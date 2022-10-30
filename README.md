@@ -1,7 +1,7 @@
 # SCDRM - Security Change Disaster-Recovery Manager		
 
 
-Also available as Ansible Collection - klovric.scdrm
+Also available as Ansible Galaxy Collection - klovric.scdrm
 -----------------------
 											
 
