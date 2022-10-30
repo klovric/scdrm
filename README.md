@@ -182,7 +182,7 @@ Simple change revert can bring you system back to operational state.
 
 
 
-2. DESCRIPTION
+2.0 DESCRIPTION
 -----------------------------------------
 
 So, what does SCDRM exactly do? In detail.
@@ -235,7 +235,7 @@ which is how SCDRM determines which files to exclude.
 
 
 
-3. INSTALLATION
+3.0 INSTALLATION
 -----------------------------------------
 
 You should use the 'scdrm-wizard'.
@@ -257,7 +257,7 @@ To do this for you inventory you can simply execute:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
  
-4. CHANGE PROCESS
+4.0 CHANGE PROCESS
 -----------------------------------------
 
 Your existing change process must adapt. Meet 'adminssh' and 'adminstart'.
@@ -337,7 +337,7 @@ To test your SCDRM installation and restore process you can use example test.yml
 
 ansible-playbook playbooks/test.yml
 
-5. CHANGE TRACKING
+5.0 CHANGE TRACKING
 -----------------------------------------
 With Ansible you could be deploying and managing clusters and fleets of servers sharing common configuration.
 
@@ -381,7 +381,7 @@ By having global tracking in 'personal' Git, we have records and possibility to 
 
 Optionally, you could use your Gitlab/Github instance to keep host_vars in. The installation wizard will ask for this.
 
-6. UPDATING CONFIGURATION
+6.0 UPDATING CONFIGURATION
 -----------------------------------------
 
 Making changes to any SCDRM configuration file, should be done locally in the project templates/files/playbooks.
@@ -410,7 +410,7 @@ To remove SCDRM from your inventory run:
 
 	ansible-playbook playbooks/scdrm.yml -e "remove=yes"
 
-7. SESSION LOGGING
+7.0 SESSION LOGGING
 -----------------------------------------
 
 Terminal session logging is enabled only for user logins, not for scripted runs.
@@ -422,7 +422,7 @@ For RHEL7 'script' is used and for newer versions 'tlog'.
 This will allow you to back-track and investigate in greater detail than before.
 
 
-8. DISASTER RECOVERY
+8.0 DISASTER RECOVERY
 -----------------------------------------
 
 Here comes a collection of real-life disaster cases that are easy to check and fix.
@@ -476,7 +476,7 @@ To revert the whole infrastructure to an older version, you would do git revert 
 
 If you are lucky and no dependencies are broken, this should work just fine.
 
-9. KNOWN LIMITATIONS
+9.0 KNOWN LIMITATIONS
 -----------------------------------------
 
  - Re-configuring exclusions in aide.conf and .gitignore is usually the first step to make as probably expectations won't be met using defaults.
@@ -492,7 +492,7 @@ If you are lucky and no dependencies are broken, this should work just fine.
  - Ansible strategy 'free' seems to break my 'consistency-enforce.yml' so works fine with 'linear' - have to look into this
 
 
-10. FUTURE UPDATES
+10.0 FUTURE UPDATES
 -----------------------------------------
 
 This is just a beginning.
@@ -503,7 +503,7 @@ Security Change Disaster-Recovery Manager for Red hat Enterprise Linux, and beyo
 
 All updates will be pushed and published on Github accordingly.
 
-11. Important change log
+11.0 Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
@@ -516,7 +516,7 @@ All updates will be pushed and published on Github accordingly.
 1.0.10      2022-10-20   Initial Gitlab commit
 
 -----------------------------------------
-12. Author
+12.0 Author
 -----------------------------------------
 Currently working as Linux architect @ IBM Croatia.
 You can contact me at kresimir.lovric@ibm.com
