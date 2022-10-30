@@ -48,13 +48,13 @@ tags:
 dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/klovric/scdrm.git
+repository: https://github.com/klovric/scdrm_collection.git
 
 # The URL to any online docs
 documentation: https://github.com/klovric/scdrm/wiki
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/klovric/scdrm/wiki
+homepage: https://github.com/klovric/scdrm.git
 
 # The URL to the collection issue tracker
 issues: https://github.com/klovric/scdrm/issues

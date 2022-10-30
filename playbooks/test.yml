@@ -16,20 +16,20 @@
     - role: adminstart
   tasks:
     - name: Install httpd
-      become: yes
+      become: True
       yum:
         name: httpd
         state: latest
 
     - name: Start httpd
-      become: yes
+      become: True
       systemd:
         name: httpd
         enabled: yes
         state: started
 
     - name: Test change
-      become: yes
+      become: True
       copy:
         content: |
           PERSISTENT
@@ -47,14 +47,14 @@
 
       # Here SCDRM should restore /etc/httpd
     - name: Restart SCDRM
-      become: yes
+      become: True
       systemd:
         name: scdrm.service
         state: restarted
 
       # httpd should start with success after restoration
     - name: Restart httpd
-      become: yes
+      become: True
       systemd:
         name: httpd.service
         state: restarted

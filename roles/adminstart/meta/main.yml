@@ -5,7 +5,6 @@ galaxy_info:
   description: Starts adminmode as part of SCDRM
   company: IBM
 
-license: GPL-2.0-or-later
 min_ansible_version: 2.9
 github_branch: main
 galaxy_tags:

@@ -9,7 +9,7 @@
     - { role: skip_host, when: '"el6" in release.stdout' }
   tasks:
    - name: Copy adminssh
-     become: yes
+     become: True
      template:
        src: ../roles/scdrm/files/adminssh.j2
        dest: /usr/local/bin/adminssh
@@ -17,7 +17,7 @@
        owner: root
 
    - name: Copy commit-hostvars
-     become: yes
+     become: True
      template:
        src: ../roles/scdrm/files/commit-hostvars.j2
        dest: /usr/local/bin/scdrm-commit
@@ -25,7 +25,7 @@
        owner: root
 
    - name: Setup scdrm-commit cron
-     become: no
+     become: False
      cron:
        name: "SCDRM commit hostvars"
        minute: "1,31"

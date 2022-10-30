@@ -6,7 +6,7 @@
   vars_files: ./vars/main.yml
   tasks:
    - name: Remove files from localhost
-     become: yes
+     become: True
      file:
        path: "{{ item }}"
        state: absent
@@ -16,7 +16,7 @@
        - /scdrm
 
    - name: Remove scdrm-commit cron
-     become: no
+     become: False
      cron:
        name: "SCDRM commit hostvars"
        minute: "1,31"

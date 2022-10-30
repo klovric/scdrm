@@ -14,7 +14,7 @@
     - role: adminstart
   tasks:
     - name: Git reset to previous commit
-      become: yes
+      become: True
       shell: 
         chdir: "{{ item }}"
         cmd: git reset --hard HEAD~1

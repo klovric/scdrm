@@ -1,7 +1,7 @@
 # Install adminstart
 ---
 - name: Copy adminstart RHEL7
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
@@ -40,7 +40,7 @@
   when: '"el7" in release.stdout'
 
 - name: Copy adminstart RHEL8
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
@@ -82,13 +82,13 @@
   when: '"el7" not in release.stdout'
 
 - name: Copy adminstart1
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
       #
       # Start admin mode for user
-      # 
+      #
       if [[ -s /etc/scdrm/scdrm.conf ]]
       then . /etc/scdrm/scdrm.conf
       else printf '\nNo configuration file found.\nExiting.\n'
@@ -112,7 +112,7 @@
     attributes: +i
 
 - name: Copy adminstop
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
@@ -168,7 +168,7 @@
     attributes: +i
 
 - name: Install adminstart-auto 
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
@@ -201,7 +201,7 @@
     attributes: +i
 
 - name: Install adminstop-auto
-  become: yes
+  become: True
   copy:
     content: |
       {{ shebang }}
