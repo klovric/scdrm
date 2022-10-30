@@ -1,0 +1,9 @@
+/var/log/scdrm/scdrmd.log {
+    maxsize 10M
+    rotate 14
+    missingok
+    notifempty
+    copytruncate
+    dateext
+    compress
+}

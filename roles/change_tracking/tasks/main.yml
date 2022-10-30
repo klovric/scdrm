@@ -1,0 +1,30 @@
+# Record Git commits for managed dirs
+---
+- name: Record commits
+  include_tasks: record-commit.yml
+  when: 
+   - update is defined
+   - check is undefined
+   - enforce is undefined
+
+- name: Check commits
+  include_tasks: check-commit.yml
+  when: 
+   - check is defined
+   - update is undefined
+   - enforce is undefined
+
+- name: Revert any previously unrecorded commits
+  include_tasks: revert-commit.yml
+  when: 
+   - update is undefined
+   - check is undefined
+   - enforce is defined
+
+#- name: Commit global changes
+#  include_tasks: commit-hostvars.yml
+#  when: 
+#   - update is defined
+#   - check is undefined
+#   - enforce is undefined
+#...

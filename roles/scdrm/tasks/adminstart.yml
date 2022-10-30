@@ -1,0 +1,255 @@
+# Install adminstart
+---
+- name: Copy adminstart RHEL7
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      #
+      # Check for configuration
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      # Check for admin mode
+      if [[ $ADMINMODE -eq 1 || -s $ALOCKF ]]
+      then printf 'Admin mode already active.\nExiting...\n'
+      exit 1
+      fi
+
+      # Check for tmux/screen
+      if [[ ! -z $TMUX || $TERM == "screen" ]]
+      then printf '\n\tYou must exit tmux/screen. Thank you.\n\n'
+      exit 1
+      fi
+
+      MYNAME="$(whoami)"
+      test -d ~/.log_local || mkdir -p ~/.log_local > /dev/null 2>&1
+      sudo /usr/local/sbin/adminstart1 $MYNAME
+      trap "sudo /usr/local/sbin/adminstop" 1 2 3 6 15
+      export PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "
+      script -qa ~/.log_local/local-$(date '+%F-%T').log
+      sudo /usr/local/sbin/adminstop $MYNAME
+    dest: /usr/local/bin/adminstart
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+  when: '"el7" in release.stdout'
+
+- name: Copy adminstart RHEL8
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      #
+      # Start admin mode for user
+      #
+      # Check for configuration
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      # Check for admin mode
+      if [[ $ADMINMODE -eq 1 || -s $ALOCKF ]]
+      then printf 'Admin mode already active.\nExiting...\n'
+      exit 1
+      fi
+
+      # Check for tmux/screen
+      if [[ ! -z $TMUX || $TERM == "screen" ]]
+      then printf '\n\tYou must exit tmux/screen. Thank you.\n\n'
+      exit 1
+      fi
+
+      MYNAME="$(whoami)"
+      test -d /home/$MYNAME/.log_local || mkdir -p /home/$MYNAME/.log_local > /dev/null 2>&1
+      sudo /usr/local/sbin/adminstart1 $MYNAME
+      trap "sudo /usr/local/sbin/adminstop" 1 2 3 6 15
+      export PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "
+      tlog-rec -o /home/$MYNAME/.log_local/local-$(date '+%F-%T').log
+      sudo /usr/local/sbin/adminstop $MYNAME
+      exit 0
+    dest: /usr/local/bin/adminstart
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+  when: '"el7" not in release.stdout'
+
+- name: Copy adminstart1
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      #
+      # Start admin mode for user
+      # 
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      USERN="$1"
+
+      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
+      chown -R $USERN:$USERN /home/$USERN/.log_local/ 2>/dev/null
+      chmod -R 0660 /home/$USERN/.log_local/* 2>/dev/null
+      sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
+      test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
+      printf "$NOW - Started admin mode for $USERN\n" >> $SCDRMDLOG
+      touch $ALOCKF && echo $(date '+%F %T') > $ALOCKF 2>/dev/null
+      #exit 0
+    dest: /usr/local/sbin/adminstart1
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy adminstop
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      # 
+      # Stop admin mode for user
+      #
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      trap "printf '\n\t\e[91mPlease WAIT for AIDE update. Patience is a virtue.\e[0m\n'" 1 2 3 6 15
+      USERN="$1"
+
+      printf '\nPlease wait for DR checks and AIDE update, sometimes it can take several minutes...\n\n'
+      /usr/local/sbin/scdrm-fast > /dev/null
+
+      for DIRECTORY in {{ check_directory }}
+      do cd $DIRECTORY > /dev/null
+      
+      git status > /tmp/scdrm.tmpf
+      if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/scdrm.tmpf > /dev/null
+      then printf 'Adding new files to the repo\n' >> $SCDRMDLOG
+      egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/scdrm.tmpf | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > /tmp/scdrm.tmpf.tmpf
+          for x in $(cat /tmp/scdrm.tmpf.tmpf)
+          do git add $x
+          done
+      /bin/rm -f /tmp/scdrm.tmpf* > /dev/null 2>&1
+      git commit -a -m "SCDRM auto add files commit" >> $SCDRMDLOG 2>&1
+      fi
+
+      if git status | fgrep "nothing to commit, working tree clean" > /dev/null
+      then true
+      else git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
+      fi
+      
+      done
+
+      chown -R root:root /home/$USERN/.log_local/ 2>/dev/null
+      chmod -R 0000 /home/$USERN/.log_local/* 2>/dev/null
+      sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+      printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git home/$USERN/.log_local/ 2>/dev/null
+      /usr/sbin/aide --update >/dev/null 2>&1
+      /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
+      /bin/rm -f $ALOCKF > /dev/null 2>&1
+      exit 0
+    dest: /usr/local/sbin/adminstop
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Install adminstart-auto 
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      # Start admin mode for Ansible/scripts
+      
+      # Check for configuration
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      NOW="$(date '+%F-%T')"
+      # Check for admin mode
+      if [[ $ADMINMODE -eq 1 ]]
+      then printf "$NOW - Admin mode already active.\nExiting...\n" >> $SCDRMDLOG
+      exit 1
+      fi
+
+      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security.git
+      sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
+      test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
+      printf "$NOW - Started admin mode\n" >> $SCDRMDLOG
+      touch $ALOCKF && echo $(date '+%F %T') > $ALOCKF 2>/dev/null
+      exit 0
+    dest: /usr/local/sbin/adminstart-auto
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Install adminstop-auto
+  become: yes
+  copy:
+    content: |
+      {{ shebang }}
+      #
+      # Stop admin mode for Ansible/scripts
+      NOW="$(date '+%F-%T')"
+
+      /usr/local/sbin/scdrm-fast > /dev/null
+
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else printf '\nNo configuration file found.\nExiting.\n'
+      exit 1
+      fi
+
+      trap "printf '\n\tPlease WAIT for AIDE update! Patience is a virtue.\n'" 1 2 3 6 15
+
+      for DIRECTORY in {{ check_directory }}
+      do cd $DIRECTORY > /dev/null
+
+      git status > /tmp/scdrm.tmpf
+      if egrep -v '^\w|^$|changes added|Changes not|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git restore|git checkout|modified:|deleted:' /tmp/scdrm.tmpf > /dev/null
+      then printf "$NOW - Adding new files to the repo\n" >> $SCDRMDLOG
+      egrep -v '^\w|^$|changes added|Changes not|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git restore|git checkout|modified:|deleted:' /tmp/scdrm.tmpf | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > /tmp/scdrm.tmpf.tmpf
+          for x in $(cat /tmp/scdrm.tmpf.tmpf)
+          do git add $x
+          done
+      /bin/rm -f /tmp/scdrm.tmpf* > /dev/null 2>&1
+      git commit -a -m "SCDRM auto add files commit" >> $SCDRMDLOG 2>&1
+      fi
+
+      if git status | fgrep "nothing to commit, working tree clean" > /dev/null
+      then true
+      else git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
+      fi
+
+      done
+
+      sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+      printf "$NOW - Exited admin mode\n" >> $SCDRMDLOG
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git
+      /usr/sbin/aide --update
+      /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+      /bin/rm -f $ALOCKF > /dev/null 2>&1
+      exit 0
+    dest: /usr/local/sbin/adminstop-auto
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+...

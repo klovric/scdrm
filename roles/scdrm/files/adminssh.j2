@@ -1,0 +1,44 @@
+{{ shebang }}
+# 
+# SCDRM SSH for 'adminstart'
+#
+SCDRMPATH={{ scdrm_install_dir }}
+SERNAME="$( echo $1 | tr [:upper:] [:lower:])"
+
+# Check for tmux/screen
+if [[ ! -z $TMUX || $TERM == "screen" ]]
+then printf '\n\t\e[91mYou must exit tmux/screen. Thank you!\e[0m\n\n'
+exit 1
+fi
+
+# Timeout set to somewhat reasonable value, adjust where appropriate. Exit if adminstart fails
+/usr/bin/ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no $SERNAME -t /usr/local/bin/adminstart || exit 1
+
+# Update host vars and Git
+printf '\n\e[32mUpdating host vars and Git, please wait..\e[0m\n\n'
+
+cd $SCDRMPATH > /dev/null
+printf "$SERNAME\n" > temp-$$.inv
+printf '\n\t\e[91mPlease WAIT and DO NOT interrupt Ansible playbook.\n\tPatience is a virtue.\e[0m\n\n'
+ansible-playbook playbooks/change_tracking.yml -i temp-$$.inv -e "update=yes"
+/bin/rm -f temp-$$.inv > /dev/null 2>&1
+
+# Commit changes for global change tracking
+cd /scdrm/host_vars > /dev/null
+git status > ~/.gitstatus.tmp
+
+if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' ~/.gitstatus.tmp > /dev/null
+	then egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' ~/.gitstatus.tmp | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > ~/.gitstatus.tmp.tmp
+fi
+
+for x in $(cat ~/.gitstatus.tmp.tmp)
+	do git add $x > /dev/null
+done
+
+/bin/rm -f ~/.gitstatus.tmp* > /dev/null 2>&1
+
+git commit -a -m "SCDRM auto commit by $(whoami)" > /dev/null
+
+cd ~ > /dev/null
+
+exit 0

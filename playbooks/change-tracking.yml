@@ -1,0 +1,17 @@
+# This playbook gets commits from the systems for local var database
+# Change tracking modes of operation:
+#  update: populates host_vars
+#  check: compares current state with pre-recorded host_vars
+#  enforce: check and reset hard all and any not previously recorded changes up to last recorded commit
+---
+- name: Get and record commits
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ./vars/main.yml
+  roles:
+    - role: get_kernel
+    - { role: skip_host, when: '"el6" in release.stdout' }
+    - role: change_tracking
+...

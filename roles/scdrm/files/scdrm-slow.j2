@@ -1,0 +1,14 @@
+{{ shebang }}
+# 
+# More expensive DR checks
+exec 2>> /var/log/scdrm/error.log
+
+# Verify binaries
+rpm --verify --noconfig glibc > /dev/null || yum reinstall glibc -y > /dev/null
+rpm --verify --noconfig openssh-server > /dev/null || yum reinstall openssh-server -y > /dev/null
+rpm --verify coreutils > /dev/null || yum reinstall coreutils -y > /dev/null
+rpm --verify bash > /dev/null || yum reinstall bash -y > /dev/null
+
+/usr/local/sbin/scdrm-fast > /dev/null
+
+exit 0

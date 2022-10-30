@@ -1,0 +1,40 @@
+---
+- name: Report on changed/deleted files
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ./vars/main.yml
+  roles:
+    - role: get_kernel
+  tasks:
+    - name: Collect SCDRM report
+      become: True
+      shell: cat /var/log/scdrm/report
+      register: report
+      changed_when: no
+      failed_when: report.stdout == ""
+
+    - name: Get deleted
+      become: False
+      shell: echo "{{ report.stdout }}" | fgrep DELETED
+      register: deleted
+      delegate_to: localhost
+
+    - name: Get changed
+      become: False
+      shell: echo "{{ report.stdout }}" | fgrep CHANGED
+      register: changed
+      delegate_to: localhost
+
+    - name: Get AIDE
+      become: False
+      shell: echo "{{ report.stdout }}" | fgrep 'AIDE ALERT'
+      register: aide
+      delegate_to: localhost
+
+    - name: Log report
+      become: False
+      shell: "echo '{{ inventory_hostname }} {{ deleted.stdout | default('OK',true) }} {{ changed.stdout | default('OK',true) }} {{ aide.stdout | default('OK',true) }}' >> {{ scdrm_install_dir }}/log/scdrm-report-$(date +%F).log"
+      delegate_to: localhost
+...

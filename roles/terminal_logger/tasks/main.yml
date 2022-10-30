@@ -1,0 +1,13 @@
+---
+- name: Install util-linux
+  yum:
+    name: util-linux
+    state: present
+  when: '"el7" in release.stdout'
+
+- name: Install tlog
+  yum:
+    name: tlog
+    state: present
+  when: '"el7" not in release.stdout'
+...

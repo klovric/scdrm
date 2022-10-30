@@ -1,0 +1,4 @@
+---
+- name: Get kernel version
+  import_tasks: get_kernel.yml
+...

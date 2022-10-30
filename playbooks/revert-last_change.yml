@@ -1,0 +1,32 @@
+# Blindly revert last change for a given directory
+---
+- name: Revert last change
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ./vars/main.yml
+  vars:
+    change_dirs:
+      - /etc
+#      - /usr/lib/systemd
+  roles:
+    - role: adminstart
+  tasks:
+    - name: Git reset to previous commit
+      become: yes
+      shell: 
+        chdir: "{{ item }}"
+        cmd: git reset --hard HEAD~1
+      with_items: "{{ change_dirs }}"
+
+    - name: Adminstop
+      import_role:
+        name: adminstop
+
+    - name: Update local vars
+      import_role:
+        name: change_tracking
+      vars:
+        update: yes
+...

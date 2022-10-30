@@ -1,0 +1,64 @@
+---
+- name: Prepare for deletion SCDRM
+  become: true
+  failed_when: False
+  shell: chattr -R -i /etc/scdrm /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+
+- name: Prepare for deletion "{{ check_directory }}"
+  become: true
+  failed_when: False
+  shell: "chattr -R -i {{ check_directory }} 2>/dev/null"
+
+- name: Remove .git
+  file:
+    path: "{{ item }}/.git"
+    state: absent
+  with_items:
+    - "{{ dirlist }}"
+
+- name: Uninstall SCDRM
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /scdrm
+    - /etc/scdrm
+    - /etc/aide.conf
+    - /var/log/scdrm
+    - /var/log/aide
+    - /etc/logrotate.d/aide
+    - /etc/logrotate.d/scdrm
+    - /etc/systemd/system/scdrm.service
+    - /etc/systemd/system/scdrm-slow-check.service
+    - /etc/systemd/system/scdrm-slow-check.timer
+    - /etc/systemd/system/aide-check.timer
+    - /etc/systemd/system/aide-check.service
+    - /usr/local/bin/adminstart
+    - /usr/local/sbin/scdrmd
+    - /usr/local/sbin/adminstart1
+    - /usr/local/sbin/adminstop
+    - /usr/local/sbin/adminstart-auto
+    - /usr/local/sbin/adminstop-auto
+    - /usr/local/sbin/scdrm-slow
+    - /usr/local/sbin/scdrm-fast
+    - /usr/local/sbin/scdrm-gitcron
+    - /usr/local/sbin/route-guard
+
+- name: Remove cron job GC
+  cron:
+    name: "SCDRM Git GC"
+    minute: "16"
+    hour: "16"
+    day: "1"
+    job: /usr/local/sbin/scdrm-gitcron
+    user: root
+    state: absent
+
+- name: Remove packages
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - aide
+    - tlog
+...

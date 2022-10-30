@@ -1,0 +1,7 @@
+---
+- name: Run adminstart-auto
+  become: True
+  shell: /usr/local/sbin/adminstart-auto
+  register: adminstart
+  failed_when: adminstart.rc != 0
+...

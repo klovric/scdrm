@@ -1,0 +1,33 @@
+# This playbook manages SCDRM installation, updates and removal
+#
+# variables explained:
+#   dryrun - (1) DO NOT revert any changes, or (0) DO revert unauthorized changes
+#   managed - is the system change managed (1) by something (Ansible,Puppet,Chef,CFEngine...) or NOT (0)
+#   managed_string - when coexisting with other configuration management put in the 'managed by' identification line
+#   check_freq - SCDRM check frequency in seconds
+#   aide_check - hour when to start AIDE check, with randomization of up to 6 hours
+#   remove - uncomment to remove SCDRM
+#   update - uncomment to update SCDRM
+---
+- name: Installs SCDRM
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ./vars/main.yml
+  vars:
+    dryrun: 1
+    managed: 0
+    managed_string: 'my_managed_by_strings_too_look_for'
+    check_freq: 300
+    aide_check: '20:00'
+    #remove: yes
+    #update: yes
+  roles:
+    - role: get_kernel
+    - { role: skip_host, when: '"el6" in release.stdout' }
+    - { role: terminal_logger, when: 'update is undefined and remove is undefined' }
+    - { role: route_guard, when: 'update is undefined and remove is undefined' }
+    - role: scdrm
+    - { role: aide, when: 'update is undefined and remove is undefined' }
+...

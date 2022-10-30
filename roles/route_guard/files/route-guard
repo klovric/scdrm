@@ -1,0 +1,25 @@
+{{ shebang }}
+#
+# Route guard for RHEL 7/8/9
+
+SBINARY="$0"
+DROUTE=NULL
+
+# First time init
+if [[ $DROUTE == 'NULL' ]]
+then GATEWAY="$(/usr/sbin/ip route show | grep default)"
+sed -i "s/^DROUTE=NULL$/DROUTE='$GATEWAY'/" $SBINARY
+exit 0
+fi
+
+# Regular check - restore default gateway when missing, update changes
+if /usr/sbin/ip route show | grep default > /dev/null
+then GATEWAY="$(/usr/sbin/ip route show | grep default)"
+	if [[ $GATEWAY != $DROUTE ]]
+	then sed -i "s/^DROUTE=.*$/DROUTE='$GATEWAY'/" $SBINARY
+	fi
+else
+/usr/sbin/ip route add $DROUTE
+fi
+
+exit 0

@@ -1,0 +1,4 @@
+---
+- name: Skip host due to critical task failure
+  meta: end_host
+...

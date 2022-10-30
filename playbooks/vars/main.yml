@@ -1,0 +1,12 @@
+# Global vars
+---
+scdrm_install_dir: INSTALLDIR
+shebang: "#!/bin/bash"
+git_branch: main
+# These directories are managed by Git
+check_directory: "/etc /usr/lib/systemd /usr/lib64/security"
+dirlist:
+  - /etc
+  - /usr/lib/systemd
+  - /usr/lib64/security
+...

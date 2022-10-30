@@ -1,0 +1,25 @@
+---
+- name: Install SCDRM
+  include_tasks: install.yml
+  when: 
+   - remove is undefined
+   - update is undefined
+
+- name: Install adminstart
+  include_tasks: adminstart.yml
+  when: 
+   - remove is undefined
+   - update is undefined
+
+- name: Remove SCDRM
+  include_tasks: remove.yml
+  when:
+    - update is undefined
+    - remove is defined
+
+- name: Update configuration
+  include_tasks: update.yml
+  when:
+    - remove is undefined
+    - update is defined
+...

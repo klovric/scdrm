@@ -1,0 +1,240 @@
+# Install SCDRM
+---
+- name: Create dirs
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - /var/log/scdrm
+    - /etc/scdrm
+    - /scdrm
+
+- name: Install Git
+  become: true
+  yum:
+    name: git
+    state: present
+
+- name: Check network service
+  become: true
+  shell: systemctl is-active network.service
+  failed_when: false
+  changed_when: false
+  register: networkcheck
+
+- name: Check NetworkManager service
+  become: true
+  shell: systemctl is-active NetworkManager.service
+  failed_when: false
+  changed_when: false
+  register: nmcheck
+
+- name: Set fact
+  set_fact:
+    netservice: network
+  when: networkcheck.stdout == "active"
+
+- name: Set fact
+  set_fact:
+    netservice: NetworkManager
+  when: nmcheck.stdout == "active"
+
+- name: Copy scdrmd
+  become: true
+  template:
+    src: ../files/check.j2
+    dest: /usr/local/sbin/scdrmd
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy scdrm.conf
+  become: true
+  template:
+    src: ../files/scdrm.j2
+    dest: /etc/scdrm/scdrm.conf
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy gitignore
+  become: true
+  copy:
+    src: ../files/gitignore
+    dest: "{{ item }}/.gitignore"
+    mode: 0640
+    owner: root
+    attributes: +i
+  with_items: "{{ dirlist }}"
+
+- name: Copy installer
+  become: true
+  copy:
+    content: |
+      {{ shebang }}
+      if [[ -s /etc/scdrm/scdrm.conf ]]
+      then . /etc/scdrm/scdrm.conf
+      else
+      printf 'Configuration file missing. Exiting...\n'
+      exit 1
+      fi
+
+      for DIRECTORY in {{ check_directory }}
+      do
+          if [[ -d ${DIRECTORY}/.git ]]
+          then printf "Git already configured for $DIRECTORY. Exiting...\n"
+          exit 1
+          fi
+
+      # Install SCDRM
+      printf "Starting installation on $(date '+%F-%T')\n" | tee -a $SCDRMILOG > $SCDRMDLOG
+      cd $DIRECTORY > /dev/null
+      git init . >> $SCDRMILOG 2>>$SCDRMELOG
+      git add . >> $SCDRMILOG 2>>$SCDRMELOG
+      git commit -a -m "Installation commit" >> $SCDRMILOG 2>>$SCDRMELOG
+
+      done
+
+      chattr -R +i /etc/scdrm  /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart 2>/dev/null
+      /bin/rm -f /usr/local/sbin/scdrm-install > /dev/null
+      exit 0
+    dest: /usr/local/sbin/scdrm-install
+    mode: 0750
+    owner: root
+    group: root
+
+
+- name: Copy cron-check
+  become: true
+  template:
+    src: ../files/scdrm-slow.j2
+    dest: /usr/local/sbin/scdrm-slow
+    mode: '0750'
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy fast-check
+  become: true
+  template:
+    src: ../files/scdrm-fast.j2
+    dest: /usr/local/sbin/scdrm-fast
+    mode: '0750'
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy GitGC cron
+  become: true
+  template:
+    src: ../files/cron-git.j2
+    dest: /usr/local/sbin/scdrm-gitcron
+    mode: '0750'
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Setup SCDRM service
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=Security/Change/Disaster-Recovery Manager daemon
+      Conflicts=shutdown.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/sbin/scdrmd
+      Restart=always
+      RestartSec=30s
+    dest: /etc/systemd/system/scdrm.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+
+
+- name: Setup SCDRM slow check timer
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=SCDRM slow check every hour minutes
+
+      [Timer]
+      OnCalendar=*:00
+      RandomizedDelaySec=40m
+      AccuracySec=1us
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/scdrm-slow-check.timer
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Setup SCDRM-slow check service
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=SCDRM slow check
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/sbin/scdrm-slow
+
+      [Install]
+      WantedBy=scdrm.service
+    dest: /etc/systemd/system/scdrm-slow-check.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Setup Git GC cron
+  cron:
+    name: "SCDRM Git GC"
+    minute: "16"
+    hour: "16"
+    day: "1"
+    job: /usr/local/sbin/scdrm-gitcron
+    user: root
+    state: present
+
+- name: Copy logrotate
+  become: true
+  copy:
+    src: ../files/logrotate
+    dest: /etc/logrotate.d/scdrm
+    mode: 0644
+    owner: root
+
+- name: Download emergency restore RPMs
+  become: true
+  shell: yum reinstall --downloadonly --downloaddir=/scdrm rpm glibc coreutils -y
+
+- name: Run the installer
+  become: true
+  shell: /usr/local/sbin/scdrm-install
+  register: installer
+  failed_when: installer.stdout != ""
+
+- name: Start SCDRM stack
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  with_items:
+    - scdrm.service
+    - scdrm-slow-check.service
+    - scdrm-slow-check.timer
+...

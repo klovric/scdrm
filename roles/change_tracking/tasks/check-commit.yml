@@ -1,0 +1,21 @@
+# Check Git commits against recorded values
+---
+- name: Get commits for managed dirs
+  become: true
+  shell: 
+    chdir: "{{ item }}"
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
+  register: gitcommit
+  with_items: 
+    - "{{ dirlist }}"
+
+- name: Compare commits
+  become: false
+  shell: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  with_together:
+    - "{{ gitcommit | json_query('results[*].item') }}"
+    - "{{ gitcommit | json_query('results[*].stdout') }}"
+    - "{{ last_commit }}"
+  delegate_to: localhost
+  changed_when: false
+...

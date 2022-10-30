@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: route_guard
+  author: Kresimir Lovric
+  description: Re-installs default route if missing as part of SCDRM
+  company: IBM
+
+license: GPL-2.0-or-later
+min_ansible_version: 2.9
+github_branch: main
+galaxy_tags:
+  - scdrm
+  - security
+  - disaster_recovery
+  - rhel
+  - ids
+
+dependencies: []
+...

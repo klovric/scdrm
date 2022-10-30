@@ -1,0 +1,8 @@
+---
+- name: Get kernel version
+  shell: uname -r
+  become: False
+  register: release
+  changed_when: False
+  failed_when: release.stdout == ""
+...

@@ -1,0 +1,25 @@
+{{ shebang }}
+#
+# This will blindly update everything in host_vars
+
+# Commit changes for global change tracking
+cd /scdrm/host_vars > /dev/null
+git status > /tmp/gitstatus-$$.tmp
+
+if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/gitstatus-$$.tmp > /dev/null
+	then egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/gitstatus-$$.tmp | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > /tmp/gitstatus-$$.tmp.tmp
+fi
+
+for x in $(cat /tmp/gitstatus-$$.tmp.tmp)
+	do git add $x > /dev/null
+done
+
+/bin/rm -f /tmp/gitstatus-$$.tmp* > /dev/null 2>&1
+
+git commit -a -m "SCDRM auto commit by $(whoami)" > /dev/null
+
+if [[ $USEGIT -eq 1 ]]
+then git push -u origin {{ git_branch }}
+fi
+
+exit 0

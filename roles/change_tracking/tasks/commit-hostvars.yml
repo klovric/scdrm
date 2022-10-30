@@ -1,0 +1,7 @@
+# Commit changes to global change tracking Git
+---
+- name: Run the program to commit changes
+  become: false
+  shell: "{{ scdrm_install_dir }}/playbooks/roles/change_tracking/files/commit-hostvars.sh"
+  delegate_to: localhost
+... 

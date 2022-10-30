@@ -1,0 +1,84 @@
+---
+- name: Adminstart
+  become: true
+  shell: /usr/local/sbin/adminstart-auto
+
+- name: Install and configure AIDE
+  become: true
+  yum:
+    name: aide
+    state: latest
+
+- name: Copy config
+  become: true
+  copy:
+    src: ../files/aide.conf
+    dest: /etc/aide.conf
+    mode: 0600
+    attributes: +i
+
+- name: AIDE init
+  become: true
+  shell: /usr/sbin/aide -i && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+
+- name: Setup AIDE check
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE check
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/sbin/aide --check
+      Restart=on-failure
+      RestartSec=30s
+
+      [Install]
+      WantedBy=scdrm.service
+    dest: /etc/systemd/system/aide-check.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Setup AIDE check timer
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE check timer
+
+      [Timer]
+      OnCalendar={{ aide_check }}
+      RandomizedDelaySec=8h
+      AccuracySec=1us
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/aide-check.timer
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Commit AIDE install
+  become: true
+  shell: cd /etc && git add aide.conf logrotate.d/aide && git commit -a -m "Aide installed"
+
+- name: Service start
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+  with_items:
+    - aide-check.timer
+    - aide-check.service
+
+- name: Adminstop
+  become: true
+  shell: /usr/local/sbin/adminstop-auto
+...

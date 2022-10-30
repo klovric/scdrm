@@ -1,0 +1,12 @@
+{{ shebang }}
+#
+# Do some Git garbage collection
+#
+for DIRECTORY in {{ check_directory }}
+	do chattr -R -i $DIRECTORY/.git > /dev/null
+	cd $DIRECTORY > /dev/null
+	git gc > /dev/null 2>&1
+	chattr -R +i $DIRECTORY/.git > /dev/null
+done
+
+exit 0

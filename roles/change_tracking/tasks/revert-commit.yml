@@ -1,0 +1,49 @@
+# Check Git commits against recorded values and revert when not a match
+---
+- name: Get commits for managed dirs
+  become: true
+  shell: 
+    chdir: "{{ item }}"
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
+  register: gitcommit
+  with_items: 
+    - "{{ dirlist }}"
+
+- name: Compare commits
+  become: false
+  shell: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  register: compare
+  changed_when: false
+  delegate_to: localhost
+  with_together:
+    - "{{ gitcommit | json_query('results[*].item') }}"
+    - "{{ gitcommit | json_query('results[*].stdout') }}"
+    - "{{ last_commit }}"
+
+- name: Prepare reverting commit
+  become: false
+  shell: echo "{{ item.cmd }}" | awk '{print "cd",$2";git reset --hard",$6}'
+  register: reverting
+  delegate_to: localhost
+  when: item.rc == 1
+  with_items: "{{ compare | json_query('results[*]') }}"
+
+- name: Adminstart
+  become: true
+  import_role: 
+    name: adminstart
+  when: reverting is changed
+
+- name: REVERT COMMIT
+  become: true
+  shell: "{{ item }}"
+  register: reverted
+  with_items: "{{ reverting | json_query('results[*].stdout') }}"
+  when: item != ""
+
+- name: Adminstop
+  become: true
+  import_role: 
+    name: adminstop
+  when: reverting is changed
+...

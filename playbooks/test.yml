@@ -1,0 +1,69 @@
+# Test adminstart process and restore process of SCDRM - install httpd, then remove and restore /etc/httpd
+# 
+# Expected results:
+# SUCCESS of ALL tasks (some skipped) when SCDRM installed properly and running in dryrun=0 
+# SUCCESS of ALL tasks (some skipped) and FAILURE of last two tasks when SCDRM installed properly and running in dryrun=1
+# FAILURE: of unknow number of tasks when SCDRM NOT installed properly
+---
+- name: Installs httpd and tests SCDRM restore function
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ../vars/scdrm_global
+  roles:
+    - role: get_kernel
+    - role: adminstart
+  tasks:
+    - name: Install httpd
+      become: yes
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Start httpd
+      become: yes
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: Test change
+      become: yes
+      copy:
+        content: |
+          PERSISTENT
+        dest: /var/www/html/index.html
+        mode: 0644
+
+    - name: Adminstop
+      import_role:
+        name: adminstop
+
+    - name: Delete config
+      file:
+        path: /etc/httpd/
+        state: absent
+
+      # Here SCDRM should restore /etc/httpd
+    - name: Restart SCDRM
+      become: yes
+      systemd:
+        name: scdrm.service
+        state: restarted
+
+      # httpd should start with success after restoration
+    - name: Restart httpd
+      become: yes
+      systemd:
+        name: httpd.service
+        state: restarted
+
+      # Failure when httpd not running
+    - name: Check if change persits OK, fail when ERROR
+      # Avoid any firewall
+      shell: curl -L http://localhost
+      register: response
+      changed_when: False
+      failed_when: response.stdout != "PERSISTENT"
+...

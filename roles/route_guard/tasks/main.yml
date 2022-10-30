@@ -1,0 +1,10 @@
+---
+- name: Install route-guard for RHEL
+  become: true
+  copy:
+    src: ../files/route-guard
+    dest: /usr/local/sbin/route-guard
+    owner: root
+    group: root
+    mode: '0750'
+...

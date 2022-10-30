@@ -1,0 +1,117 @@
+{{ shebang }}
+# 
+# SCDRM daemon - runs forever until stopped
+
+while true
+do 
+
+# Config check
+if [[ -s /etc/scdrm/scdrm.conf ]]
+then . /etc/scdrm/scdrm.conf
+else printf '\nNo configuration file found.\nExiting.\n'
+exit 1
+fi
+
+# Exit when admin mode active
+if [[ $ADMINMODE -eq 1 ]]
+then if find /run -type f -name scdrm-admin.lock -mmin +360 | fgrep scdrm-admin.lock >/dev/null 
+	then printf 'ERROR: admin mode active over 6 hours. Exiting admin mode.\n' | tee -a $SCDRMDLOG
+	chattr -R -i /etc/scdrm 2>/dev/null
+      	sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+	/bin/rm -f $ALOCKF > /dev/null 2>&1
+	chattr -R +i /etc/scdrm 2>/dev/null
+	fi
+exit 16
+fi
+
+# Cleanup
+/bin/rm -f $TMPF1 $TMPF > /dev/null 2>&1
+
+GRST=0
+printf "$NOW - Starting sanity checks\n" | tee -a $SCDRMDLOG > $SCDRMREPORT
+
+for DIRECTORY in {{ check_directory }}
+do cd $DIRECTORY
+git status > $TMPF 2>&1
+
+# Check if clean and get exclusions managed by configuration management
+if fgrep -i 'nothing to commit, working tree clean' $TMPF >> $SCDRMREPORT 2>>$SCDRMELOG
+then true
+else 
+	if [[ $MANAGED -eq 1 ]]
+	then fgrep -ri "$MANAGEDBY" . | cut -d':' -f1 > $EXCLUDED
+	else echo 'Nothing_to_be_excluded_here-for_real' > $EXCLUDED
+	fi
+fi
+
+# Check for deleted
+if awk '/deleted:/ {if ($1 == "#") print $3; else print $2}' $TMPF > $TMPF1
+then 
+	for linija in $(cat $TMPF1)
+	do 
+		if fgrep $linija $EXCLUDED > /dev/null
+		then sed -i "#${linija}#d" $TMPF1
+		fi
+	done
+
+	if [[ -s $TMPF1 ]]
+	then printf 'These files were deleted:\n' >> $SCDRMDLOG
+	cat $TMPF1 >> $SCDRMDLOG
+	cat $TMPF1 | tr '\n' ',' | sed "s/^/DELETED /g" | sed 's/,$/\n/' >> $SCDRMREPORT
+	printf 'Resetting to previous version to restore the files.\n' >> $SCDRMDLOG
+	let "GRST+=1"
+	fi
+fi
+
+# Check for modified files
+if awk '/modified:/ {if ($1 == "#") print $3; else print $2}' $TMPF > $TMPF1
+then
+	for linija in $(cat $TMPF1)
+	do 
+		if fgrep $linija $EXCLUDED > /dev/null
+		then sed -i "#${linija}#d" $TMPF1
+		fi
+	done
+	if [[ -s $TMPF1 ]]
+	then printf 'These files were changed:\n' >> $SCDRMDLOG
+	cat $TMPF1 >> $SCDRMDLOG
+	cat $TMPF1 | tr '\n' ',' | sed "s/^/CHANGED /g" | sed 's/,$/\n/' >> $SCDRMREPORT
+	printf 'Reseting to previous version to revert the changes.\n' >> $SCDRMDLOG
+	let "GRST+=1"
+	fi
+fi
+
+# Check for new, untracked files
+if fgrep -i 'ntracked files' $TMPF > /dev/null
+then 
+	printf 'These files are untracked:\n' >> $SCDRMDLOG
+	git status | egrep -v -i '(On branch|untracked files|not staged|git add|^$|^#$)' | tee -a $SCDRMDLOG | tr '\n' ',' | sed "s/^/UNTRACKED /g" >> $SCDRMREPORT
+	printf '\n' >> $SCDRMREPORT
+fi
+
+# Restore files
+if [[ $GRST -ne 0 && $DRYRUN -eq 0 ]]
+then chattr -R -i .git 2>/dev/null
+git reset --hard HEAD >> $SCDRMDLOG
+chattr -R +i .git 2>/dev/null
+fi
+
+cd - > /dev/null
+done
+
+# Aide check is done from cron as it is relatively intensive
+if fgrep 'Looks okay' /var/log/aide/aide.log > /dev/null
+then printf 'AIDE OK\n' >> $SCDRMREPORT
+else printf 'AIDE ALERT\n' >> $SCDRMREPORT
+fi
+
+
+# DR check
+/usr/local/sbin/scdrm-fast > /dev/null
+
+# Check frequency
+sleep {{ check_freq }}
+
+done
+
+exit 0

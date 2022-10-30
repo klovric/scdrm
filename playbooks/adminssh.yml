@@ -1,0 +1,34 @@
+# This playbook installs 'adminssh' onto your central management jumphost and a cron job
+---
+- name: Install adminssh
+  hosts: localhost
+  gather_facts: no
+  vars_files: ./vars/main.yml
+  roles:
+    - role: get_kernel
+    - { role: skip_host, when: '"el6" in release.stdout' }
+  tasks:
+   - name: Copy adminssh
+     become: yes
+     template:
+       src: ../roles/scdrm/files/adminssh.j2
+       dest: /usr/local/bin/adminssh
+       mode: '0755'
+       owner: root
+
+   - name: Copy commit-hostvars
+     become: yes
+     template:
+       src: ../roles/scdrm/files/commit-hostvars.j2
+       dest: /usr/local/bin/scdrm-commit
+       mode: '0755'
+       owner: root
+
+   - name: Setup scdrm-commit cron
+     become: no
+     cron:
+       name: "SCDRM commit hostvars"
+       minute: "1,31"
+       job: /usr/local/bin/scdrm-commit
+       state: present
+...

@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: change_tracking
+  author: Kresimir Lovric
+  description: Tracks changes as part of SCDRM
+  company: IBM
+
+license: GPL-2.0-or-later
+min_ansible_version: 2.9
+github_branch: main
+galaxy_tags:
+  - scdrm
+  - security
+  - disaster_recovery
+  - rhel
+  - ids
+
+dependencies: []
+...

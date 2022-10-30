@@ -1,0 +1,15 @@
+.*
+*rpmsave
+*.bak
+*.bkp
+*.tar.gz
+*.tar.bz2
+*.cf-before-edit
+*.cfsaved
+yum.repos.d/v*security-emergency*
+shadow*
+motd.d/*
+tcpwrapper.d/*
+scdrm/scdrm.conf
+systemd/system/os-update.service
+systemd/system/system-update.target.wants/os-update.service
