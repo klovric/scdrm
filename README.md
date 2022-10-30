@@ -387,8 +387,7 @@ All updates will be pushed and published on Github accordingly.
 =================================================
 | Version |	Date   |	Description 	|
 =================================================
-1.2.7 	    2022-10-30   Fixes for collection
-1.2.4 	    2022-10-30   Rewritten as Ansible collection
+1.2.10 	    2022-10-30   Fixes and updates for working collection
 1.1.2 	    2022-10-29   Global host_vars are under Git protection, multiuser environment set
 1.0.15      2022-10-28   SCDRM goes public
 1.0.10      2022-10-20   Initial Gitlab commit

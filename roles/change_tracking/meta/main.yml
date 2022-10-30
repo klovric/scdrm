@@ -4,15 +4,5 @@ galaxy_info:
   author: Kresimir Lovric
   description: Tracks changes as part of SCDRM
   company: IBM
-
-min_ansible_version: 2.9
-github_branch: main
-galaxy_tags:
-  - scdrm
-  - security
-  - disaster_recovery
-  - rhel
-  - ids
-
 dependencies: []
 ...

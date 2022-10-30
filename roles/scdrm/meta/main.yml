@@ -4,15 +4,5 @@ galaxy_info:
   author: Kresimir Lovric
   description: Manages SCDRM (Security Change Disaster-Recovery Manager) for RHEL 7/8/9
   company: IBM
-
-min_ansible_version: 2.9
-github_branch: main
-galaxy_tags:
-  - scdrm
-  - security
-  - disaster_recovery
-  - rhel
-  - ids
-
 dependencies: []
 ...
