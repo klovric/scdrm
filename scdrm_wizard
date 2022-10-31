@@ -1,0 +1,126 @@
+#!/bin/bash
+#
+# SCDRM Installation wizard
+#
+
+# User check
+if whoami | fgrep root > /dev/null
+then printf "\n\tERROR - don't run this as root. Need normal user with sudo privileges.\nExiting.\n\n"
+exit 1
+fi
+
+# Inventory check
+if [[ -s ./inventory ]]
+then SYSNO="$(wc -l ./inventory)"
+else printf 'Default inventory file is missing or empty!\n\tPlease put your fleet into ${PWD}/inventory\nExiting\n\n'
+exit 1
+fi
+
+HERE="$(pwd)"
+# Setup install dir variable
+sed -i "s#INSTALLDIR#${HERE}#" playbooks/vars/main.yml
+
+# Dependency installation
+printf '\n\n\tChecking and installing dependencies.\n\n'
+if uname -r | fgrep el7 > /dev/null
+then sudo yum install ansible python-jmespath.noarch -y
+else sudo yum install ansible python3-jmespath.noarch -y
+fi
+
+# Gather info
+printf '\e[32m\n\nHello and welcome to the SCDRM installation wizard!\e[0m\nJust relax and let us go over few things we need to setup SCDRM for you!\n\n'
+printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es or (n)o [default]\n'
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK.Please enter the 'managed by' header you are using (case insensitive)"
+			read managedby
+			printf '\tOK\n'
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+
+printf 'By default SCDRM check is running every 5 minutes. Do you want to change this value into something else?\n\t(y)es or (n)o[default]\n'
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK.Please enter desired frequency in seconds the check should be running?\n"
+			read check_freq
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+
+printf "Are you using upstream Git to keep host_vars in?\n\t(y)es or (n)o [default]\n"
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK.Please enter origin's branch name to push to\n"
+			read git_branch
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+
+
+printf '\nBy default SCDRM runs in DRYRUN mode, meaning no files will be reverted or restored\nThis alows you to collect intelligence about changes in your environment before running active SCDRM.\n'
+printf '\e[91m\nInstalling SCDRM now, please wait.\e[0m\n\n'
+
+if [[ $managedby != "" ]]
+then sed -i "s/my_managed_by_strings_too_look_for/${managedby}/" playbooks/scdrm.yml
+sed -i  's/managed: 0/managed: 1/' playbooks/scdrm.yml
+fi
+
+if [[ $check_freq != "" ]]
+then sed -i "s/check_freq: 300/check_freq: ${check_freq}/" playbooks/scdrm.yml
+fi
+
+
+# Setup change tracking
+if [[ ! -d /scdrm/host_vars ]]
+then
+sudo mkdir -p -m 2775 /scdrm/host_vars > /dev/null 2>&1
+sudo groupadd scdrm > /dev/null 2>&1
+sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1
+sudo chown -R $(whoami) /scdrm > /dev/null 2>&1
+sudo chgrp -R scdrm /scdrm > /dev/null 2>&1
+ln -s /scdrm/host_vars .
+cd /scdrm/host_vars > /dev/null
+git init > /dev/null
+git add . > /dev/null
+git commit -a -m "Installation init" > /dev/null
+else
+	if [[ ! -d /scdrm/.git ]]
+	then cd /scdrm/host_vars > /dev/null
+	git init > /dev/null
+	git add . > /dev/null
+	git commit -a -m "Installation init" > /dev/null
+	fi
+# Check group presence
+fgrep scdrm /etc/group > /dev/null || (sudo groupadd scdrm && sudo chgrp -R scdrm /scdrm) > /dev/null 2>&1
+fgrep scdrm /etc/group | fgrep $(whoami) > /dev/null || sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1
+stat /scdrm/host_vars | awk '/Access/ {print $2}' | fgrep 2775 > /dev/null || sudo chmod 2775 /scdrm/host_vars > /dev/null 2>&1
+cd $HERE
+ln -s /scdrm/host_vars .
+fi
+
+cd $HERE
+ansible-playbook playbooks/scdrm.yml 
+
+if [[ $git_branch != "" ]]
+then ansible-playbook playbooks/adminssh.yml -e "git_branch=$git_branch"
+else ansible-playbook playbooks/adminssh.yml
+fi
+
+
+printf '\t\e[32mALL DONE\e[0m\n'
+printf '\nFirst thing to do now is to add you team members to "scdrm" group to be able to write to /scdrm/host_vars\n'
+printf 'Then you can start using \e[91madminssh\e[0m from this node to enforce new change management process.\nYou can also start using \e[91madminstart-auto\e[0m for your scripts and playbooks...\n\n'
+printf '\t\e[91mThank you for using SCDRM installation wizard!\e[0m\n'
+printf '\t\e[32mHave a wonderfull day!\e[0m\n'
+
+exit 0
