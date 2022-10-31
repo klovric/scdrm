@@ -2,9 +2,10 @@
 ---
 - name: Revert last change
   hosts: all
-  gather_facts: no
+  gather_facts: false
   serial: 96
-  ignore_errors: yes
+  ignore_errors: true
+  strategy: linear
   vars_files: ./vars/main.yml
   vars:
     change_dirs:

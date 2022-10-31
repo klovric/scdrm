@@ -6,12 +6,13 @@
 ---
 - name: Enforce configuration version consistency
   hosts: all
-  gather_facts: no
+  gather_facts: false
   serial: 96
-  ignore_errors: yes
+  ignore_errors: true
+  strategy: linear
   vars_files: ./vars/main.yml
   roles:
     - role: get_kernel
-    - { role: skip_host, when: '"el6" in release.stdout' }
+    - { role: skip_host, when: '(release is undefined or "el6" in release.stdout)' }
     - { role: change_tracking, enforce: "yes" }
 ...
