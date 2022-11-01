@@ -8,7 +8,7 @@ namespace: klovric
 name: scdrm
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.2.13
+version: 1.2.14
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -26,10 +26,6 @@ description: Security Change Disaster-recovery Manager for RHEL 7/8/9. It is a A
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
 license:
   - GPL-2.0-or-later
-
-# The path to the license file for the collection. This path is relative to the root of the collection. This key is
-# mutually exclusive with 'license'
-license_file: ''
 
 # A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
 # requirements as 'namespace' and 'name'

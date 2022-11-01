@@ -1,0 +1,30 @@
+# Cleanup after test playbook
+# 
+---
+- name: Installs httpd and tests SCDRM restore function
+  hosts: all
+  gather_facts: no
+  serial: 96
+  ignore_errors: yes
+  vars_files: ./vars/main.yml
+  roles:
+    - role: get_kernel
+    - role: adminstart
+  tasks:
+    - name: Stop httpd
+      become: True
+      systemd:
+        name: httpd
+        enabled: no
+        state: stopped
+
+    - name: Remove httpd
+      become: True
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Adminstop
+      import_role:
+        name: adminstop
+...
