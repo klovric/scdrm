@@ -101,8 +101,8 @@
 
       done
 
-      chattr -R +i /etc/scdrm  /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart 2>/dev/null
       /bin/rm -f /usr/local/sbin/scdrm-install > /dev/null
+      chattr -R +i /etc/scdrm  /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart 2>/dev/null
       exit 0
     dest: /usr/local/sbin/scdrm-install
     mode: 0750
@@ -225,13 +225,13 @@
   become: true
   shell: /usr/local/sbin/scdrm-install
   register: installer
-  failed_when: installer.stdout != ""
+  failed_when: installer.rc != 0
 
 - name: Remove installer
   file:
     path: /usr/local/sbin/scdrm-install
     state: absent
-  when: instaler is failed
+  when: installer is failed
 
 - name: Start SCDRM stack
   systemd:

@@ -1,6 +1,7 @@
 # Global vars
 ---
 scdrm_install_dir: INSTALLDIR
+#scdrm_install_dir: /home/klovric/ansible_collections/klovric/scdrm
 shebang: "#!/bin/bash"
 git_branch: main
 # These directories are managed by Git
