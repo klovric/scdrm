@@ -9,13 +9,28 @@
     name: aide
     state: latest
 
-- name: Copy config
+- name: Check SELinux
+  become: false
+  shell: /usr/sbin/getenforce
+  register: selinux
+
+- name: Copy config when SELinux disabled/permissive
   become: true
   copy:
     src: ../files/aide.conf
     dest: /etc/aide.conf
     mode: 0600
     attributes: +i
+  when: selinux.stdout != "Enforcing"
+
+- name: Copy config when SELinux enforcing
+  become: true
+  copy:
+    src: ../files/aide-selinux.conf
+    dest: /etc/aide.conf
+    mode: 0600
+    attributes: +i
+  when: selinux.stdout == "Enforcing"
 
 - name: AIDE init
   become: true

@@ -9,12 +9,12 @@
 #   remove - uncomment to remove SCDRM
 #   update - uncomment to update SCDRM
 ---
-- name: Installs SCDRM
+- name: Manage SCDRM
   hosts: all
   gather_facts: False
   serial: 96
   ignore_errors: True
-  strategy: free
+  #strategy: linear
   vars_files: ./vars/main.yml
   vars:
     dryrun: 1
@@ -26,7 +26,7 @@
     #update: yes
   roles:
     - role: get_kernel
-    - { role: skip_host, when: '(release is undefined or "el6" in release.stdout)' }
+    - { role: skip_host, when: 'release is undefined or "el6" in release.stdout' }
     - { role: terminal_logger, when: 'update is undefined and remove is undefined' }
     - { role: route_guard, when: 'update is undefined and remove is undefined' }
     - role: scdrm

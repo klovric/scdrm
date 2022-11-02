@@ -20,7 +20,7 @@ printf '\n\e[32mUpdating host vars and Git, please wait..\e[0m\n\n'
 cd $SCDRMPATH > /dev/null
 printf "$SERNAME\n" > temp-$$.inv
 printf '\n\t\e[91mPlease WAIT and DO NOT interrupt Ansible playbook.\n\tPatience is a virtue.\e[0m\n\n'
-ansible-playbook playbooks/change_tracking.yml -i temp-$$.inv -e "update=yes"
+ansible-playbook playbooks/change-tracking.yml -i temp-$$.inv -e "update=yes"
 /bin/rm -f temp-$$.inv > /dev/null 2>&1
 
 # Commit changes for global change tracking
@@ -31,9 +31,12 @@ if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|d
 	then egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' ~/.gitstatus.tmp | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > ~/.gitstatus.tmp.tmp
 fi
 
-for x in $(cat ~/.gitstatus.tmp.tmp)
+if [[ -s ~/.gitstatus.tmp.tmp ]]
+then
+	for x in $(cat ~/.gitstatus.tmp.tmp)
 	do git add $x > /dev/null
-done
+	done
+fi
 
 /bin/rm -f ~/.gitstatus.tmp* > /dev/null 2>&1
 

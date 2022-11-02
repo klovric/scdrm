@@ -29,6 +29,9 @@
     - /etc/logrotate.d/aide
     - /etc/logrotate.d/scdrm
     - /etc/systemd/system/scdrm.service
+    - /etc/systemd/system/scdrm.service.wants
+    - /etc/systemd/system/timers.target.wants/aide-check.timer
+    - /etc/systemd/system/timers.target.wants/scdrm-slow-check.timer
     - /etc/systemd/system/scdrm-slow-check.service
     - /etc/systemd/system/scdrm-slow-check.timer
     - /etc/systemd/system/aide-check.timer
@@ -39,6 +42,7 @@
     - /usr/local/sbin/adminstop
     - /usr/local/sbin/adminstart-auto
     - /usr/local/sbin/adminstop-auto
+    - /usr/local/sbin/scdrm-install
     - /usr/local/sbin/scdrm-slow
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
@@ -61,4 +65,8 @@
   with_items:
     - aide
     - tlog
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
 ...

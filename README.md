@@ -507,6 +507,8 @@ All updates will be pushed and published on Github accordingly.
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.2.15 	    2022-11-02   Added separate aide.conf for SELinux
+
 1.2.13 	    2022-10-31   Fixes and updates for working collection
 
 1.2.12 	    2022-10-30   Fixes and updates for working collection

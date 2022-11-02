@@ -227,6 +227,12 @@
   register: installer
   failed_when: installer.stdout != ""
 
+- name: Remove installer
+  file:
+    path: /usr/local/sbin/scdrm-install
+    state: absent
+  when: instaler is failed
+
 - name: Start SCDRM stack
   systemd:
     name: "{{ item }}"
