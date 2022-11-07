@@ -258,7 +258,7 @@ To do this for you inventory you can simply execute:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
  
-3.1 INSTALLATION
+3.1 DEINSTALLATION
 -----------------------------------------
 
 It is a two part procedure. 
