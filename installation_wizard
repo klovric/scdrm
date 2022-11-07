@@ -54,6 +54,17 @@ read yesno
 			;;
 esac
 
+printf 'By default SCDRM deletes session logs older then 60 days. Do you want to change this value into something else?\n\t(y)es or (n)o[default]\n'
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK. Logs older then how many days should be deleted?\n"
+			read llog_retention
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
 printf "Are you using upstream Git to keep host_vars in?\n\t(y)es or (n)o [default]\n"
 read yesno
 	case "$yesno" in
@@ -71,14 +82,17 @@ printf '\nBy default SCDRM runs in DRYRUN mode, meaning no files will be reverte
 printf '\e[91m\nInstalling SCDRM now, please wait.\e[0m\n\n'
 
 if [[ $managedby != "" ]]
-then sed -i "s/my_managed_by_strings_too_look_for/${managedby}/" playbooks/scdrm.yml
-sed -i  's/managed: 0/managed: 1/' playbooks/scdrm.yml
+then sed -i "s/^\ \{4\}my_managed_by_strings_too_look_for/${managedby}/" playbooks/scdrm.yml
+sed -i  's/^\ \{4\]managed: 0/    managed: 1/' playbooks/scdrm.yml
 fi
 
 if [[ $check_freq != "" ]]
-then sed -i "s/check_freq: 300/check_freq: ${check_freq}/" playbooks/scdrm.yml
+then sed -i "s/^\ \{4\}check_freq:.*/    check_freq: ${check_freq}/" playbooks/scdrm.yml
 fi
 
+if [[ $llog_retention != "" ]]
+then sed -i "s/^\ \{4\}llog_retention:.*/    llog_retention: ${llog_retention}/" playbooks/scdrm.yml
+fi
 
 # Setup change tracking
 if [[ ! -d /scdrm/host_vars ]]
@@ -88,7 +102,7 @@ sudo groupadd scdrm > /dev/null 2>&1
 sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1
 sudo chown -R $(whoami) /scdrm > /dev/null 2>&1
 sudo chgrp -R scdrm /scdrm > /dev/null 2>&1
-ln -s /scdrm/host_vars .
+ln -sf /scdrm/host_vars . > /dev/null 2>&1
 cd /scdrm/host_vars > /dev/null
 git init > /dev/null
 git add . > /dev/null

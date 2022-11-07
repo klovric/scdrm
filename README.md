@@ -32,9 +32,9 @@ Because managing N(N)k machines in a heavily segmented infrastructure with Ansib
 -----------------------------------------
 Enforcing change management procedure and restoring from human made disaster.
 
-Currently tested and working on RHEL 7/8/9 and Ansible 2.9.27/2.12.2.
+Currently tested and working on RHEL 7/8/9 with Ansible 2.9.27 -> 2.12.2.
 
-Extend Ansible with local agent counterpart.
+Extendind Ansible with local agent counterpart.
 
 
 0.4 HOW
@@ -56,7 +56,7 @@ Switch from 'DRYRUN' for active change management enforcing and disaster recover
 
 Append your playbooks/scripts with 'adminstart' and 'adminstop' roles to comply with the new change management process.
 
-Use 'adminssh' for all RW SSH sessions to enforce the new change management process.
+Use 'adminssh' for ALL RW SSH sessions to enforce the new change management process.
 
 Set a cron job to collect reports and put a big smile on security manager's face!
 
@@ -76,6 +76,7 @@ Developed for N(N)k Linux environments by yours truly working as Linux IT archit
 
 Thanks to Steffen Fromer@Redhat.com for inspiring me in finishing this and give something back to the community!
 
+Many thanks to IBM for the opportunity!
 
 0.8 LICENCE
 -----------------------------------------
@@ -257,6 +258,21 @@ To do this for you inventory you can simply execute:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
  
+3.1 INSTALLATION
+-----------------------------------------
+
+It is a two part procedure. 
+
+1. Remove SCDRM from your inventory:
+
+ansible-playbook playbooks/scdrm.yml -e "remove=yes"
+
+
+2. Remove SCDRM and 'adminssh' from central management node.
+
+ansible-playbook playbooks/adminssh-remove.yml
+
+
 4.0 CHANGE PROCESS
 -----------------------------------------
 
@@ -501,12 +517,14 @@ I have many other ideas I would like to implement here for a complete and robust
 
 Security Change Disaster-Recovery Manager for Red hat Enterprise Linux, and beyond.
 
-All updates will be pushed and published on Github accordingly.
+All updates will be pushed and published on Github and Ansible Galaxy accordingly.
 
 11.0 Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.3.0	    2022-11-07   Added log_local rotation
+
 1.2.16	    2022-11-02   Added separate aide.conf for SELinux, minor fixes
 
 1.2.13 	    2022-10-31   Fixes and updates for working collection
@@ -523,6 +541,5 @@ All updates will be pushed and published on Github accordingly.
 12.0 Author
 -----------------------------------------
 Currently working as Linux architect @ IBM Croatia.
-You can contact me at kresimir.lovric@ibm.com
-
-Linkedin or Github
+You can contact me at kresimir.lovric@ibm.com,
+Linkedin or Github.

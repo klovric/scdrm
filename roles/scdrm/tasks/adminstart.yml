@@ -25,6 +25,7 @@
       exit 1
       fi
 
+      # Do the job
       MYNAME="$(whoami)"
       test -d ~/.log_local || mkdir -p ~/.log_local > /dev/null 2>&1
       sudo /usr/local/sbin/adminstart1 $MYNAME
@@ -66,6 +67,7 @@
       exit 1
       fi
 
+      # Do the job
       MYNAME="$(whoami)"
       test -d /home/$MYNAME/.log_local || mkdir -p /home/$MYNAME/.log_local > /dev/null 2>&1
       sudo /usr/local/sbin/adminstart1 $MYNAME
@@ -99,7 +101,7 @@
 
       chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
       chown -R $USERN:$USERN /home/$USERN/.log_local/ 2>/dev/null
-      chmod -R 0660 /home/$USERN/.log_local/* 2>/dev/null
+      chmod 0660 /home/$USERN/.log_local/* 2>/dev/null
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
       test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
       printf "$NOW - Started admin mode for $USERN\n" >> $SCDRMDLOG
@@ -152,8 +154,9 @@
       
       done
 
+      find /home/$USERN/.log_local -type f -ctime +{{ llog_retention }} -delete > /dev/null 2>&1
       chown -R root:root /home/$USERN/.log_local/ 2>/dev/null
-      chmod -R 0000 /home/$USERN/.log_local/* 2>/dev/null
+      chmod 0000 /home/$USERN/.log_local/* 2>/dev/null
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
       chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git home/$USERN/.log_local/ 2>/dev/null

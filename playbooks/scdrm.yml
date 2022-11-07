@@ -6,6 +6,7 @@
 #   managed_string - when coexisting with other configuration management put in the 'managed by' identification line
 #   check_freq - SCDRM check frequency in seconds
 #   aide_check - hour when to start AIDE check, with randomization of up to 6 hours
+#   llog_retention - remove ~/log_local session logs older then X[YZ] days
 #   remove - uncomment to remove SCDRM
 #   update - uncomment to update SCDRM
 ---
@@ -20,8 +21,9 @@
     dryrun: 1
     managed: 0
     managed_string: 'my_managed_by_strings_too_look_for'
-    check_freq: 300
+    check_freq: 20
     aide_check: '20:00'
+    llog_retention: 22
     #remove: yes
     #update: yes
   roles:
