@@ -1,14 +1,115 @@
 {{ shebang }}
-# 
+#
 # More expensive DR checks
-exec 2>> /var/log/scdrm/error.log
+#
+export PATH=/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin:/usr/local/sbin
 
-# Verify binaries
+exec 2>>/var/log/scdrm/error.log
+
+# Blindly read configuration
+. /etc/scdrm/scdrm.conf >/dev/null
+
+# Do a self check and try to kill previous run if hanging do to storage/notwork
+if ps -o pid -C scdrm-slow | egrep -v "PID|$$" > /dev/null
+then TARGET="$(ps -o pid -C scdrm-slow | egrep -v "PID|$$")"
+printf "Stale process found $TARGET - Trying to kill\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+ps -o pid,state,start,cmd -C scdrm-slow | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+kill $TARGET
+sleep 6
+kill -9 $TARGET
+fi
+
+# Verify some binaries
 rpm --verify --noconfig glibc > /dev/null || yum reinstall glibc -y > /dev/null
 rpm --verify --noconfig openssh-server > /dev/null || yum reinstall openssh-server -y > /dev/null
 rpm --verify coreutils > /dev/null || yum reinstall coreutils -y > /dev/null
 rpm --verify bash > /dev/null || yum reinstall bash -y > /dev/null
+rpm --verify rpm > /dev/null || yum reinstall /scdrm/rpm* > /dev/null
 
+# Systemd verify
+DEF="$(systemctl get-default)"
+for DIRS in /etc/systemd/system/${DEF}.wants /usr/lib/systemd/system/${DEF}.wants
+do if [[ -d $DIRS ]]
+	then cd $DIRS
+	for x in $(ls)
+	do systemd-analyze verify ./${x} | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+	done
+fi
+done
+
+# Check for IO errors
+LC_ALL=C fgrep -i 'Input/output error' /var/log/messages* > /dev/null && printf 'IO ERROR found\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+
+# Check fstab and mounts
+findmnt -x 2>/dev/null | fgrep -v Success | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+
+# LV checker
+while read -r LV
+do
+DEVICE=$(echo $LV | awk '{print $1}')
+MNTPOINT=$(echo $LV | awk '{print $2}')
+
+        # Check mount point
+        if $( ls "$MNTPOINT" >/dev/null 2>&1 || test -d $MNTPOINT >/dev/null 2>&1)
+        then (touch $MNTPOINT/scdrm_write-test || printf 'ERROR - unable to write to $DEVICE - $MNTPOINT\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log)
+        /bin/rm -f $MNTPOINT/scdrm_write-test >/dev/null 2>&1
+        else echo -e "\nERROR - Mount point $MNTPOINT for $DEVICE does not exist!\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+        exit 1
+        fi
+
+        # Check LV
+        if [[ $( blkid | grep "$DEVICE") ]] && [[ $( lvs | grep $(echo $DEVICE | cut -d '/' -f4 | rev | cut -d'-' -f1 | rev)) ]]
+        then true
+        else
+        printf "\nERROR - Device $DEVICE is not present! Please check.\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+        exit 1
+        fi
+done < <(awk '!/^#/ && !/swap/ && /mapper/ {print $1,$2}' /etc/fstab)
+
+# NFS checker
+while read -r NFS
+do
+SERV=$(echo $NFS | awk '{print $1}')
+MNTPOINT=$(echo $NFS | awk '{print $2}')
+MNTOPTS=$(echo $NFS | awk '{print $3}')
+
+        # Check mount point
+        if $( ls $MNTPOINT >/dev/null 2>&1 || test -d $MNTPOINT >/dev/null 2>&1)
+        then (touch $MNTPOINT/scdrm_write-test || printf 'ERROR - unable to write to $SERV - $MNTPOINT\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log)
+	/bin/rm -f $MNTPOINT/scdrm_write-test >/dev/null 2>&1
+        else echo -e "\nERROR - Mount point $MNTPOINT for $SERV does not exist!\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+        exit 1
+        fi
+
+        # Check for _netdev mount option
+        if $(echo $MNTOPTS | egrep '_netdev|network' >/dev/null 2>&1)
+        then true
+        else printf "\nWARNING - NFS mount $MNTPOINT is missing _netdev mount option!\n\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+        LNUM=$(fgrep -n "$MNTPOINT " /etc/fstab | grep -v '^#' | tail -1 | cut -d':' -f1)
+        cp -a /etc/fstab /etc/fstab-$(date '+%F-%T').bck
+        sed -i "$LNUM s/$MNTOPTS/$MNTOPTS,_netdev/" /etc/fstab
+        exit 1
+        fi
+done < <(awk '!/^#/ && $3 == "nfs" {print $1,$2,$4}' /etc/fstab)
+
+# Check other mounts
+while read -r OTHER
+do
+DEVICE=$(echo $OTHER | awk '{print $1}')
+MNTOPTS=$(echo $OTHER | awk '{print $3}')
+
+        # Check mount point
+        if $( ls $MNTPOINT >/dev/null 2>&1 || test -d $MNTPOINT >/dev/null 2>&1)
+        then (touch $MNTPOINT/scdrm_write-test || printf 'ERROR - unable to write to $DEVICE - $MNTPOINT\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log)
+        /bin/rm -f $MNTPOINT/scdrm_write-test >/dev/null 2>&1
+        else echo -e "\nERROR - Mount point $MNTPOINT for $DEVICE does not exist!\n" | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+        exit 1
+        fi
+
+done < <(awk '!/^#/ && !/nfs/ && !/mapper/ && !/swap/ && !/tmpfs/ && !/iso9660/ {print $1,$2,$4}' /etc/fstab)
+
+
+# Run SCDRM fast checks
 /usr/local/sbin/scdrm-fast > /dev/null
 
 exit 0

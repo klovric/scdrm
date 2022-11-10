@@ -1,5 +1,5 @@
 {{ shebang }}
-exec 2>> /var/log/scdrm/error.log
+exec 2>>/var/log/scdrm/error.log
 
 # Check and try to fix some known disaster scenarios
 systemctl is-active {{ netservice }}.service > /dev/null || systemctl restart {{ netservice }}.service > /dev/null
@@ -36,11 +36,11 @@ do
 	fi
 done
 
-for unit in scdrm.service scdrm-slow-check.timer aide-check.timer
+for timer in scdrm.service scdrm-slow-check.timer aide-check.timer
 do
-	if systemctl is-active $unit > /dev/null
+	if systemctl is-active $timer > /dev/null
 	then true
-	else systemctl start $unit > /dev/null
+	else systemctl start $timer > /dev/null
 	fi
 done
 

@@ -523,6 +523,9 @@ All updates will be pushed and published on Github and Ansible Galaxy accordingl
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+
+1.4.1	    2022-11-10   Sanity checks added: systemd verify, fstab/device checker, IO error check; bug fixes
+
 1.3.1	    2022-11-10   Systemd reload after removing units
 
 1.3.0	    2022-11-07   Added log_local rotation

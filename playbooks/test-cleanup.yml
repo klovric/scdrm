@@ -22,7 +22,7 @@
       become: True
       yum:
         name: httpd
-        state: latest
+        state: absent
 
     - name: Adminstop
       import_role:

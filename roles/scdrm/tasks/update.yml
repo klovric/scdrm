@@ -34,7 +34,7 @@
     netservice: NetworkManager
   when: nmcheck.stdout == "active"
 
-- name: Copy scdrm-check
+- name: Copy scdrmd
   become: true
   template:
     src: ../files/check.j2
