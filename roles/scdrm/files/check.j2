@@ -1,7 +1,6 @@
 {{ shebang }}
 # 
 # SCDRM daemon - runs forever until stopped
-
 while true
 do 
 
@@ -24,6 +23,9 @@ then if find /run -type f -name scdrm-admin.lock -mmin +360 | fgrep scdrm-admin.
 exit 16
 fi
 
+# Log all errors from here on
+exec 2>SCDRMELOG
+
 # Cleanup
 /bin/rm -f $TMPF1 $TMPF > /dev/null 2>&1
 
@@ -35,7 +37,7 @@ do cd $DIRECTORY
 git status > $TMPF 2>&1
 
 # Check if clean and get exclusions managed by configuration management
-if fgrep -i 'nothing to commit, working tree clean' $TMPF >> $SCDRMREPORT 2>>$SCDRMELOG
+if fgrep -i 'nothing to commit, working tree clean' $TMPF >> $SCDRMREPORT
 then true
 else 
 	if [[ $MANAGED -eq 1 ]]
@@ -96,8 +98,11 @@ git reset --hard HEAD >> $SCDRMDLOG
 chattr -R +i .git 2>/dev/null
 fi
 
-cd - > /dev/null
+cd ~ > /dev/null
 done
+
+# Check for systemd changes and reload
+egrep '\.(automount|mount|path|service|slice|socket|target|timer)' $SCDRMREPORT > /dev/null && systemctl daemon-reload > /dev/null
 
 # Aide check is done from cron as it is relatively intensive
 if fgrep 'Looks okay' /var/log/aide/aide.log > /dev/null
@@ -113,5 +118,4 @@ fi
 sleep {{ check_freq }}
 
 done
-
 exit 0
