@@ -104,6 +104,9 @@ done
 # Check for systemd changes and reload
 egrep '\.(automount|mount|path|service|slice|socket|target|timer)' $SCDRMREPORT > /dev/null && systemctl daemon-reload > /dev/null
 
+# Check for rsyslog changes and reload
+fgrep 'syslog' $SCDRMREPORT > /dev/null && systemctl restart rsyslog
+
 # Aide check is done from cron as it is relatively intensive
 if fgrep 'Looks okay' /var/log/aide/aide.log > /dev/null
 then printf 'AIDE OK\n' >> $SCDRMREPORT

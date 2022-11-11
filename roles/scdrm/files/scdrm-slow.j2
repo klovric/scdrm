@@ -96,7 +96,7 @@ done < <(awk '!/^#/ && $3 == "nfs" {print $1,$2,$4}' /etc/fstab)
 while read -r OTHER
 do
 DEVICE=$(echo $OTHER | awk '{print $1}')
-MNTOPTS=$(echo $OTHER | awk '{print $3}')
+MNTPOINT=$(echo $OTHER | awk '{print $2}')
 
         # Check mount point
         if $( ls $MNTPOINT >/dev/null 2>&1 || test -d $MNTPOINT >/dev/null 2>&1)
@@ -106,7 +106,7 @@ MNTOPTS=$(echo $OTHER | awk '{print $3}')
         exit 1
         fi
 
-done < <(awk '!/^#/ && !/nfs/ && !/mapper/ && !/swap/ && !/tmpfs/ && !/iso9660/ {print $1,$2,$4}' /etc/fstab)
+done < <(awk '!/^#/ && !/nfs/ && !/mapper/ && !/swap/ && !/tmpfs/ && !/iso9660/ {print $1,$2}' /etc/fstab)
 
 
 # Run SCDRM fast checks

@@ -16,7 +16,6 @@
        - /scdrm
        - "{{ scdrm_install_dir }}/host_vars"
 
-
    - name: Remove scdrm-commit cron
      become: False
      cron:
