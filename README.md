@@ -523,6 +523,8 @@ All updates will be pushed and published on Github and Ansible Galaxy accordingl
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.4.3	    2022-11-11   Bug fix to route-guard
+
 1.4.2	    2022-11-11   Bug fix, rsyslog restart added when changed
 
 1.4.1	    2022-11-10   Sanity checks added: systemd verify, fstab/device checker, IO error check; bug fixes

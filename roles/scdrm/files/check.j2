@@ -102,7 +102,7 @@ cd ~ > /dev/null
 done
 
 # Check for systemd changes and reload
-egrep '\.(automount|mount|path|service|slice|socket|target|timer)' $SCDRMREPORT > /dev/null && systemctl daemon-reload > /dev/null
+egrep '\.(automount|mount|path|service|slice|socket|target|timer)|fstab' $SCDRMREPORT > /dev/null && systemctl daemon-reload > /dev/null
 
 # Check for rsyslog changes and reload
 fgrep 'syslog' $SCDRMREPORT > /dev/null && systemctl restart rsyslog

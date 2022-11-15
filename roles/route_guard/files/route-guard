@@ -6,7 +6,7 @@ SBINARY="$0"
 DROUTE=NULL
 
 # First time init
-if [[ $DROUTE == 'NULL' ]]
+if [[ $DROUTE == "NULL" ]]
 then GATEWAY="$(/usr/sbin/ip route show | grep default)"
 sed -i "s/^DROUTE=NULL$/DROUTE='$GATEWAY'/" $SBINARY
 exit 0
@@ -19,7 +19,7 @@ then GATEWAY="$(/usr/sbin/ip route show | grep default)"
 	then sed -i "s/^DROUTE=.*$/DROUTE='$GATEWAY'/" $SBINARY
 	fi
 else
-/usr/sbin/ip route add $DROUTE
+/usr/sbin/ip route add $DROUTE || systemctl restart {{ netservice }}.service > /dev/null
 fi
 
 exit 0
