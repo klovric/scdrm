@@ -1,4 +1,28 @@
 ---
+- name: Check network service
+  become: true
+  shell: systemctl is-active network.service
+  failed_when: false
+  changed_when: false
+  register: networkcheck
+
+- name: Check NetworkManager service
+  become: true
+  shell: systemctl is-active NetworkManager.service
+  failed_when: false
+  changed_when: false
+  register: nmcheck
+
+- name: Set fact
+  set_fact:
+    netservice: network
+  when: networkcheck.stdout == "active"
+
+- name: Set fact
+  set_fact:
+    netservice: NetworkManager
+  when: nmcheck.stdout == "active"
+
 - name: Install route-guard for RHEL
   become: true
   template:
