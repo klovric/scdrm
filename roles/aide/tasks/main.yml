@@ -36,7 +36,29 @@
   become: true
   shell: /usr/sbin/aide -i && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 
-- name: Setup AIDE check
+- name: Setup AIDE check RHEL7
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE check
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/sbin/aide -C > /var/log/aide/aide.log
+      Restart=on-failure
+      RestartSec=30m
+
+      [Install]
+      WantedBy=scdrm.service
+    dest: /etc/systemd/system/aide-check.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+  when: '"el7" in release.stdout'
+
+- name: Setup AIDE check RHEL89
   become: true
   copy:
     content: |
@@ -56,6 +78,7 @@
     owner: root
     group: root
     attributes: +i
+  when: '"el7" not in release.stdout'
 
 - name: Setup AIDE check timer
   become: true
