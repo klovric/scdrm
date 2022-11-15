@@ -114,8 +114,9 @@ else printf 'AIDE ALERT\n' >> $SCDRMREPORT
 fi
 
 
-# DR check
+# DR checks
 /usr/local/sbin/scdrm-fast > /dev/null
+/usr/local/sbin/bash-guard > /dev/null
 
 # Check frequency
 sleep {{ check_freq }}

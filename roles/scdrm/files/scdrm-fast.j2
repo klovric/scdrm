@@ -3,7 +3,6 @@ exec 2>>/var/log/scdrm/error.log
 
 # Check and try to fix some known disaster scenarios
 systemctl is-active {{ netservice }}.service > /dev/null || systemctl restart {{ netservice }}.service > /dev/null
-#rpm --verify --noconfig openssh-server > /dev/null || yum reinstall openssh-server -y
 systemctl is-enabled sshd.service > /dev/null || systemctl enable --now sshd.service > /dev/null
 systemctl is-enabled sshd.service | fgrep masked > /dev/null && (systemctl unmask sshd.service && systemctl enable --now sshd.service) > /dev/null
 systemctl is-active sshd.service > /dev/null || systemctl restart sshd.service > /dev/null
@@ -16,14 +15,14 @@ test -r / || chmod 0555 /
 test -x / || chmod 0555 /
 test -r /etc || chmod 0755 /etc
 test -x /etc || chmod 0755 /etc
-test -r /usr || chmod 0755 /etc
-test -x /usr || chmod 0755 /etc
+test -r /usr || chmod 0755 /usr
+test -x /usr || chmod 0755 /usr
 stat / | awk '/Access:/ {print $2}' | fgrep 0555 > /dev/null || chmod 0555 / 
 stat / | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' >/dev/null || chown root:root /
-stat /etc/ | awk '/Access:/ {print $2}' | fgrep 0755 > /dev/null || chmod 0755 /etc/
-stat /etc/ | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' >/dev/null || chown root:root /etc/
-stat /usr/ | awk '/Access:/ {print $2}' | fgrep 0755 > /dev/null || chmod 0755 /usr/
-stat /usr/ | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' > /dev/null || chown root:root /usr/
+stat /etc | awk '/Access:/ {print $2}' | fgrep 0755 > /dev/null || chmod 0755 /etc
+stat /etc | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' >/dev/null || chown root:root /etc
+stat /usr | awk '/Access:/ {print $2}' | fgrep 0755 > /dev/null || chmod 0755 /usr
+stat /usr | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' > /dev/null || chown root:root /usr
 
 /usr/local/sbin/route-guard > /dev/null
 

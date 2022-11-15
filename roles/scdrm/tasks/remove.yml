@@ -47,6 +47,7 @@
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
     - /usr/local/sbin/route-guard
+    - /usr/local/sbin/bash-guard
 
 - name: Remove cron job GC
   cron:

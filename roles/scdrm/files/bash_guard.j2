@@ -1,0 +1,10 @@
+{{ hebang }}
+# 
+# Bash guard - verify bash and reinstall when NOK
+
+rpm -V bash > /dev/null 2>&1 || yum reinstall bash -y > /dev/null
+
+if [[ $? -eq 0 ]]
+then exit 0
+else exit 1
+fi

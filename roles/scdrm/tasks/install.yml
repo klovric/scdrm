@@ -13,24 +13,26 @@
     - /etc/scdrm
     - /scdrm
 
-- name: Install Git
+- name: Install dependencies
   become: true
   yum:
-    name: git
+    name: 
+      - git
+      - ksh
     state: present
 
 - name: Check network service
   become: true
   shell: systemctl is-active network.service
-  failed_when: false
-  changed_when: false
+  failed_when: False
+  changed_when: False
   register: networkcheck
 
 - name: Check NetworkManager service
   become: true
   shell: systemctl is-active NetworkManager.service
-  failed_when: false
-  changed_when: false
+  failed_when: False
+  changed_when: False
   register: nmcheck
 
 - name: Set fact
@@ -140,6 +142,16 @@
     group: root
     attributes: +i
 
+- name: Copy bash-guard
+  become: true
+  template:
+    src: ../files/bash_guard.j2
+    dest: /usr/local/sbin/bash-guard
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
 - name: Setup SCDRM service
   become: true
   copy:
@@ -158,7 +170,6 @@
     owner: root
     group: root
     attributes: +i
-
 
 - name: Setup SCDRM slow check timer
   become: true
@@ -219,7 +230,7 @@
 
 - name: Download emergency restore RPMs
   become: true
-  shell: yum reinstall --downloadonly --downloaddir=/scdrm rpm glibc coreutils -y
+  shell: yum reinstall --downloadonly --downloaddir=/scdrm rpm glibc coreutils bash -y
 
 - name: Run the installer
   become: true
