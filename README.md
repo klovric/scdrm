@@ -562,7 +562,14 @@ Let there be uptime!
 
 1.0.10      2022-10-20   Initial Gitlab commit
 
+
+12.0 Thanks to
 -----------------------------------------
+My wife for the support!
+IBM for the opportunity!
+Red hat for great innovation and education!
+Steffen Froemer@Redhat for motivation!
+
 12.0 Author
 -----------------------------------------
 Currently working as Linux architect @ IBM Croatia.
