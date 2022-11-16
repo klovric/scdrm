@@ -116,18 +116,19 @@ else
 	fi
 # Check group presence
 fgrep scdrm /etc/group > /dev/null || (sudo groupadd scdrm && sudo chgrp -R scdrm /scdrm) > /dev/null 2>&1
-fgrep scdrm /etc/group | fgrep $(whoami) > /dev/null || sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1
+fgrep scdrm /etc/group | fgrep $USER > /dev/null || sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1
 stat /scdrm/host_vars | awk '/Access/ {print $2}' | fgrep 2775 > /dev/null || sudo chmod 2775 /scdrm/host_vars > /dev/null 2>&1
 cd $HERE
 ln -s /scdrm/host_vars .
 fi
 
 cd $HERE
-ansible-playbook playbooks/scdrm.yml 
+mkdir log > /dev/null 2>&1
+ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
 
 if [[ $git_branch != "" ]]
-then ansible-playbook playbooks/adminssh.yml -e "git_branch=$git_branch"
-else ansible-playbook playbooks/adminssh.yml
+then ansible-playbook playbooks/adminssh.yml -e "git_branch=$git_branch myuser=$USER"
+else ansible-playbook playbooks/adminssh.yml -e "myuser=$USER"
 fi
 
 

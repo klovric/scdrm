@@ -23,4 +23,36 @@
        minute: "1,31"
        job: /usr/local/bin/scdrm-commit
        state: absent
+
+   - name: Setup local bashrc functions
+     become: False
+     blockinfile:
+       path: "/home/{{ myuser }}/.bashrc"
+       block: |
+         function scdrm-change-tracking_check {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/change-tracking.yml -e "check=yes" | tee log/change-tracking-check-$(date '+%F-%T').log
+         }
+         function scdrm-change-tracking_update {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/change-tracking.yml -e "update=yes" | tee log/change-tracking-update-$(date '+%F-%T').log
+         }
+         function scdrm-consistency-enforce {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/consistency-enforce.yml | tee log/consistency-enforce-$(date '+%F-%T').log
+         }
+         function scdrm-update-config {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee log/update-config-$(date '+%F-%T').log
+         }
+         function scdrm-update-config--dryrun-off {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0" | tee log/update-config-dryrun-off-$(date '+%F-%T').log
+         }
+         function scdrm-update-config--dryrun-on {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=1" | tee log/update-config-dryrun-on-$(date '+%F-%T').log
+         }
+       marker: "##<!-- ANSIBLE MANAGED BLOCK -->"
+       state: absent
 ...

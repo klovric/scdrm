@@ -250,8 +250,8 @@ You should use the 'installation_wizard'.
 
 It will setup some variable and invoke two plays:
 
-	ansible-playbook playbooks/scdrm.yml    (installs fleet of hosts)
-	ansible-playbook playbooks/adminssh.yml (installs only localhost)
+	playbooks/scdrm.yml    (installs fleet of hosts)
+	playbooks/adminssh.yml (installs only localhost)
 
 Default install will set SCDRM in DRYRUN mode, meaning it will do only DR checks but will NOT revert any changes/deletions in given directories.
 
@@ -264,6 +264,8 @@ Once updated 'DRYRUN=0' in /etc/scdrm/scdrm.conf you have activated change/delet
 To do this for you inventory you can simply execute:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
+			or
+	scdrm-update-config--dryrun-off
  
 3.1 DEINSTALLATION
 -----------------------------------------
@@ -277,7 +279,7 @@ It is a two part procedure.
 
 2. Remove SCDRM and 'adminssh' from central management node.
 
-        ansible-playbook playbooks/adminssh-remove.yml
+        ansible-playbook playbooks/adminssh-remove.yml -e "myuser=$USER"
 
 
 4.0 CHANGE PROCESS
@@ -306,7 +308,6 @@ before exiting, AIDE is updated to make sure all authorized changes are recorded
 
 Finally, the Git commit IDs are stored in local host vars files for change tracking.
 
-#You will have to exit shell once again to logout from the server.
 
 
 These will ensure the change process is respected and will safely close the changes to the system with Git and AIDE.
@@ -377,16 +378,22 @@ Standard change process will update the local Git commit IDs locally as host var
 To collect the host vars run:
 
 	ansible-playbook playbooks/change_tracking.yml -e "update=yes"
+			or
+	scdrm-change-tracking_update
 
 To check for configuration version discrepancies run:
 
 	ansible-playbook playbooks/change_tracking.yml -e "check=yes"
+			or
+	scdrm-change-tracking_check
 
 To revert to previously recorded version run:
 
 	ansible-playbook playbooks/change_tracking.yml -e "enforce=yes"
 			or
 	ansible-playbook playbooks/consistency-enforce.yml
+			or
+	scdrm-consistency-enforce
 
 
 Bottom line, SCDRM takes care of configuration consistency in two levels:
@@ -415,6 +422,8 @@ Then run this to provision the updates to your fleet:
 
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes"
+			or
+	scdrm-update-config
 
 Configuration update can be done inline - without making changes to any template/playbook.
 
@@ -425,6 +434,11 @@ For production you want the values hardcoded into scdrm.yml for persistence reas
 Simply run the scdrm.yml playbook with 'update=yes' and add any variable you need to update, i.e.
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
+				or
+	scdrm-update-config--dryrun-off
+
+
+Here you can update the check frequency from default 5 minutes to 30 seconds:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0 check_freq=30"
 
@@ -477,6 +491,8 @@ If the last recorded commit IDs differs from live state, SCDRM will revert to la
 
 
 	ansible-playbook playbooks/consistency-enforce.yml
+			or
+	scdrm-consistency-enforce
 
 
 Project also provides a simple revert playbook for fast config revert. You would use this with CAUTION.
@@ -538,6 +554,8 @@ Let there be uptime!
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.5.0	    2022-11-16   For usage convenience added 'scdrm-' bash functions to ~/.bashrc
+
 1.4.9	    2022-11-16   README updates, set tag and mark for pre_release
 
 1.4.3-8	    2022-11-16   Bug fixes to route-guard, remove.yml, additions to aide.conf, bash-guard added, minor bug fixes
