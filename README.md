@@ -272,12 +272,12 @@ It is a two part procedure.
 
 1. Remove SCDRM from your inventory:
 
-ansible-playbook playbooks/scdrm.yml -e "remove=yes"
+        ansible-playbook playbooks/scdrm.yml -e "remove=yes"
 
 
 2. Remove SCDRM and 'adminssh' from central management node.
 
-ansible-playbook playbooks/adminssh-remove.yml
+        ansible-playbook playbooks/adminssh-remove.yml
 
 
 4.0 CHANGE PROCESS
@@ -313,33 +313,33 @@ These will ensure the change process is respected and will safely close the chan
 
 The two have been provided as roles and binaries you can easily include into your existing playbooks, i.e.:
 
----
-- name: Test SCDRM change process
-  hosts: all
-  gather_facts: False
-  serial: 96
-  roles:
-    - role: adminstart
-    - role: install_httpd
-    - role: adminstop
-...
+    ---
+    - name: Test SCDRM change process
+      hosts: all
+      gather_facts: False
+      serial: 96
+      roles:
+        - role: adminstart
+        - role: install_httpd
+        - role: adminstop
+    ...
 
 Or you could call the binaries directly, i.e. 
 
----
-- name: Adminstart
-  become: yes
-  shell: /usr/local/sbin/adminstart-auto
+    ---
+    - name: Adminstart
+      become: yes
+      shell: /usr/local/sbin/adminstart-auto
 
-- name: Update system
-  yum: 
-    name: "*"
-    update_only: yes
-    state: latest
+    - name: Update system
+      yum: 
+        name: "*"
+        update_only: yes
+        state: latest
 
-- name: Adminstop
-  become: yes
-  shell: /usr/local/sbin/adminstop-auto
+    - name: Adminstop
+      become: yes
+      shell: /usr/local/sbin/adminstop-auto
 ...
 
 The only difference between 'adminstop/adminstart' and 'adminstart-auto/adminstop-auto' is user session logging.
@@ -358,7 +358,7 @@ In case adminmode is active for more then 6 hours, it will be exited forcefully 
 
 To test your SCDRM installation and restore process you can use example test.yml:
 
-ansible-playbook playbooks/test.yml
+        ansible-playbook playbooks/test.yml
 
 5.0 CHANGE TRACKING
 -----------------------------------------
