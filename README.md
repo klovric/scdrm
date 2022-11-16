@@ -1,89 +1,96 @@
 # SCDRM - Security Change Disaster-Recovery Manager		
-
-
-Also available as Ansible Galaxy Collection - klovric.scdrm
 -----------------------
-											
 
-0.1 WHAT
+0.1 What is SCDRM?
 -----------------------------------------
-Ansible local agent and disaster recovery daemon for enterprise environments based on Red Hat Enterprise Linux
-It stacks:
+It is a wrapper that acts as Ansible local agent and disaster recovery daemon for enterprise environments currently only for Red Hat Enterprise Linux.
 
+Software stack:
  - AIDE: Intrusion detection system
- - Ansible: provided as Ansible role, intended as Ansible local agent
+ - Ansible: provided as Ansible roles/collection, intended as Ansible local agent
  - Git: change tracking and reverting
  - script/tlog: terminal session logging
 
+It enforces secure change process, does security reporting, change tracking and management. 
 
-Does security reporting, change tracking and management.
-
-Can coexist with other existing change management systems!
+Can coexist with existing change management systems like Puppet, CFEngine, Ansible...
 
 
-0.2 WHY
+0.2 Why would someone run it?
 -----------------------------------------
 Because people make mistakes!
 
 Because managing N(N)k machines in a heavily segmented infrastructure with Ansible is fun and easy!
 
 
-0.3 WHAT FOR
+
+0.2.1 Answer this question! 
 -----------------------------------------
-Enforcing change management procedure and restoring from human made disaster.
-
-Currently tested and working on RHEL 7/8/9 with Ansible 2.9.27 -> 2.12.2.
-
-Extendind Ansible with local agent counterpart.
+If a junior sysadmin makes a typo in a playbook which got executed on ENTIRE inventory, and the typo resulted in /etc/passwd file getting deleted/overwritten, how long would it take you to recover from this?
 
 
-0.4 HOW
+How bad would it hurt?
+
+
+0.3 How to use it?
 -----------------------------------------
-By forcing change procedure and making sure configuration is consistent.
+Get the project from Github or Ansible Galaxy.
 
-By doing several disaster sanity checks and trying to keep the system up.
+Install and adjust settings to your needs - change configuration variables, update .gitignore and aide.conf.
+
+By default your systems are actively set for disaster recovery, few most common scenarios.
+
+Spin it up from 'dryrun' mode to active system critical configuration protection.
+
+Embrace new change process into your environment by starting using 'adminmode/adminstart(-auto)' for all and any system changes, both interactive and automated.
+
+Get daily reports and make unauthorized changes impossible.
 
 
-0.5 HOW TO
+0.4 Targeted audience
 -----------------------------------------
-Clone the project. 
+Anyone looking for a free Ansible local agent.
 
-Run the wizard on your infrastructure (its safe as it runs in DRYRUN by default - performs only DR tests).
+Anyone interested in running a free local disaster recovery agent for RHEL and up the uptime.
 
-Gather intelligence and edit your aide.conf and gitignore when applicable.
+Enterprise environments requiring hard and heavy security posture and compliance.
 
-Switch from 'DRYRUN' for active change management enforcing and disaster recovery.
-
-Append your playbooks/scripts with 'adminstart' and 'adminstop' roles to comply with the new change management process.
-
-Use 'adminssh' for ALL RW SSH sessions to enforce the new change management process.
-
-Set a cron job to collect reports and put a big smile on security manager's face!
+Security managers looking for a free compliance/reporting/audit tool.
 
 
-0.6 TARGETED AUDIENCE
+0.5 What does it do / how does it work
 -----------------------------------------
-Anyone looking for Ansible local agent.
+By default it will check for few most common man made disaster scenarios, like stopped network/SSH, missing default route, bad permissions, etc. When found it will revert to defaults, i.e. restart network/SSH or restore previously known default route.
 
-Anyone using Ansible in heavily segmented/dispersed environment.
+When set with 'dryrun=0' it will actively protect /etc, /usr/lib/systemd/ and /usr/lib64/security, by using local Git instance for every directory. It uses Git to revert any unauthorized change.
 
-Anyone interested in running local disaster recovery agent for RHEL.
+It will record terminal user session for debugging/accounting purposes.
+
+All changes are committed with local Git instances and AIDE update is ran after EVERY exit from 'adminmode'.
+
+A global Git instance is taking care of commit metadata for every machine in your inventory, so the management node should always know about the current state in the infrastructure.
+
+This makes possible to revert settings for entire infrastructure in a safe and automated manner or just hunt for any unauthorized changes.
 
 
-0.7 AUTHOR
------------------------------------------
-Developed for N(N)k Linux environments by yours truly working as Linux IT architect for IBM (kresimir.lovric@ibm.com)
+Adminmode allows ONLY ONE user/script/playbook at a time to be doing changes to a machine. No more stepping over toes.
 
-Thanks to Steffen Fromer@Redhat.com for inspiring me in finishing this and give something back to the community!
 
-Many thanks to IBM for the opportunity!
-
-0.8 LICENCE
+0.6 LICENCE
 -----------------------------------------
 GNU GPL v3 - see LICENSE for more details.
 
 
-0.9 CONTRIBUTE
+0.7 VIDEO DEMO - v1.4.7
+-----------------------------------------
+You can watch the demo at:
+
+https://ibm.webex.com/ibm/ldr.php?RCID=370447dfd337cc651036af46684c0ae1
+
+Enter with iPNngwP8
+											
+
+0.8 CONTRIBUTE
 -----------------------------------------
 There are many ways you could contribute to this project:
 
@@ -519,11 +526,21 @@ Security Change Disaster-Recovery Manager for Red hat Enterprise Linux, and beyo
 
 All updates will be pushed and published on Github and Ansible Galaxy accordingly.
 
+
+After properly testing SCDRM on a larger infrastructure, I intend to extend support for Debian based systems.
+
+Several other 'modules' are planned and should be released in the 2023, like scdrm-reboot (pre-reboot sanity checker).
+
+Let there be uptime!
+
+
 11.0 Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.4.8	    2022-11-16   Bug fix to route-guard, additions to aide.conf, bash-guard added, minor fixes
+1.4.9	    2022-11-16   README updates, set tag and mark for pre_release
+
+1.4.3-8	    2022-11-16   Bug fixes to route-guard, remove.yml, additions to aide.conf, bash-guard added, minor bug fixes
 
 1.4.2	    2022-11-11   Bug fix, rsyslog restart added when changed
 
