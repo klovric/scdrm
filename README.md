@@ -246,7 +246,7 @@ which is how SCDRM determines which files to exclude.
 3.0 INSTALLATION
 -----------------------------------------
 
-You should use the 'scdrm-wizard'.
+You should use the 'installation_wizard'.
 
 It will setup some variable and invoke two plays:
 
