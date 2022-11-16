@@ -523,7 +523,7 @@ All updates will be pushed and published on Github and Ansible Galaxy accordingl
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.4.7	    2022-11-11   Bug fixe to route-guard, additions to aide.conf, bash-guard added
+1.4.8	    2022-11-16   Bug fix to route-guard, additions to aide.conf, bash-guard added, minor fixes
 
 1.4.2	    2022-11-11   Bug fix, rsyslog restart added when changed
 
