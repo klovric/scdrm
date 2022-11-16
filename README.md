@@ -566,12 +566,16 @@ Let there be uptime!
 12.0 Thanks to
 -----------------------------------------
 My wife for the support!
+
 IBM for the opportunity!
+
 Red hat for great innovation and education!
+
 Steffen Froemer@Redhat for motivation!
 
 12.0 Author
 -----------------------------------------
 Currently working as Linux architect @ IBM Croatia.
+
 You can contact me at kresimir.lovric@ibm.com,
 Linkedin or Github.
