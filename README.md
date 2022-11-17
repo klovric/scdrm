@@ -554,6 +554,8 @@ Let there be uptime!
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.7.2	    2022-11-18   Improvements and updates to reporting
+
 1.6.0	    2022-11-17   Added fast and easy modularity - AIDE and route-guard ON/OFF switch
 
 1.5.1	    2022-11-17   Revert config - service restart fix for: ssh,sssd,firewalld,cron,udev,kdump,NetworkManger,journal; Handle LVM restores - ignore /etc/lvm/[archive,backup,cache,profile]. Now does proper service restart after revert change

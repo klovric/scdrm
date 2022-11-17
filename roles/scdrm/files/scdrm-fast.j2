@@ -43,7 +43,7 @@ do
 	fi
 done
 
-{% if disable_aide == "False" %}
+{% if disable_aide is undefined %}
 if systemctl is-active aide-check.timer > /dev/null
 then true
 else systemctl start aide-check.timer > /dev/null

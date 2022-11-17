@@ -35,6 +35,6 @@
 
     - name: Log report
       become: False
-      shell: "echo '{{ inventory_hostname }} {{ deleted.stdout | default('OK',true) }} {{ changed.stdout | default('OK',true) }} {{ aide.stdout | default('OK',true) }}' >> {{ scdrm_install_dir }}/log/scdrm-report-$(date +%F).log"
+      shell: "echo '{{ inventory_hostname }} {{ deleted.stdout | default('OK',true) }} {{ changed.stdout | default('OK',true) }} {{ aide.stdout | default('OK',true) }}' >> {{ scdrm_install_dir }}/reports/scdrm-report-$(date +%F).txt"
       delegate_to: localhost
 ...

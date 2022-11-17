@@ -85,7 +85,7 @@ printf "In case you are not using default routes you should disable route-guard?
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/disable_route_guard: False/disable_route_guard: True/' playbooks/scdrm.yml
+			sed -i 's/#disable_route_guard: yes/disable_route_guard: yes/' playbooks/scdrm.yml
 			;;
 		n)      printf '\tOK\n'
 			;;
@@ -97,7 +97,7 @@ printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do y
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/disable_aide: False/disable_aide: True/' playbooks/scdrm.yml
+			sed -i 's/#disable_aide: yes/disable_aide: yes/' playbooks/scdrm.yml
 			;;
 		n)      printf '\tOK\n'
 			;;
@@ -151,7 +151,7 @@ ln -s /scdrm/host_vars .
 fi
 
 cd $HERE
-mkdir log > /dev/null 2>&1
+mkdir log reports > /dev/null 2>&1
 ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
 
 if [[ $git_branch != "" ]]

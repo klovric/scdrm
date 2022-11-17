@@ -7,8 +7,8 @@
 #   check_freq - SCDRM check frequency in seconds
 #   aide_check - hour when to start AIDE check, with randomization of up to 6 hours
 #   llog_retention - remove ~/log_local session logs older then X[YZ] days
-#   disable_route_guard - removes route-guard from the stack (disable for machines without default route)
-#   disable_aide - removes AIDE from the stack (Disable at will)
+#   disable_route_guard - removes route-guard from the stack (disable for machines without default route), uncomment to activate
+#   disable_aide - removes AIDE from the stack (Disable at will), uncomment to activate
 #   remove - uncomment to remove SCDRM
 #   update - uncomment to update SCDRM
 ---
@@ -26,15 +26,23 @@
     check_freq: 300
     aide_check: '20:00'
     llog_retention: 60
-    disable_route_guard: False
-    disable_aide: False
+    #disable_route_guard: yes
+    #disable_aide: yes
     #remove: yes
     #update: yes
   roles:
     - role: get_kernel
     - { role: skip_host, when: 'release is undefined or "el6" in release.stdout' }
     - { role: terminal_logger, when: 'update is undefined and remove is undefined' }
-    - { role: route_guard, when: 'update is undefined and remove is undefined and disable_route_guard == "False"' }
+    - role: route_guard
+      when: 
+        - update is undefined 
+        - remove is undefined 
+        - disable_route_guard is undefined
     - role: scdrm
-    - { role: aide, when: 'update is undefined and remove is undefined and disable_aide == "False"' }
+    - role: aide
+      when: 
+        - update is undefined 
+        - remove is undefined 
+        - disable_aide is undefined
 ...

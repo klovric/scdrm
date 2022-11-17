@@ -108,7 +108,7 @@
   shell: /usr/sbin/getenforce
   register: selinux
   when:
-    - disable_aide == "False"
+    - disable_aide is undefined
 
 - name: Copy aide.conf
   become: true
@@ -121,7 +121,7 @@
     attributes: +i
   when: 
     - selinux.stdout != "Enforcing"
-    - disable_aide == "False"
+    - disable_aide is undefined
 
 - name: Copy SELinux aide.conf
   become: true
@@ -134,7 +134,7 @@
     attributes: +i
   when: 
     - selinux.stdout == "Enforcing"
-    - disable_aide == "False"
+    - disable_aide is undefined
 
 - name: Setup AIDE check timer
   become: true
@@ -155,7 +155,7 @@
     owner: root
     group: root
     attributes: +i
-  when: disable_aide == "False"
+  when: disable_aide is undefined
 
 - name: Adminstop
   become: true
@@ -177,5 +177,5 @@
     enabled: yes
     state: restarted
     daemon-reload: yes
-  when: disable_aide == "False"
+  when: disable_aide is undefined
 ...

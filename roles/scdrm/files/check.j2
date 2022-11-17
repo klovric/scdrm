@@ -137,7 +137,7 @@ fgrep 'udev' $SCDRMREPORT > /dev/null && systemctl restart systemd-udevd 2>$SCDR
 # Check for httpd changes and restart
 fgrep 'httpd' $SCDRMREPORT > /dev/null && systemctl restart httpd 2>$SCDRMELOG
 
-{% if disable_aide == "True" %}
+{% if disable_aide is undefined %}
 # Aide check is done from cron as it is relatively intensive and you will get false positives, just run 'aide -C' and should be OK
 if fgrep 'Looks okay' /var/log/aide/aide.log > /dev/null
 then printf 'AIDE OK\n' >> $SCDRMREPORT
