@@ -17,8 +17,11 @@ exit 1
 fi
 
 HERE="$(pwd)"
-# Setup install dir variable
+# Setup install_dir variable
 sed -i "s#INSTALLDIR#${HERE}#" playbooks/vars/main.yml
+
+# Setup myuser variable
+sed -i "s/USER/$USER/" playbooks/vars/main.yml
 
 # Dependency installation
 printf '\n\n\tChecking and installing dependencies.\n\n'
