@@ -1,6 +1,6 @@
 # Global vars
 ---
-scdrm_install_dir: /home/klovric/ansible_collections/klovric/scdrm
+scdrm_install_dir: INSTALLDIR
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
 git_branch: main
