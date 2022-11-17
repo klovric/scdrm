@@ -2,7 +2,14 @@
 - name: Prepare for deletion SCDRM
   become: true
   failed_when: False
-  shell: chattr -R -i /etc /usr/lib/systemd /usr/lib64/security/.git /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /usr/local/sbin/*-guard /etc/systemd/system 2>/dev/null
+  shell: chattr -R -i /etc /usr/lib/systemd /usr/lib64/security/ /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /usr/local/sbin/*-guard 2>/dev/null
+
+- name: Remove .gitignore
+  file:
+    path: "{{ item }}/.gitignore"
+    state: absent
+  with_items:
+    - "{{ dirlist }}"
 
 - name: Remove .git
   file:
@@ -41,6 +48,7 @@
     - /usr/local/sbin/scdrm-slow
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
+    - /usr/local/sbin/scdrm-service-restart
     - /usr/local/sbin/route-guard
     - /usr/local/sbin/bash-guard
 

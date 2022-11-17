@@ -21,7 +21,7 @@
     dryrun: 1
     managed: 0
     managed_string: 'my_managed_by_strings_too_look_for'
-    check_freq: 300
+    check_freq: 30
     aide_check: '20:00'
     llog_retention: 60
     #remove: yes

@@ -22,9 +22,25 @@
 
 - name: Prepare reverting commit
   become: false
-  shell: echo "{{ item.cmd }}" | awk '{print "cd",$2";git reset --hard",$6}'
+  shell: echo "{{ item.cmd }}" | awk '{print "cd",$2" ; git reset --hard",$6}'
   register: reverting
   delegate_to: localhost
+  when: item.rc == 1
+  with_items: "{{ compare | json_query('results[*]') }}"
+
+- name: Prepare facts
+  become: false
+  delegate_to: localhost
+  shell: echo "{{ item.cmd }}" | awk '{print $2}'
+  register: dirs
+  when: item.rc == 1
+  with_items: "{{ compare | json_query('results[*]') }}"
+
+- name: Prepare facts
+  become: false
+  delegate_to: localhost
+  shell: echo "{{ item.cmd }}" | awk '{print $3}'
+  register: revcommit
   when: item.rc == 1
   with_items: "{{ compare | json_query('results[*]') }}"
 
@@ -34,12 +50,27 @@
     name: adminstart
   when: reverting is changed
 
+- name: Check reverting commit changed files
+  become: true
+  shell: 
+    chdir: "{{ item.0 }}"
+    cmd: "git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
+  register: changedfiles
+  with_together:
+    - "{{ dirs | json_query('results[*].stdout') }}"
+    - "{{ revcommit | json_query('results[*].stdout') }}"
+
 - name: REVERT COMMIT
   become: true
   shell: "{{ item }}"
   register: reverted
   with_items: "{{ reverting | json_query('results[*].stdout') }}"
   when: item != ""
+
+- name: Restart services after revert
+  become: true
+  shell: /usr/local/sbin/scdrm-service-restart "{{ changedfiles | json_query('results[*].stdout') }}"
+  changed_when: false
 
 - name: Adminstop
   become: true

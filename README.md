@@ -265,7 +265,7 @@ To do this for you inventory you can simply execute:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
 			or
-	scdrm-update-config--dryrun-off
+	scdrm-config-update--dryrun-off
  
 3.1 DEINSTALLATION
 -----------------------------------------
@@ -379,13 +379,13 @@ To collect the host vars run:
 
 	ansible-playbook playbooks/change_tracking.yml -e "update=yes"
 			or
-	scdrm-change-tracking_update
+	scdrm-update-change-tracking
 
 To check for configuration version discrepancies run:
 
 	ansible-playbook playbooks/change_tracking.yml -e "check=yes"
 			or
-	scdrm-change-tracking_check
+	scdrm-check-change-tracking
 
 To revert to previously recorded version run:
 
@@ -393,7 +393,7 @@ To revert to previously recorded version run:
 			or
 	ansible-playbook playbooks/consistency-enforce.yml
 			or
-	scdrm-consistency-enforce
+	scdrm-enforce-consistency
 
 
 Bottom line, SCDRM takes care of configuration consistency in two levels:
@@ -423,7 +423,7 @@ Then run this to provision the updates to your fleet:
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes"
 			or
-	scdrm-update-config
+	scdrm-config-update
 
 Configuration update can be done inline - without making changes to any template/playbook.
 
@@ -435,7 +435,7 @@ Simply run the scdrm.yml playbook with 'update=yes' and add any variable you nee
 
 	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
 				or
-	scdrm-update-config--dryrun-off
+	scdrm-config-update--dryrun-off
 
 
 Here you can update the check frequency from default 5 minutes to 30 seconds:
@@ -492,7 +492,7 @@ If the last recorded commit IDs differs from live state, SCDRM will revert to la
 
 	ansible-playbook playbooks/consistency-enforce.yml
 			or
-	scdrm-consistency-enforce
+	scdrm-enforce-consistency
 
 
 Project also provides a simple revert playbook for fast config revert. You would use this with CAUTION.
@@ -554,6 +554,8 @@ Let there be uptime!
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.5.1	    2022-11-17   Revert config - service restart fix for: ssh,sssd,firewalld,cron,udev,kdump,NetworkManger,journal; Handle LVM restores - ignore /etc/lvm/[archive,backup,cache,profile]. Now does proper service restart after revert change
+
 1.5.0	    2022-11-16   For usage convenience added 'scdrm-' bash functions to ~/.bashrc
 
 1.4.9	    2022-11-16   README updates, set tag and mark for pre_release

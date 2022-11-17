@@ -29,29 +29,66 @@
      blockinfile:
        path: "/home/{{ myuser }}/.bashrc"
        block: |
-         function scdrm-change-tracking_check {
+         function scdrm-check-change-tracking {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/change-tracking.yml -e "check=yes" | tee log/change-tracking-check-$(date '+%F-%T').log
+         ansible-playbook playbooks/change-tracking.yml -e "check=yes" | tee log/change-tracking-check-$(date '+%F-%T').log 
          }
-         function scdrm-change-tracking_update {
+
+         function scdrm-update-change-tracking {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/change-tracking.yml -e "update=yes" | tee log/change-tracking-update-$(date '+%F-%T').log
+         ansible-playbook playbooks/change-tracking.yml -e "update=yes" | tee log/change-tracking-update-$(date '+%F-%T').log 
          }
-         function scdrm-consistency-enforce {
+
+         function scdrm-enforce-consistency {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/consistency-enforce.yml | tee log/consistency-enforce-$(date '+%F-%T').log
+         ansible-playbook playbooks/consistency-enforce.yml | tee log/consistency-enforce-$(date '+%F-%T').log 
          }
-         function scdrm-update-config {
+
+         function scdrm-config-update {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee log/update-config-$(date '+%F-%T').log
+         ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee log/update-config-$(date '+%F-%T').log 
          }
-         function scdrm-update-config--dryrun-off {
+
+         function scdrm-config-update--dryrun-off {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0" | tee log/update-config-dryrun-off-$(date '+%F-%T').log
+         ansible-playbook playbooks/switch-dryrun-mode.yml -e "dryrun=0" | tee log/update-config--dryrun-off-$(date '+%F-%T').log 
          }
-         function scdrm-update-config--dryrun-on {
+
+         function scdrm-config-update--dryrun-on {
          cd {{ scdrm_install_dir }} > /dev/null
-         ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=1" | tee log/update-config-dryrun-on-$(date '+%F-%T').log
+         ansible-playbook playbooks/switch-dryrun-mode.yml -e "dryrun=1" | tee log/update-config--dryrun-on-$(date '+%F-%T').log 
+         }
+
+         function scdrm-remove {
+         cd {{ scdrm_install_dir }} > /dev/null
+         if [[ $# -ne 1 ]]
+         then printf 'Please provide a servername for removal.\nExiting.\n\n'
+         return 1
+         fi
+         ansible-playbook playbooks/scdrm.yml -e "remove=yes" -l $1 | tee log/remove-$(date '+%F-%T').log  
+         }
+
+         function scdrm-remove-all {
+         cd {{ scdrm_install_dir }} > /dev/null
+         ansible-playbook playbooks/scdrm.yml -e "remove=yes" | tee log/remove-$(date '+%F-%T').log  
+         }
+
+         function scdrm-install {
+         cd {{ scdrm_install_dir }} > /dev/null
+         if [[ $# -ne 1 ]]
+         then printf 'Please provide a servername for installation.\nExiting.\n\n'
+         return 1
+         fi
+         ansible-playbook playbooks/scdrm.yml -l $1 | tee log/install-$(date '+%F-%T').log 
+         }
+
+         function scdrm-install-from-list {
+         cd {{ scdrm_install_dir }} > /dev/null
+         if [[ $# -ne 1 || ! -s $1 ]]
+         then printf 'Provided inventory list is empty or does not exist!\nExiting.\n\n'
+         return 1
+         fi
+         ansible-playbook playbooks/scdrm.yml -i $1 | tee log/install-$(date '+%F-%T').log 
          }
        marker: "##<!-- ANSIBLE MANAGED BLOCK -->"
        state: absent

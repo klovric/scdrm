@@ -1,0 +1,17 @@
+# This playbook switches SCDRM dryrun mode on-off, fast
+#
+# variables explained:
+#   dryrun - (1) DO NOT revert any changes, or (0) DO revert unauthorized changes
+---
+- name: Manage SCDRM
+  hosts: all
+  gather_facts: False
+  serial: 96
+  ignore_errors: True
+  strategy: linear
+  vars_files: ./vars/main.yml
+  roles:
+    - role: get_kernel
+    - { role: skip_host, when: 'release is undefined or "el6" in release.stdout' }
+    - role: switch_dryrun
+...

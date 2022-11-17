@@ -1,0 +1,8 @@
+---
+galaxy_info:
+  role_name: switch_dryrun
+  author: Kresimir Lovric
+  description: Toggles SCDRM dryrun mode
+  company: IBM
+dependencies: []
+...

@@ -1,0 +1,19 @@
+---
+- name: Prepare for update
+  become: true
+  failed_when: False
+  shell: chattr -R -i /etc/scdrm/ 2>/dev/null
+
+- name: Update config
+  become: true
+  lineinfile:
+    path: /etc/scdrm/scdrm.conf
+    regexp: '^DRYRUN='
+    line: DRYRUN={{ dryrun }}
+    state: present
+
+- name: Lock config
+  become: true
+  failed_when: False
+  shell: chattr -R +i /etc/scdrm/ 2>/dev/null
+...

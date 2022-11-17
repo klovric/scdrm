@@ -1,6 +1,9 @@
 {{ shebang }}
 # 
-# SCDRM daemon - runs forever until stopped
+# SCDRM daemon - runs forever until stopped when it is restarted :)
+
+LC_ALL=C
+
 while true
 do 
 
@@ -101,13 +104,40 @@ fi
 cd ~ > /dev/null
 done
 
-# Check for systemd changes and reload
-egrep '\.(automount|mount|path|service|slice|socket|target|timer)|fstab' $SCDRMREPORT > /dev/null && systemctl daemon-reload > /dev/null
+# Check for systemd changes and restart
+egrep '\.(automount|mount|path|service|slice|socket|target|timer)|fstab' $SCDRMREPORT > /dev/null && systemctl daemon-reload 2>$SCDRMELOG
 
-# Check for rsyslog changes and reload
-fgrep 'syslog' $SCDRMREPORT > /dev/null && systemctl restart rsyslog
+# Check for rsyslog changes and restart
+fgrep 'syslog' $SCDRMREPORT > /dev/null && systemctl restart rsyslog 2>$SCDRMELOG
 
-# Aide check is done from cron as it is relatively intensive
+# Check for sshd changes and restart
+fgrep 'ssh' $SCDRMREPORT > /dev/null && systemctl restart sshd 2>$SCDRMELOG
+
+# Check for sssd changes and restart
+fgrep 'sssd' $SCDRMREPORT > /dev/null && systemctl restart sssd 2>$SCDRMELOG
+
+# Check for firewalld changes and restart
+fgrep 'firewalld' $SCDRMREPORT > /dev/null && systemctl restart firewalld 2>$SCDRMELOG
+
+# Check for cron changes and restart
+fgrep 'cron' $SCDRMREPORT > /dev/null && systemctl restart crond 2>$SCDRMELOG
+
+# Check for kdump changes and restart
+fgrep 'kdump' $SCDRMREPORT > /dev/null && systemctl restart kdump 2>$SCDRMELOG
+
+# Check for journal changes and restart
+fgrep 'journald.conf' $SCDRMREPORT > /dev/null && systemctl restart systemd-journald 2>$SCDRMELOG
+
+# Check for Network changes and restart
+egrep 'NetworkManager|network-scripts' $SCDRMREPORT > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
+
+# Check for udev changes and restart
+fgrep 'udev' $SCDRMREPORT > /dev/null && systemctl restart systemd-udevd 2>$SCDRMELOG
+
+# Check for httpd changes and restart
+fgrep 'httpd' $SCDRMREPORT > /dev/null && systemctl restart httpd 2>$SCDRMELOG
+
+# Aide check is done from cron as it is relatively intensive and you will get false positives, just run 'aide -C' and should be OK
 if fgrep 'Looks okay' /var/log/aide/aide.log > /dev/null
 then printf 'AIDE OK\n' >> $SCDRMREPORT
 else printf 'AIDE ALERT\n' >> $SCDRMREPORT

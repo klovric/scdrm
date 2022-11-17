@@ -6,6 +6,13 @@
 *.tar.bz2
 *.cf-before-edit
 *.cfsaved
+*.iso
+*.zip
+*.tar
+lvm/archive/*
+lvm/backup/*
+lvm/cache/*
+lvm/profile/*
 yum.repos.d/v*security-emergency*
 shadow*
 motd.d/*

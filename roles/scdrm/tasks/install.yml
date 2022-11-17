@@ -152,6 +152,16 @@
     group: root
     attributes: +i
 
+- name: Copy scdrm-service-restart
+  become: true
+  template:
+    src: ../files/scdrm-service-restart.j2
+    dest: /usr/local/sbin/scdrm-service-restart
+    mode: 0750
+    owner: root
+    group: root
+    attributes: +i
+
 - name: Setup SCDRM service
   become: true
   copy:
