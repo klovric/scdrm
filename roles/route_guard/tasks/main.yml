@@ -26,7 +26,7 @@
 - name: Install route-guard for RHEL
   become: true
   template:
-    src: ../files/route-guard
+    src: ../files/route-guard.j2
     dest: /usr/local/sbin/route-guard
     owner: root
     group: root

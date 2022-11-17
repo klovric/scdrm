@@ -27,7 +27,7 @@ stat /usr | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' > /dev/null || chown ro
 /usr/local/sbin/route-guard > /dev/null
 
 # Self check
-for unit in scdrm.service scdrm-slow-check.service scdrm-slow-check.timer aide-check.timer
+for unit in scdrm.service scdrm-slow-check.service scdrm-slow-check.timer
 do 
 	if systemctl is-enabled $unit > /dev/null
 	then true
@@ -35,7 +35,7 @@ do
 	fi
 done
 
-for timer in scdrm.service scdrm-slow-check.timer aide-check.timer
+for timer in scdrm.service scdrm-slow-check.timer
 do
 	if systemctl is-active $timer > /dev/null
 	then true
@@ -43,4 +43,14 @@ do
 	fi
 done
 
+{% if disable_aide == "False" %}
+if systemctl is-active aide-check.timer > /dev/null
+then true
+else systemctl start aide-check.timer > /dev/null
+fi
+if systemctl is-enabled aide-check.timer > /dev/null
+then true
+else systemctl enable aide-check.timer > /dev/null
+fi
+{% endif %}
 exit 0

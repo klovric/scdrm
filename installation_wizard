@@ -32,7 +32,7 @@ fi
 
 # Gather info
 printf '\e[32m\n\nHello and welcome to the SCDRM installation wizard!\e[0m\nJust relax and let us go over few things we need to setup SCDRM for you!\n\n'
-printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es or (n)o [default]\n'
+printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es or (n)o[default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter the 'managed by' header you are using (case insensitive)"
@@ -68,7 +68,8 @@ read yesno
 		*)      true
 			;;
 esac
-printf "Are you using upstream Git to keep host_vars in?\n\t(y)es or (n)o [default]\n"
+
+printf "Are you using upstream Git to keep host_vars in?\n\t(y)es or (n)o[default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter origin's branch name to push to\n"
@@ -80,9 +81,33 @@ read yesno
 			;;
 esac
 
+printf "In case you are not using default routes you should disable route-guard?\n\t(y)es or (n)o[default]\n"
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK\n"
+			sed -i 's/disable_route_guard: False/disable_route_guard: True/' playbooks/scdrm.yml
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+
+printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do you want to disable AIDE?\n\t(y)es or (n)o[default]\n"
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK\n"
+			sed -i 's/disable_aide: False/disable_aide: True/' playbooks/scdrm.yml
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
 
 printf '\nBy default SCDRM runs in DRYRUN mode, meaning no files will be reverted or restored\nThis alows you to collect intelligence about changes in your environment before running active SCDRM.\n'
 printf '\e[91m\nInstalling SCDRM now, please wait.\e[0m\n\n'
+sleep 2
 
 if [[ $managedby != "" ]]
 then sed -i "s/^\ \{4\}my_managed_by_strings_too_look_for/${managedby}/" playbooks/scdrm.yml
@@ -137,7 +162,7 @@ fi
 
 printf '\t\e[32mALL DONE\e[0m\n'
 printf '\nFirst thing to do now is to add you team members to "scdrm" group to be able to write to /scdrm/host_vars\n'
-printf 'Then you can start using \e[91madminssh\e[0m from this node to enforce new change management process.\nYou can also start using \e[91madminstart-auto\e[0m for your scripts and playbooks...\n\n'
+printf 'Then you can start using \e[91madminssh\e[0m from this node to enforce new change management process.\nYou can also start using \e[91madminstart-auto\e[0m for your scripts...\n\n'
 printf '\t\e[91mThank you for using SCDRM installation wizard!\e[0m\n'
 printf '\t\e[32mHave a wonderfull day!\e[0m\n'
 

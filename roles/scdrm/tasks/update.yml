@@ -103,6 +103,39 @@
     user: root
     state: present
 
+- name: Check SELinux
+  become: false
+  shell: /usr/sbin/getenforce
+  register: selinux
+  when:
+    - disable_aide == "False"
+
+- name: Copy aide.conf
+  become: true
+  template:
+    src: ../../aide/files/aide
+    dest: /etc/aide.conf
+    mode: 0600
+    owner: root
+    group: root
+    attributes: +i
+  when: 
+    - selinux.stdout != "Enforcing"
+    - disable_aide == "False"
+
+- name: Copy SELinux aide.conf
+  become: true
+  template:
+    src: ../../aide/files/aide-selinux.conf
+    dest: /etc/aide.conf
+    mode: 0600
+    owner: root
+    group: root
+    attributes: +i
+  when: 
+    - selinux.stdout == "Enforcing"
+    - disable_aide == "False"
+
 - name: Setup AIDE check timer
   become: true
   copy:
@@ -122,20 +155,27 @@
     owner: root
     group: root
     attributes: +i
+  when: disable_aide == "False"
 
 - name: Adminstop
   become: true
   import_role: 
     name: adminstop
 
-- name: Restart SCDRM stack
+- name: Restart SCDRMd
   become: true
   systemd:
-    name: "{{ item }}"
+    name: scdrm.service
     enabled: yes
     state: restarted
     daemon-reload: yes
-  with_items:
-    - scdrm.service
-    - aide-check.timer
+
+- name: Restart AIDE
+  become: true
+  systemd:
+    name: aide-check.timer
+    enabled: yes
+    state: restarted
+    daemon-reload: yes
+  when: disable_aide == "False"
 ...

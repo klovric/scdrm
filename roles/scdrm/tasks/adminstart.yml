@@ -160,8 +160,10 @@
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
       chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git home/$USERN/.log_local/ 2>/dev/null
+      {% if disable_aide == "False" %}
       /usr/sbin/aide --update >/dev/null 2>&1
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
+      {% endif %}
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop
@@ -246,8 +248,10 @@
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
       printf "$NOW - Exited admin mode\n" >> $SCDRMDLOG
       chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git
+      {% if disable_aide == "False" %}
       /usr/sbin/aide --update
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+      {% endif %}
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop-auto
