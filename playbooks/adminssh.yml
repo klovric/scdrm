@@ -24,7 +24,7 @@
        mode: '0755'
        owner: root
 
-   - name: Copy scdrmrc
+   - name: Copy scdrm_rc
      become: False
      template:
        src: ../roles/scdrm/files/bashrc.j2

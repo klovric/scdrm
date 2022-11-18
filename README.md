@@ -554,6 +554,8 @@ Let there be uptime!
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.7.5	    2022-11-18   Improvements and updates to scdrm_rc functions
+
 1.7.4	    2022-11-18   Improvements and updates to reporting and usage
 
 1.6.0	    2022-11-17   Added fast and easy modularity - AIDE and route-guard ON/OFF switch
