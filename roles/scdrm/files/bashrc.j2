@@ -16,7 +16,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-update-change-tracking {
@@ -32,7 +31,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-enforce-consistency {
@@ -48,7 +46,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-config-update {
@@ -64,7 +61,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-config-update--dryrun-off {
@@ -80,7 +76,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-config-update--dryrun-on {
@@ -96,7 +91,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-remove {
@@ -117,7 +111,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-remove-all {
@@ -133,7 +126,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-install {
@@ -152,7 +144,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-install-from-list {
@@ -173,7 +164,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 function scdrm-install-from-list {
@@ -194,7 +184,6 @@ printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 
 # This function will take optional inventory file
@@ -213,6 +202,5 @@ printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
-cd ~ > /dev/null
 }
 

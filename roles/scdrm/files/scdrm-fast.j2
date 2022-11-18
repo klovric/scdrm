@@ -24,7 +24,9 @@ stat /etc | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' >/dev/null || chown roo
 stat /usr | awk '/Access:/ {print $2}' | fgrep 0755 > /dev/null || chmod 0755 /usr
 stat /usr | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' > /dev/null || chown root:root /usr
 
+{% if disable_route_guard is undefined %}
 /usr/local/sbin/route-guard > /dev/null
+{% endif %}
 
 # Self check
 for unit in scdrm.service scdrm-slow-check.service scdrm-slow-check.timer

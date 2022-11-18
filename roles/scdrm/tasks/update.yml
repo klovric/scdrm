@@ -120,8 +120,8 @@
     group: root
     attributes: +i
   when: 
-    - selinux.stdout != "Enforcing"
     - disable_aide is undefined
+    - selinux.stdout != "Enforcing"
 
 - name: Copy SELinux aide.conf
   become: true
@@ -133,8 +133,8 @@
     group: root
     attributes: +i
   when: 
-    - selinux.stdout == "Enforcing"
     - disable_aide is undefined
+    - selinux.stdout == "Enforcing"
 
 - name: Setup AIDE check timer
   become: true
@@ -157,6 +157,23 @@
     attributes: +i
   when: disable_aide is undefined
 
+- name: Disable AIDE
+  become: true
+  systemd:
+    name: aide-check.timer
+    enabled: no
+    state: stopped
+    daemon-reload: yes
+  when: disable_aide is defined
+
+- name: Update adminstart
+  include_tasks: adminstart.yml
+
+- name: Update route-guard
+  import_role:
+    name: route_guard
+  when: disable_route_guard is undefined
+
 - name: Adminstop
   become: true
   import_role: 
@@ -178,4 +195,13 @@
     state: restarted
     daemon-reload: yes
   when: disable_aide is undefined
+
+- name: Disable AIDE
+  become: true
+  systemd:
+    name: aide-check.timer
+    enabled: no
+    state: stopped
+    daemon-reload: yes
+  when: disable_aide is defined
 ...

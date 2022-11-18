@@ -554,7 +554,7 @@ Let there be uptime!
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.7.2	    2022-11-18   Improvements and updates to reporting
+1.7.3	    2022-11-18   Improvements and updates to reporting and usage
 
 1.6.0	    2022-11-17   Added fast and easy modularity - AIDE and route-guard ON/OFF switch
 
