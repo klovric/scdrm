@@ -1,11 +1,10 @@
 # Global vars
 ---
-#scdrm_install_dir: INSTALLDIR
-scdrm_install_dir: /home/klovric/ansible_collections/klovric/scdrm
+scdrm_install_dir: INSTALLDIR
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
 git_branch: main
-myuser: klovric
+myuser: USER
 # These directories are managed by Git
 check_directory: "/etc /usr/lib/systemd /usr/lib64/security"
 dirlist:
