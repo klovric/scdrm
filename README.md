@@ -275,11 +275,14 @@ It is a two part procedure.
 1. Remove SCDRM from your inventory:
 
         ansible-playbook playbooks/scdrm.yml -e "remove=yes"
+			or
+	scdrm-remove
 
 
 2. Remove SCDRM and 'adminssh' from central management node.
 
         ansible-playbook playbooks/adminssh-remove.yml -e "myuser=$USER"
+
 
 
 4.0 CHANGE PROCESS
@@ -445,7 +448,7 @@ Here you can update the check frequency from default 5 minutes to 30 seconds:
 
 To remove SCDRM from your inventory run:
 
-	ansible-playbook playbooks/scdrm.yml -e "remove=yes"
+	scdrm-remove
 
 7.0 SESSION LOGGING
 -----------------------------------------
@@ -478,7 +481,6 @@ Here I will list all active DR sanity checks currently performed:
  - if /etc/nologin or /var/run/nologin exist
  - rpm verify sshd, coreutils, bash, glibc
  - if default route is missing, restore it
- - any other modification to given directories that can cause system unreachability or malfunction
 
 SCDRM will try to prevent accidental deletion of its files and git by making files immutable.
 
@@ -520,7 +522,7 @@ If you are lucky and no dependencies are broken, this should work just fine.
 
  - Re-configuring exclusions in aide.conf and .gitignore is usually the first step to make as probably expectations won't be met using defaults.
  - Exiting admin mode will ALWAYS run AIDE update, which on some systems can take longer time. It also updates local vars.
- - In case you don't use default route on your systems, you will have no use of route-guard as it restores previously recorded default route when one found missing from the system. If you have multiple default routes, you could have PROBLEMS with route-guard!
+ - In case you don't use default route on your systems, you will have no use of route-guard as it restores previously recorded default route when one found missing from the system. If you have multiple default routes, you could have PROBLEMS with route-guard! You can easily disable route-guard.
  - Maybe you don't want your networking services automatically restarted when not active, as part of DR.
  - Maybe default RPM verification won't suit your case, test it.
  - Removal of SCDRM will remove AIDE and tlog from the system! You have been notified.
