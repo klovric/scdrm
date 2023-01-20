@@ -574,7 +574,7 @@ Linkedin or Github.
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.8.1	    2023-01-20   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added
+1.8.2	    2023-01-20   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added; minor fixes
 
 1.7.5	    2022-11-18   Improvements and updates to scdrm_rc functions
 

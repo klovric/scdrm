@@ -3,13 +3,18 @@
   yum:
     name: util-linux
     state: present
-  when: '"el7" in release.stdout or "generic" in release.stdout or "amd64" in release.stdout'
+  when: '"el7" in release.stdout'
 
 - name: Install tlog
   yum:
     name: tlog
     state: present
   when: 
-    - '"el" in release.stdout'
-    - '"el7" not in release.stdout'
+    - '"el8" in release.stdout or "el9" in release.stdout'
+
+- name: Install bsdutils
+  package:
+    name: bsdutils
+    state: present
+  when: '"generic" in release.stdout or "amd64" in release.stdout'
 ...

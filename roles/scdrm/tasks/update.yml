@@ -24,6 +24,22 @@
   changed_when: false
   register: nmcheck
 
+- name: Check networking service
+  become: true
+  shell: systemctl is-active networking.service
+  failed_when: false
+  changed_when: false
+  register: networkingcheck
+  when: '"amd64" in release.stdout'
+
+- name: Check systemd-networkd.service
+  become: true
+  shell: systemctl is-active systemd-networkd.service
+  failed_when: false
+  changed_when: false
+  register: systemdnetworkd
+  when: '"generic" in release.stdout'
+
 - name: Set fact
   set_fact:
     netservice: network
@@ -33,6 +49,16 @@
   set_fact:
     netservice: NetworkManager
   when: nmcheck.stdout == "active"
+
+- name: Set fact
+  set_fact:
+    netservice: networking
+  when: networkingcheck.stdout == "active"
+
+- name: Set fact
+  set_fact:
+    netservice: systemd-networkd
+  when: systemdnetworkd.stdout == "active"
 
 - name: Copy scdrmd
   become: true

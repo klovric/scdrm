@@ -105,11 +105,11 @@ read yesno
 			;;
 esac
 
-printf "For more frequent reporting you should really run AIDE check after every change. CAUTION this will introduce load to the system.\n\tDo you want to enable this feature?\n\t(y)es or (n)o[default]\n"
+printf "For more frequent reporting you should really run AIDE check after every change. CAUTION this introduces additional load to the system.\n\tDo you want to disable this feature?\n\t(y)es or (n)o[default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/#aide_auto_check: yes/aide_auto_check: yes/' playbooks/scdrm.yml
+			sed -i 's/aide_auto_check: yes/#aide_auto_check: yes/' playbooks/scdrm.yml
 			;;
 		n)      printf '\tOK\n'
 			;;
