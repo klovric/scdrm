@@ -1,4 +1,4 @@
-# Working configuration for x86 RHEL infrastructure
+# Example configuration file for AIDE.
 
 @@define DBDIR /var/lib/aide
 @@define LOGDIR /var/log/aide
@@ -18,7 +18,7 @@ gzip_dbout=yes
 verbose=5
 
 report_url=file:@@{LOGDIR}/aide.log
-#report_url=stdout
+report_url=stdout
 #report_url=stderr
 #NOT IMPLEMENTED report_url=mailto:root@foo.com
 #NOT IMPLEMENTED report_url=syslog:LOG_AUTH
@@ -65,26 +65,26 @@ EVERYTHING = R+ALLXTRAHASHES
 
 # Sane
 # NORMAL = R+sha512
-NORMAL = p+i+n+u+g+s+m+c+acl+xattrs+sha512
+NORMAL = p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha512
 
 # For directories, don't bother doing hashes
-DIR = p+i+n+u+g+acl+xattrs
+DIR = p+i+n+u+g+acl+selinux+xattrs
 
 # Access control only
-PERMS = p+u+g+acl+xattrs
+PERMS = p+u+g+acl+selinux+xattrs
 
 # Logfile are special, in that they often change
-LOG = p+u+g+n+S+acl+xattrs
+LOG = p+u+g+n+S+acl+selinux+xattrs
 
 # Content + file type.
 CONTENT = sha512+ftype
 
 # Extended content + file type + access.
-CONTENT_EX = sha512+ftype+p+u+g+n+acl+xattrs
+CONTENT_EX = sha512+ftype+p+u+g+n+acl+selinux+xattrs
 
 # Some files get updated automatically, so the inode/ctime/mtime change
 # but we want to know when the data inside them changes
-DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
+DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha512
 
 # Next decide what directories/files you want in the database.
 
@@ -93,12 +93,16 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 
 # Admins dot files constantly change, just check perms
 /root/\..* PERMS
+!/root/.xauth*
 # Otherwise get all of /root.
 /root   CONTENT_EX
 
 # These are too volatile
 !/usr/src
 !/usr/tmp
+
+# Otherwise get all of /usr.
+/usr    CONTENT_EX
 
 # Excluded for SCDRM
 !/usr/bin/scdrm-install
@@ -150,12 +154,6 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 !/samba
 !/cifs
 !/WAS
-!/WASlogs
-!/vw
-
-
-# Otherwise get all of /usr.
-/usr    CONTENT_EX
 
 # trusted databases
 /etc/hosts$      CONTENT_EX
@@ -180,8 +178,6 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 /etc/subuid$     CONTENT_EX
 /etc/security/opasswd$ CONTENT_EX
 /etc/skel        CONTENT_EX
-/etc/subuid$     CONTENT_EX
-/etc/subgid$     CONTENT_EX
 /etc/sssd        CONTENT_EX
 /etc/machine-id$ CONTENT_EX
 /etc/swid        CONTENT_EX
@@ -190,10 +186,7 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 /etc/tmux.conf$  CONTENT_EX
 /etc/xattr.conf$ CONTENT_EX
 
-
 # networking
-/etc/hosts.allow$   CONTENT_EX
-/etc/hosts.deny$    CONTENT_EX
 /etc/firewalld      CONTENT_EX
 !/etc/NetworkManager/system-connections
 /etc/NetworkManager CONTENT_EX
@@ -237,7 +230,7 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 # This gets new/removes-old filenames daily
 !/var/log/sa
 # As we are checking it, we've truncated yesterdays size to zero.
-!/var/log/aide/aide.log
+!/var/log/aide.log
 
 # auditing
 # AIDE produces an audit record, so this becomes perpetual motion.
@@ -291,10 +284,8 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 #### Daemons ####
 
 # cron jobs
-/var/spool/at CONTENT
 /etc/at.allow$ CONTENT
 /etc/at.deny$ CONTENT
-/var/spool/anacron CONTENT
 /etc/anacrontab$ CONTENT_EX
 /etc/cron.allow$ CONTENT_EX
 /etc/cron.deny$ CONTENT_EX
@@ -361,10 +352,3 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha512
 #
 #=/lost\+found    DIR
 #=/home           DIR
-
-# Ditto /var/log/sa reason...
-!/var/log/and-httpd
-
-# Admins dot files constantly change, just check perms
-/root/\..* PERMS
-!/root/.xauth*

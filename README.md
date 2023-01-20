@@ -3,7 +3,7 @@
 
 0.1 What is SCDRM?
 -----------------------------------------
-It is a wrapper that acts as Ansible local agent and disaster recovery daemon for enterprise environments currently only for Red Hat Enterprise Linux.
+It is a wrapper that acts as Ansible local agent and disaster recovery daemon designed for enterprise environments.
 
 Software stack:
  - AIDE: Intrusion detection system
@@ -13,10 +13,10 @@ Software stack:
 
 It enforces secure change process, does security reporting, change tracking and management. 
 
-Can coexist with existing change management systems like Puppet, CFEngine, Ansible...
+Can work with existing change management systems like Puppet, Chef, CFEngine, Ansible...
 
 
-0.2 Why would someone run it?
+0.2 Why would someone use it?
 -----------------------------------------
 Because people make mistakes!
 
@@ -51,18 +51,18 @@ Get daily reports and make unauthorized changes impossible.
 -----------------------------------------
 Anyone looking for a free Ansible local agent.
 
-Anyone interested in running a free local disaster recovery agent for RHEL and up the uptime.
+Anyone interested in running a free local disaster recovery agent for Linux and keep up the uptime.
 
 Enterprise environments requiring hard and heavy security posture and compliance.
 
-Security managers looking for a free compliance/reporting/audit tool.
+Security managers looking for a free change management/reporting/audit tool.
 
 
 0.5 What does it do / how does it work
 -----------------------------------------
 By default it will check for few most common man made disaster scenarios, like stopped network/SSH, missing default route, bad permissions, etc. When found it will revert to defaults, i.e. restart network/SSH or restore previously known default route.
 
-When set with 'dryrun=0' it will actively protect /etc, /usr/lib/systemd/ and /usr/lib64/security, by using local Git instance for every directory. It uses Git to revert any unauthorized change.
+When set with 'dryrun=0' it will actively protect /etc, /usr/lib/systemd/ and /usr/lib64/security, by using local Git instance for every directory. Git will revert any unauthorized change.
 
 It will record terminal user session for debugging/accounting purposes.
 
@@ -126,7 +126,7 @@ P.S. For those willing to read more, here we go in more detail.
 1.0 INTRODUCTION
 -----------------------------------------
 
-While working with Nk RHEL infrastructure managed by CFEngine, which implementation was insufficient if you ask me, I've immediately started to write Ansible plays to deal with the infrastructure.
+While working with Nk RHEL infrastructure managed by CFEngine, which implementation was incomplete if you ask me, I've immediately started to write Ansible plays to deal with the infrastructure.
 
 Been Ansible user for years and loving it, for multiple reasons.
 
@@ -552,10 +552,30 @@ Several other 'modules' are planned and should be released in the 2023, like scd
 Let there be uptime!
 
 
-11.0 Important change log
+11.0 Thanks to
+-----------------------------------------
+My wife for the support!
+
+IBM for the opportunity!
+
+Red hat for great products and education!
+
+Steffen Froemer@Redhat for motivation!
+
+12.0 Author
+-----------------------------------------
+Currently working as Linux architect @ IBM Croatia.
+
+You can contact me at kresimir.lovric@ibm.com
+Linkedin or Github.
+
+
+13.0 Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.8.1	    2023-01-20   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added
+
 1.7.5	    2022-11-18   Improvements and updates to scdrm_rc functions
 
 1.7.4	    2022-11-18   Improvements and updates to reporting and usage
@@ -589,21 +609,3 @@ Let there be uptime!
 1.0.15      2022-10-28   SCDRM goes public
 
 1.0.10      2022-10-20   Initial Gitlab commit
-
-
-12.0 Thanks to
------------------------------------------
-My wife for the support!
-
-IBM for the opportunity!
-
-Red hat for great innovation and education!
-
-Steffen Froemer@Redhat for motivation!
-
-12.0 Author
------------------------------------------
-Currently working as Linux architect @ IBM Croatia.
-
-You can contact me at kresimir.lovric@ibm.com,
-Linkedin or Github.

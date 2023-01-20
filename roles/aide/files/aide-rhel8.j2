@@ -1,4 +1,4 @@
-# Working configuration for x86 RHEL infrastructure
+# Example configuration file for AIDE.
 
 @@define DBDIR /var/lib/aide
 @@define LOGDIR /var/log/aide
@@ -18,7 +18,7 @@ gzip_dbout=yes
 verbose=5
 
 report_url=file:@@{LOGDIR}/aide.log
-#report_url=stdout
+report_url=stdout
 #report_url=stderr
 #NOT IMPLEMENTED report_url=mailto:root@foo.com
 #NOT IMPLEMENTED report_url=syslog:LOG_AUTH
@@ -100,16 +100,19 @@ DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha512
 !/usr/src
 !/usr/tmp
 
+# Otherwise get all of /usr.
+/usr    CONTENT_EX
+
 # Excluded for SCDRM
 !/usr/bin/scdrm-install
 !/scdrm
 !/etc/.git
 !/etc/.gitignore
+!/etc/cron.allow
 !/usr/lib/systemd/.git
 !/usr/lib/systemd/.gitignore
 !/usr/lib64/security/.git
 !/usr/lib64/security/.gitignore
-!/etc/cron.allow
 !/var/log
 !/var/tmp
 !/var/run
@@ -150,12 +153,6 @@ DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha512
 !/samba
 !/cifs
 !/WAS
-!/WASlogs
-!/vw
-
-
-# Otherwise get all of /usr.
-/usr    CONTENT_EX
 
 # trusted databases
 /etc/hosts$      CONTENT_EX
@@ -237,7 +234,7 @@ DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha512
 # This gets new/removes-old filenames daily
 !/var/log/sa
 # As we are checking it, we've truncated yesterdays size to zero.
-!/var/log/aide/aide.log
+!/var/log/aide.log
 
 # auditing
 # AIDE produces an audit record, so this becomes perpetual motion.
@@ -355,6 +352,7 @@ DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha512
 
 # Now everything else
 /etc    PERMS
+
 
 # With AIDE's default verbosity level of 5, these would give lots of
 # warnings upon tree traversal. It might change with future version.

@@ -46,7 +46,13 @@ ALOCKF="/run/scdrm-admin.lock"
 # Timestamp
 NOW="$(date '+%F-%T')"
 #
-# Toggles admin mode on | off
+# Toggles automatic AIDE check ON | OFF
+AIDE_CHECK=0
+#
+# Aide check temp file
+ACTMPF="/tmp/aide-auto-check.lck"
+#
+# Toggles admin mode ON | OFF
 ADMINMODE=0
 #
 # Report only, don't restore any files. However still does basic disaster recovery

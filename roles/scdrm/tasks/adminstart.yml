@@ -158,6 +158,9 @@
       chown -R root:root /home/$USERN/.log_local/ 2>/dev/null
       chmod 0000 /home/$USERN/.log_local/* 2>/dev/null
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+      {% if aide_auto_check is defined %}
+      sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
+      {% endif %}
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
       chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git home/$USERN/.log_local/ 2>/dev/null
       {% if disable_aide is undefined %}
@@ -246,13 +249,15 @@
       done
 
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+      {% if aide_auto_check is defined %}
+      sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
+      {% endif %}
       printf "$NOW - Exited admin mode\n" >> $SCDRMDLOG
       chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git
       {% if disable_aide is undefined %}
       /usr/sbin/aide --update
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
       {% endif %}
-      /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop-auto
     mode: 0750

@@ -32,12 +32,15 @@
     - /etc/logrotate.d/scdrm
     - /etc/systemd/system/scdrm.service
     - /etc/systemd/system/scdrm.service.wants
+    - /etc/systemd/system/timers.target.wants/aide-auto-check.timer
     - /etc/systemd/system/timers.target.wants/aide-check.timer
     - /etc/systemd/system/timers.target.wants/scdrm-slow-check.timer
     - /etc/systemd/system/scdrm-slow-check.service
     - /etc/systemd/system/scdrm-slow-check.timer
     - /etc/systemd/system/aide-check.timer
     - /etc/systemd/system/aide-check.service
+    - /etc/systemd/system/aide-auto-check.service
+    - /etc/systemd/system/aide-auto-check.timer
     - /usr/local/bin/adminstart
     - /usr/local/sbin/scdrmd
     - /usr/local/sbin/adminstart1
@@ -51,6 +54,7 @@
     - /usr/local/sbin/scdrm-service-restart
     - /usr/local/sbin/route-guard
     - /usr/local/sbin/bash-guard
+    - /usr/local/sbin/aide-auto-check
 
 - name: Remove cron job GC
   cron:

@@ -1,0 +1,46 @@
+{{ shebang }}
+#
+# This program is part of SCDRM and will see if AIDE check if needed and run it accordingly
+# 
+
+# Config check
+if [[ -s /etc/scdrm/scdrm.conf ]]
+then . /etc/scdrm/scdrm.conf
+else printf '\nNo configuration file found.\nExiting.\n'
+exit 1
+fi
+
+if [[ AIDE_CHECK -ne 1 ]]
+then exit 0
+fi
+
+if [[ -s $ACTMPF ]]
+then 
+	if find /tmp/ -type f -name "aide-auto-check.lck" -mmin +60 | grep .
+	then find /tmp/ -type f -name "aide-auto-check.lck" -mmin +60 -delete
+	else exit 0
+	fi
+else
+touch $ACTMPF && echo $(date '+%F-%T') > $ACTMPF
+fi
+
+# Sleep some to prevent immediate checking as update might be running
+sleep 60
+
+{% if "el7" in release.stdout %}
+/usr/sbin/aide -C > /var/log/aide/aide.log 2>$SCDRMELOG
+{% endif %}
+{% if "el8" in release.stdout %}
+/usr/sbin/aide -C 2>$SCDRMELOG
+{% endif %}
+{% if "el9" in release.stdout %}
+/usr/sbin/aide -C 2>$SCDRMELOG
+{% endif %}
+
+/bin/rm -f $ACTMPF
+
+setattr -R -i /etc/scdrm > /dev/null 2>$SCDRMELOG
+sed -i 's/^AIDE_CHECK=1/AIDE_CHECK=0/' /etc/scdrm/scdrm.conf > /dev/null 2>$SCDRMELOG
+setattr -R +i /etc/scdrm > /dev/null 2>$SCDRMELOG
+
+exit 0

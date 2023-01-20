@@ -14,23 +14,62 @@
   shell: /usr/sbin/getenforce
   register: selinux
 
-- name: Copy config when SELinux disabled/permissive
-  become: true
-  copy:
-    src: ../files/aide.conf
-    dest: /etc/aide.conf
-    mode: 0600
-    attributes: +i
-  when: selinux.stdout != "Enforcing"
+- name: Set SELinux fact
+  set_facts:
+    has_selinux: yes
+  when: 'selinux.stdout == "Enforcing" or selinux.stdout == "Permissive"'
 
-- name: Copy config when SELinux enforcing
+- name: Set SELinux fact
+  set_facts:
+    has_selinux: no
+  when: 
+    - selinux.stdout != "Enforcing" 
+    - selinux.stdout != "Permissive"
+
+- name: Copy RHEL7 aide.conf
   become: true
-  copy:
-    src: ../files/aide-selinux.conf
+  template:
+    src: ../files/aide-rhel7.j2
     dest: /etc/aide.conf
     mode: 0600
     attributes: +i
-  when: selinux.stdout == "Enforcing"
+  when: '"el7" in release.stdout'
+
+- name: Copy RHEL8 aide.conf
+  become: true
+  template:
+    src: ../files/aide-rhel8.j2
+    dest: /etc/aide.conf
+    mode: 0600
+    attributes: +i
+  when: '"el8" in release.stdout'
+
+- name: Copy RHEL9 aide.conf
+  become: true
+  template:
+    src: ../files/aide-rhel9.j2
+    dest: /etc/aide.conf
+    mode: 0600
+    attributes: +i
+  when: '"el9" in release.stdout'
+
+- name: Copy Debian/Ubuntu aide.conf
+  become: true
+  copy:
+    src: ../files/98_aide_scdrm
+    dest: /etc/aide/aide.conf.d/98_aide_scdrm
+    mode: 0644
+    attributes: +i
+  when: '"generic" in release.stdout or "amd64" in release.stdout'
+
+- name: Copy aide-auto-check
+  become: true
+  template:
+    src: ../files/aide-auto-check.j2
+    dest: /usr/local/sbin/aide-auto-check
+    mode: 0750
+    attributes: +i
+  when: aide_auto_check is defined
 
 - name: AIDE init
   become: true
@@ -100,6 +139,50 @@
     owner: root
     group: root
     attributes: +i
+
+- name: Setup AIDE auto-check
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE auto-check
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/sbin/aide-auto-check
+      #Restart=on-failure
+
+      [Install]
+      WantedBy=scdrm.service
+    dest: /etc/systemd/system/aide-auto-check.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+  when:
+    - aide_auto_check is defined
+
+- name: Setup AIDE auto-check timer
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE auto-check timer
+
+      [Timer]
+      OnCalendar=*/2
+      RandomizedDelaySec=1m
+      AccuracySec=1us
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/aide-auto-check.timer
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+  when: aide_auto_check is defined
 
 - name: Commit AIDE install
   become: true
