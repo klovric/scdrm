@@ -1,7 +1,7 @@
 # SCDRM - Security Change Disaster-Recovery Manager		
 -----------------------
 
-0.1 What is SCDRM?
+What is SCDRM?
 -----------------------------------------
 It is a wrapper that acts as Ansible local agent and disaster recovery daemon designed for enterprise environments.
 
@@ -16,7 +16,7 @@ It enforces secure change process, does security reporting, change tracking and 
 Can work with existing change management systems like Puppet, Chef, CFEngine, Ansible...
 
 
-0.2 Why would someone use it?
+Why would someone use it?
 -----------------------------------------
 Because people make mistakes!
 
@@ -24,7 +24,7 @@ Because managing N(N)k machines in a heavily segmented infrastructure with Ansib
 
 
 
-0.2.1 Answer this question! 
+Answer this question! 
 -----------------------------------------
 If a junior sysadmin makes a typo in a playbook which got executed on ENTIRE inventory, and the typo resulted in /etc/passwd file getting deleted/overwritten, how long would it take you to recover from this?
 
@@ -32,7 +32,7 @@ If a junior sysadmin makes a typo in a playbook which got executed on ENTIRE inv
 How bad would it hurt?
 
 
-0.3 How to use it?
+How to use it?
 -----------------------------------------
 Get the project from Github or Ansible Galaxy.
 
@@ -47,7 +47,7 @@ Embrace new change process into your environment by starting using 'adminmode/ad
 Get daily reports and make unauthorized changes impossible.
 
 
-0.4 Targeted audience
+Targeted audience
 -----------------------------------------
 Anyone looking for a free Ansible local agent.
 
@@ -58,7 +58,7 @@ Enterprise environments requiring hard and heavy security posture and compliance
 Security managers looking for a free change management/reporting/audit tool.
 
 
-0.5 What does it do / how does it work
+What does it do / how does it work
 -----------------------------------------
 By default it will check for few most common man made disaster scenarios, like stopped network/SSH, missing default route, bad permissions, etc. When found it will revert to defaults, i.e. restart network/SSH or restore previously known default route.
 
@@ -76,12 +76,12 @@ This makes possible to revert settings for entire infrastructure in a safe and a
 Adminmode allows ONLY ONE user/script/playbook at a time to be doing changes to a machine. No more stepping over toes.
 
 
-0.6 LICENCE
+LICENCE
 -----------------------------------------
 GNU GPL v3 - see LICENSE for more details.
 
 
-0.7 VIDEO DEMO - v1.4.7
+VIDEO DEMO - v1.4.7
 -----------------------------------------
 You can watch the demo at:
 
@@ -90,7 +90,7 @@ https://ibm.webex.com/ibm/ldr.php?RCID=370447dfd337cc651036af46684c0ae1
 Enter with iPNngwP8
 											
 
-0.8 CONTRIBUTE
+CONTRIBUTE
 -----------------------------------------
 There are many ways you could contribute to this project:
 
@@ -123,7 +123,7 @@ P.S. For those willing to read more, here we go in more detail.
 
 
 
-1.0 INTRODUCTION
+INTRODUCTION
 -----------------------------------------
 
 While working with Nk RHEL infrastructure managed by CFEngine, which implementation was incomplete if you ask me, I've immediately started to write Ansible plays to deal with the infrastructure.
@@ -167,7 +167,7 @@ Recovering Nk machines over console is not something a sane person would enjoy n
 
 
 
-1.1 APPROACH
+APPROACH
 -----------------------------------------
 
 The idea is to check for changed/deleted critical system configuration files and revert.
@@ -190,7 +190,7 @@ Simple change revert can bring you system back to operational state.
 
 
 
-2.0 DESCRIPTION
+DESCRIPTION
 -----------------------------------------
 
 So, what does SCDRM exactly do? In detail.
@@ -243,7 +243,7 @@ which is how SCDRM determines which files to exclude.
 
 
 
-3.0 INSTALLATION
+INSTALLATION
 -----------------------------------------
 
 You should use the 'installation_wizard'.
@@ -267,7 +267,7 @@ To do this for you inventory you can simply execute:
 			or
 	scdrm-config-update--dryrun-off
  
-3.1 DEINSTALLATION
+DEINSTALLATION
 -----------------------------------------
 
 It is a two part procedure. 
@@ -285,7 +285,7 @@ It is a two part procedure.
 
 
 
-4.0 CHANGE PROCESS
+CHANGE PROCESS
 -----------------------------------------
 
 Your existing change process must adapt. Meet 'adminssh' and 'adminstart'.
@@ -364,7 +364,7 @@ To test your SCDRM installation and restore process you can use example test.yml
 
         ansible-playbook playbooks/test.yml
 
-5.0 CHANGE TRACKING
+CHANGE TRACKING
 -----------------------------------------
 With Ansible you could be deploying and managing clusters and fleets of servers sharing common configuration.
 
@@ -414,7 +414,7 @@ By having global tracking in 'personal' Git, we have records and possibility to 
 
 Optionally, you could use your Gitlab/Github instance to keep host_vars in. The installation wizard will ask for this.
 
-6.0 UPDATING CONFIGURATION
+UPDATING CONFIGURATION
 -----------------------------------------
 
 Making changes to any SCDRM configuration file, should be done locally in the project templates/files/playbooks.
@@ -450,7 +450,7 @@ To remove SCDRM from your inventory run:
 
 	scdrm-remove
 
-7.0 SESSION LOGGING
+SESSION LOGGING
 -----------------------------------------
 
 Terminal session logging is enabled only for user logins, not for scripted runs.
@@ -462,7 +462,7 @@ For RHEL7 'script' is used and for newer versions 'tlog'.
 This will allow you to back-track and investigate in greater detail than before.
 
 
-8.0 DISASTER RECOVERY
+DISASTER RECOVERY
 -----------------------------------------
 
 Here comes a collection of real-life disaster cases that are easy to check and fix.
@@ -517,7 +517,7 @@ To revert the whole infrastructure to an older version, you would do git revert 
 
 If you are lucky and no dependencies are broken, this should work just fine.
 
-9.0 KNOWN LIMITATIONS
+KNOWN LIMITATIONS
 -----------------------------------------
 
  - Re-configuring exclusions in aide.conf and .gitignore is usually the first step to make as probably expectations won't be met using defaults.
@@ -528,12 +528,12 @@ If you are lucky and no dependencies are broken, this should work just fine.
  - Removal of SCDRM will remove AIDE and tlog from the system! You have been notified.
  - If you don't want to use AIDE - it can be turned off easily.
  - Automated revert possible only for dirs managed, currently ONLY /etc, /usr/lib/systemd/, /usr/lib64/security.
- - Race condition/piggy back commits - during admin mode is activated and another user is making changes to the system, they will be committed by user using 'adminstart'
+ - Race condition/piggy back commits - during admin mode is activated and another user is making changes to the system, they will be committed by user using 'admin mode'
  - Intended to be ran from single central management jumphost as it keeps the commit vars locally
  - Ansible strategy 'free' seems to break my 'consistency-enforce.yml' so works fine with 'linear' - have to look into this
 
 
-10.0 FUTURE UPDATES
+FUTURE UPDATES
 -----------------------------------------
 
 This is just a beginning.
@@ -552,7 +552,7 @@ Several other 'modules' are planned and should be released in the 2023, like scd
 Let there be uptime!
 
 
-11.0 Thanks to
+Thanks to
 -----------------------------------------
 My wife for the support!
 
@@ -562,7 +562,7 @@ Red hat for great products and education!
 
 Steffen Froemer@Redhat for motivation!
 
-12.0 Author
+Author
 -----------------------------------------
 Currently working as Linux architect @ IBM Croatia.
 
@@ -570,11 +570,11 @@ You can contact me at kresimir.lovric@ibm.com
 Linkedin or Github.
 
 
-13.0 Important change log
+Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.8.2	    2023-01-20   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added; minor fixes
+1.8.3	    2023-01-21   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added; minor fixes
 
 1.7.5	    2022-11-18   Improvements and updates to scdrm_rc functions
 

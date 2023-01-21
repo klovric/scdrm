@@ -1,13 +1,24 @@
 # Check Git commits against recorded values and revert when not a match
 ---
-- name: Get commits for managed dirs
+- name: Get commits for managed dirs EL
   become: true
   shell: 
     chdir: "{{ item }}"
     cmd: git log | head -3 | awk '/commit/ {print $2}'
   register: gitcommit
   with_items: 
-    - "{{ dirlist }}"
+    - "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Get commits for managed dirs Deb
+  become: true
+  shell: 
+    chdir: "{{ item }}"
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
+  register: gitcommit
+  with_items: 
+    - "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
 
 - name: Compare commits
   become: false

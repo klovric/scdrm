@@ -9,22 +9,40 @@
     name: aide
     state: present
 
+- name: Create log dir if not present
+  become: True
+  file:
+    path: /var/log/aide
+    state: directory
+    mode: 0750
+
 - name: Check SELinux
   become: false
   shell: /usr/sbin/getenforce
   register: selinux
+  when: '"el" in release.stdout'
 
 - name: Set SELinux fact
   set_fact:
     hasselinux: yes
-  when: 'selinux.stdout == "Enforcing" or selinux.stdout == "Permissive"'
+  when: 
+    - '"el" in release.stdout'
+    - selinux.stdout == "Enforcing" or selinux.stdout == "Permissive"
 
 - name: Set SELinux fact
   set_fact:
     hasselinux: no
   when: 
+    - '"el" in release.stdout'
     - selinux.stdout != "Enforcing" 
     - selinux.stdout != "Permissive"
+
+- name: Set SELinux fact
+  set_fact:
+    hasselinux: no
+  when: 
+    - '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
+    - selinux is not defined
 
 - name: Copy RHEL7 aide.conf
   become: true
@@ -60,7 +78,7 @@
     dest: /etc/aide/aide.conf.d/98_aide_scdrm
     mode: 0644
     attributes: +i
-  when: '"generic" in release.stdout or "amd64" in release.stdout'
+  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
 - name: Copy aide-auto-check
   become: true
@@ -71,9 +89,15 @@
     attributes: +i
   when: aide_auto_check is defined
 
-- name: AIDE init
+- name: AIDE init EL
   become: true
   shell: /usr/sbin/aide -i && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  when: '"el" in release.stdout'
+
+- name: AIDE init Deb
+  become: true
+  shell: /usr/bin/aide -c /etc/aide/aide.conf -i && mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
 - name: Setup AIDE check RHEL7
   become: true
@@ -117,7 +141,29 @@
     owner: root
     group: root
     attributes: +i
-  when: '"el7" not in release.stdout'
+  when: '"el8" in release.stdout or "el9" in release.stdout'
+
+- name: Setup AIDE check Debian
+  become: true
+  copy:
+    content: |
+      [Unit]
+      Description=AIDE check
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/bin/aide -c /etc/aide/aide.conf --check > /var/log/aide/aide.log
+      Restart=on-failure
+      RestartSec=30m
+
+      [Install]
+      WantedBy=scdrm.service
+    dest: /etc/systemd/system/aide-check.service
+    mode: 0644
+    owner: root
+    group: root
+    attributes: +i
+  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
 - name: Setup AIDE check timer
   become: true
@@ -184,9 +230,19 @@
     attributes: +i
   when: aide_auto_check is defined
 
-- name: Commit AIDE install
+- name: Commit AIDE install EL
   become: true
-  shell: cd /etc && git add aide.conf logrotate.d/aide && git commit -a -m "Aide installed"
+  shell: 
+    chdir: /etc
+    cmd: git add aide.conf systemd/system/aide* logrotate.d/aide && git commit -a -m "Aide installed"
+  when: '"el" in release.stdout'
+
+- name: Commit AIDE install Deb
+  become: true
+  shell: 
+    chdir: /etc
+    cmd: git add aide systemd/system/aide* && git commit -a -m "Aide installed"
+  when: '"el" not in release.stdout'
 
 - name: Service start
   become: true

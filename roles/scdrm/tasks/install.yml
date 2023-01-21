@@ -41,35 +41,43 @@
   failed_when: false
   changed_when: false
   register: networkingcheck
-  when: '"amd64" in release.stdout'
+  when: '"Debian" in distro.stdout'
 
 - name: Check systemd-networkd.service
   become: true
   shell: systemctl is-active systemd-networkd.service
   failed_when: false
   changed_when: false
-  register: systemdnetworkd
-  when: '"generic" in release.stdout'
+  register: sysdnetcheck
+  when: '"Ubuntu" in distro.stdout'
 
 - name: Set fact
   set_fact:
     netservice: network
-  when: networkcheck.stdout == "active"
+  when: 
+    - '"el" in release.stdout'
+    - networkcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: NetworkManager
-  when: nmcheck.stdout == "active"
+  when: 
+    - '"el" in release.stdout'
+    - nmcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: networking
-  when: networkingcheck.stdout == "active"
+  when: 
+    - '"Debian" in distro.stdout'
+    - networkingcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: systemd-networkd
-  when: systemdnetworkd.stdout == "active"
+  when: 
+    - '"Ubuntu" in distro.stdout'
+    - sysdnetcheck.stdout == "active"
 
 - name: Copy scdrmd
   become: true
@@ -91,7 +99,7 @@
     group: root
     attributes: +i
 
-- name: Copy gitignore
+- name: Copy gitignore EL
   become: true
   copy:
     src: ../files/gitignore
@@ -99,7 +107,19 @@
     mode: 0640
     owner: root
     attributes: +i
-  with_items: "{{ dirlist }}"
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Copy gitignore Deb
+  become: true
+  copy:
+    src: ../files/gitignore
+    dest: "{{ item }}/.gitignore"
+    mode: 0640
+    owner: root
+    attributes: +i
+  with_items: "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
 
 - name: Copy installer
   become: true
@@ -113,7 +133,11 @@
       exit 1
       fi
 
-      for DIRECTORY in {{ check_directory }}
+      {% if "el" in release.stdout %}
+      for DIRECTORY in {{ dirlist_el | join(' ') }}
+      {% else %}
+      for DIRECTORY in {{ dirlist_deb | join(' ') }}
+      {% endif %}
       do
           if [[ -d ${DIRECTORY}/.git ]]
           then printf "Git already configured for $DIRECTORY. Exiting...\n"
@@ -130,7 +154,7 @@
       done
 
       /bin/rm -f /usr/local/sbin/scdrm-install > /dev/null
-      chattr -R +i /etc/scdrm  /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart 2>/dev/null
+      chattr -R +i /etc/scdrm /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart 2>/dev/null
       exit 0
     dest: /usr/local/sbin/scdrm-install
     mode: 0750
@@ -267,6 +291,14 @@
 - name: Download emergency restore RPMs
   become: true
   shell: yum reinstall --downloadonly --downloaddir=/scdrm rpm glibc coreutils bash -y
+  when: '"el" in release.stdout'
+
+- name: Download emergency restore DPKGs
+  become: true
+  shell: 
+    cmd: apt-get download dpkg libc6 libc-bin coreutils bash
+    chdir: /scdrm
+  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
 - name: Run the installer
   become: true

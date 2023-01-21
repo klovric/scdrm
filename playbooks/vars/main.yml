@@ -1,14 +1,17 @@
 # Global vars
 ---
-scdrm_install_dir: /home/klovric/scdrm
+scdrm_install_dir: INSTALLDIR
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
 git_branch: main
-myuser: klovric
+myuser: $USER
 # These directories are managed by Git
-check_directory: "/etc /usr/lib/systemd /usr/lib64/security"
-dirlist:
+dirlist_el:
   - /etc
   - /usr/lib/systemd
   - /usr/lib64/security
+dirlist_deb:
+  - /etc
+  - /usr/lib/systemd
+  - /lib/x86_64-linux-gnu/security
 ...

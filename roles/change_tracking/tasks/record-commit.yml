@@ -7,7 +7,18 @@
     cmd: git log | head -3 | awk '/commit/ {print $2}'
   register: gitcommit
   with_items: 
-    - "{{ dirlist }}"
+    - "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Get commits for managed dirs
+  become: true
+  shell: 
+    chdir: "{{ item }}"
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
+  register: gitcommit
+  with_items: 
+    - "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
 
 - name: Prepare host vars file
   become: true

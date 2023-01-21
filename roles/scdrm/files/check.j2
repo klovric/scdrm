@@ -35,7 +35,11 @@ exec 2>SCDRMELOG
 GRST=0
 printf "$NOW - Starting sanity checks\n" | tee -a $SCDRMDLOG > $SCDRMREPORT
 
-for DIRECTORY in {{ check_directory }}
+{% if "el" in release.stdout %}
+for DIRECTORY in {{ dirlist_el | join(' ') }}
+{% else %}
+for DIRECTORY in {{ dirlist_deb | join(' ') }}
+{% endif %}
 do cd $DIRECTORY
 git status > $TMPF 2>&1
 

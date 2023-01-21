@@ -5,4 +5,11 @@
   register: release
   changed_when: False
   failed_when: release.stdout == ""
+
+- name: Get distribution
+  shell: awk -F'"' '/^NAME/ {print $2}' /etc/*-release
+  become: False
+  register: distro
+  changed_when: False
+  failed_when: distro.stdout == ""
 ...

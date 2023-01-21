@@ -21,35 +21,43 @@
   failed_when: false
   changed_when: false
   register: networkingcheck
-  when: '"amd64" in release.stdout'
+  when: '"Debian" in distro.stdout'
 
 - name: Check systemd-networkd.service
   become: true
   shell: systemctl is-active systemd-networkd.service
   failed_when: false
   changed_when: false
-  register: systemdnetworkd
-  when: '"generic" in release.stdout'
+  register: sysdnetcheck
+  when: '"Ubuntu" in distro.stdout'
 
 - name: Set fact
   set_fact:
     netservice: network
-  when: networkcheck.stdout == "active"
+  when: 
+    - '"el" in release.stdout'
+    - networkcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: NetworkManager
-  when: nmcheck.stdout == "active"
+  when: 
+    - '"el" in release.stdout'
+    - nmcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: networking
-  when: networkingcheck.stdout == "active"
+  when: 
+    - '"Debian" in distro.stdout'
+    - networkingcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: systemd-networkd
-  when: systemdnetworkd.stdout == "active"
+  when: 
+    - '"Ubuntu" in distro.stdout'
+    - sysdnetcheck.stdout == "active"
 
 - name: Install route-guard
   become: true

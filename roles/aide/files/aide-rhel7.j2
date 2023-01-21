@@ -51,7 +51,7 @@ report_url=stdout
 #crc32:  crc32 checksum (MHASH only)
 #whirlpool:     whirlpool checksum (MHASH only)
 
-{% if hasselinux = "yes" %}
+{% if hasselinux == "yes" %}
 FIPSR = p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha256
 
 #R:             p+i+n+u+g+s+m+c+acl+selinux+xattrs+md5
@@ -92,9 +92,8 @@ CONTENT_EX = sha256+ftype+p+u+g+n+acl+selinux+xattrs
 # Some files get updated automatically, so the inode/ctime/mtime change
 # but we want to know when the data inside them changes.
 DATAONLY =  p+n+u+g+s+acl+selinux+xattrs+sha256
-{% endif %}
+{% else %}
 
-{% if hasselinux = "no" %}
 FIPSR = p+i+n+u+g+s+m+c+acl+xattrs+sha256
 
 #R:             p+i+n+u+g+s+m+c+acl+selinux+xattrs+md5

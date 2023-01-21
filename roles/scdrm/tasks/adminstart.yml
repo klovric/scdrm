@@ -132,8 +132,12 @@
 
       printf '\nPlease wait for DR checks and AIDE update, sometimes it can take several minutes...\n\n'
       /usr/local/sbin/scdrm-fast > /dev/null
-
-      for DIRECTORY in {{ check_directory }}
+      
+      {% if "el" in release.stdout %}
+      for DIRECTORY in {{ dirlist_el | join(' ') }}
+      {% else %}
+      for DIRECTORY in {{ dirlist_deb | join(' ') }}
+      {% endif %}
       do cd $DIRECTORY > /dev/null
       
       git status > /tmp/scdrm.tmpf
@@ -227,7 +231,11 @@
 
       trap "printf '\n\tPlease WAIT for AIDE update! Patience is a virtue.\n'" 1 2 3 6 15
 
-      for DIRECTORY in {{ check_directory }}
+      {% if "el" in release.stdout %}
+      for DIRECTORY in {{ dirlist_el | join(' ') }}
+      {% else %}
+      for DIRECTORY in {{ dirlist_deb | join(' ') }}
+      {% endif %}
       do cd $DIRECTORY > /dev/null
 
       git status > /tmp/scdrm.tmpf
