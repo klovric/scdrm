@@ -2,19 +2,23 @@
 ---
 - name: Get commits for managed dirs
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
-  with_items: 
+  with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
 - name: Get commits for managed dirs
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
   with_items: 
     - "{{ dirlist_deb }}"
@@ -26,11 +30,13 @@
     content: | 
       last_commit:
     dest: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
-    force: yes
+    force: true
+    mode: 0640
+    owner: root
   delegate_to: localhost
 
 - name: Record commits
-  become: false
+  become: true
   blockinfile:
     path: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
     block: |
@@ -41,5 +47,4 @@
   with_items:
     - "{{ gitcommit.results }}"
   delegate_to: localhost
-
 ...

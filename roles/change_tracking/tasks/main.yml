@@ -2,29 +2,30 @@
 ---
 - name: Record commits
   include_tasks: record-commit.yml
-  when: 
+  when:
    - update is defined
    - check is undefined
    - enforce is undefined
 
 - name: Check commits
   include_tasks: check-commit.yml
-  when: 
+  when:
    - check is defined
    - update is undefined
    - enforce is undefined
 
 - name: Revert any previously unrecorded commits
   include_tasks: revert-commit.yml
-  when: 
+  when:
    - update is undefined
    - check is undefined
    - enforce is defined
 
-#- name: Commit global changes
-#  include_tasks: commit-hostvars.yml
-#  when: 
-#   - update is defined
-#   - check is undefined
-#   - enforce is undefined
-#...
+- name: Commit global changes
+  include_tasks: commit-hostvars.yml
+  when:
+   - update is defined
+   - check is undefined
+   - enforce is undefined
+   - upstream_git is undefined
+...

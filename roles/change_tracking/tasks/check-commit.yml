@@ -2,27 +2,35 @@
 ---
 - name: Get commits for managed dirs EL
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail;git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
-  with_items: 
+  with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
 - name: Get commits for managed dirs Deb
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail; git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
-  with_items: 
+  changed_when: false
+  with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
 - name: Compare commits
   become: false
-  shell: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  shell: 
+    cmd: "set -o pipefail;echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  args:
+    executable: /bin/bash
   with_together:
     - "{{ gitcommit | json_query('results[*].item') }}"
     - "{{ gitcommit | json_query('results[*].stdout') }}"

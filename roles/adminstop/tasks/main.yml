@@ -1,12 +1,13 @@
 ---
 - name: Run adminstop-auto
-  become: True
-  shell: /usr/local/sbin/adminstop-auto
+  become: true
+  command: /usr/local/sbin/adminstop-auto
   register: adminstop
+  changed_when: false
   failed_when: adminstop.rc != 0
 
 - name: Update host_vars
-  import_role: 
+  import_role:
     name: change_tracking
   vars:
     update: yes

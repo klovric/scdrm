@@ -1,7 +1,7 @@
 ---
 - name: Check network service
   become: true
-  shell: systemctl is-active network.service
+  command: systemctl is-active network.service
   failed_when: false
   changed_when: false
   register: networkcheck
@@ -9,7 +9,7 @@
 
 - name: Check NetworkManager service
   become: true
-  shell: systemctl is-active NetworkManager.service
+  command: systemctl is-active NetworkManager.service
   failed_when: false
   changed_when: false
   register: nmcheck
@@ -17,7 +17,7 @@
 
 - name: Check networking service
   become: true
-  shell: systemctl is-active networking.service
+  command: systemctl is-active networking.service
   failed_when: false
   changed_when: false
   register: networkingcheck
@@ -25,7 +25,7 @@
 
 - name: Check systemd-networkd.service
   become: true
-  shell: systemctl is-active systemd-networkd.service
+  command: systemctl is-active systemd-networkd.service
   failed_when: false
   changed_when: false
   register: sysdnetcheck
@@ -34,28 +34,28 @@
 - name: Set fact
   set_fact:
     netservice: network
-  when: 
+  when:
     - '"el" in release.stdout'
     - networkcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: NetworkManager
-  when: 
+  when:
     - '"el" in release.stdout'
     - nmcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: networking
-  when: 
+  when:
     - '"Debian" in distro.stdout'
     - networkingcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: systemd-networkd
-  when: 
+  when:
     - '"Ubuntu" in distro.stdout'
     - sysdnetcheck.stdout == "active"
 

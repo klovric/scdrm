@@ -2,31 +2,32 @@
 ---
 - name: Adminstart
   become: true
-  import_role: 
+  import_role:
     name: adminstart
 
 - name: Prepare for update
   become: true
-  failed_when: False
-  shell: chattr -R -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+  command: chattr -R -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+  failed_when: false
+  changed_when: true
 
 - name: Check network service
   become: true
-  shell: systemctl is-active network.service
+  command: systemctl is-active network.service
   changed_when: false
   failed_when: false
   register: networkcheck
 
 - name: Check NetworkManager service
   become: true
-  shell: systemctl is-active NetworkManager.service
+  command: systemctl is-active NetworkManager.service
   failed_when: false
   changed_when: false
   register: nmcheck
 
 - name: Check networking service
   become: true
-  shell: systemctl is-active networking.service
+  command: systemctl is-active networking.service
   failed_when: false
   changed_when: false
   register: networkingcheck
@@ -34,7 +35,7 @@
 
 - name: Check systemd-networkd.service
   become: true
-  shell: systemctl is-active systemd-networkd.service
+  command: systemctl is-active systemd-networkd.service
   failed_when: false
   changed_when: false
   register: systemdnetworkd
@@ -43,28 +44,28 @@
 - name: Set fact
   set_fact:
     netservice: network
-  when: 
+  when:
     - networkcheck.stdout == "active"
     - '"el" in release.stdout'
 
 - name: Set fact
   set_fact:
     netservice: NetworkManager
-  when: 
+  when:
     - nmcheck.stdout == "active"
     - '"el" in release.stdout'
 
 - name: Set fact
   set_fact:
     netservice: networking
-  when: 
+  when:
     - networkingcheck.stdout == "active"
     - '"Debian" in distro.stdout'
 
 - name: Set fact
   set_fact:
     netservice: systemd-networkd
-  when: 
+  when:
     - systemdnetworkd.stdout == "active"
     - '"Ubuntu" in distro.stdout'
 
@@ -116,6 +117,7 @@
     owner: root
     group: root
     attributes: +i
+
 - name: Copy scdrm-service-restart
   become: true
   template:
@@ -138,7 +140,8 @@
 
 - name: Check SELinux
   become: false
-  shell: /usr/sbin/getenforce
+  command: /usr/sbin/getenforce
+  changed_when: false
   register: selinux
   when:
     - disable_aide is undefined
@@ -215,9 +218,9 @@
   become: true
   systemd:
     name: aide-check.timer
-    enabled: no
+    enabled: false
     state: stopped
-    daemon-reload: yes
+    daemon-reload: true
   when: disable_aide is defined
 
 - name: Setup AIDE auto-check
@@ -273,41 +276,41 @@
 
 - name: Adminstop
   become: true
-  import_role: 
+  import_role:
     name: adminstop
 
 - name: Restart SCDRMd
   become: true
   systemd:
     name: scdrm.service
-    enabled: yes
+    enabled: true
     state: restarted
-    daemon-reload: yes
+    daemon-reload: true
 
 - name: Restart AIDE
   become: true
   systemd:
     name: aide-check.timer
-    enabled: yes
+    enabled: true
     state: restarted
-    daemon-reload: yes
+    daemon-reload: true
   when: disable_aide is undefined
 
 - name: Disable AIDE
   become: true
   systemd:
     name: aide-check.timer
-    enabled: no
+    enabled: false
     state: stopped
-    daemon-reload: yes
+    daemon-reload: true
   when: disable_aide is defined
 
 - name: Disable services
   systemd:
     name: "{{ item }}"
-    enabled: no
+    enabled: false
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   with_items:
     - aide-check.timer
     - aide-auto-check.timer

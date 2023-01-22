@@ -9,7 +9,7 @@
   yum:
     name: tlog
     state: present
-  when: 
+  when:
     - '"el8" in release.stdout or "el9" in release.stdout'
 
 - name: Install bsdutils

@@ -1,0 +1,9 @@
+{{ shebang }}
+# Update host_vars to upstream Git repository
+
+cd /scdrm > /dev/null 2>&1
+git add * > /dev/null 2>&1
+git commit -a -m "Automatic update" > /dev/null 2>&1
+git push -u origin {{ git_branch }} > /dev/null
+
+exit 0

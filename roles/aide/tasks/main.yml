@@ -2,6 +2,9 @@
 - name: Adminstart
   become: true
   shell: /usr/local/sbin/adminstart-auto
+  args:
+    executable: /bin/bash
+  changed_when: false
 
 - name: Install and configure AIDE
   become: true
@@ -10,7 +13,7 @@
     state: present
 
 - name: Create log dir if not present
-  become: True
+  become: true
   file:
     path: /var/log/aide
     state: directory
@@ -18,7 +21,8 @@
 
 - name: Check SELinux
   become: false
-  shell: /usr/sbin/getenforce
+  command: /usr/sbin/getenforce
+  changed_when: false
   register: selinux
   when: '"el" in release.stdout'
 
@@ -68,6 +72,7 @@
     src: ../files/aide-rhel9.j2
     dest: /etc/aide.conf
     mode: 0600
+    owner: root
     attributes: +i
   when: '"el9" in release.stdout'
 
@@ -77,6 +82,7 @@
     src: ../files/98_aide_scdrm
     dest: /etc/aide/aide.conf.d/98_aide_scdrm
     mode: 0644
+    owner: root
     attributes: +i
   when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
@@ -92,11 +98,15 @@
 - name: AIDE init EL
   become: true
   shell: /usr/sbin/aide -i && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  args:
+    executable: /bin/bash
   when: '"el" in release.stdout'
 
 - name: AIDE init Deb
   become: true
   shell: /usr/bin/aide -c /etc/aide/aide.conf -i && mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+  args:
+    executable: /bin/bash
   when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
 
 - name: Setup AIDE check RHEL7
@@ -232,30 +242,35 @@
 
 - name: Commit AIDE install EL
   become: true
-  shell: 
+  shell:
     chdir: /etc
     cmd: git add aide.conf systemd/system/aide* logrotate.d/aide && git commit -a -m "Aide installed"
+  args:
+    executable: /bin/bash
   when: '"el" in release.stdout'
 
 - name: Commit AIDE install Deb
   become: true
-  shell: 
+  shell:
     chdir: /etc
     cmd: git add aide systemd/system/aide* && git commit -a -m "Aide installed"
+  args:
+    executable: /bin/bash
   when: '"el" not in release.stdout'
 
 - name: Service start
   become: true
   systemd:
     name: "{{ item }}"
-    enabled: yes
+    enabled: true
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
   with_items:
     - aide-check.timer
     - aide-check.service
 
 - name: Adminstop
   become: true
-  shell: /usr/local/sbin/adminstop-auto
+  command: /usr/local/sbin/adminstop-auto
+  changed_when: false
 ...

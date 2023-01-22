@@ -33,12 +33,17 @@
        owner: "{{ myuser }}"
 
    - name: Setup scdrm-commit cron
-     become: False
      cron:
        name: "SCDRM commit hostvars"
        minute: "1,31"
        job: /usr/local/bin/scdrm-commit
        state: present
+
+   - name: Check local bashrc functions existing
+     command: "fgrep '.scdrm_rc' /home/{{ myuser }}/.bashrc"
+     changed_when: false
+     failed_when: false
+     register: checkrc
 
    - name: Setup local bashrc functions
      become: False
@@ -50,4 +55,6 @@
          fi
        marker: "##<!-- ANSIBLE MANAGED BLOCK -->"
        state: present
+     changed_when: true
+     when: checkrc.rc == 1
 ...

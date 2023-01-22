@@ -1,7 +1,7 @@
 # Install adminstart
 ---
 - name: Copy adminstart RHEL7
-  become: True
+  become: true
   copy:
     content: |
       {{ shebang }}

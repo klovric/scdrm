@@ -2,21 +2,25 @@
 ---
 - name: Get commits for managed dirs EL
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
-  with_items: 
+  with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
 - name: Get commits for managed dirs Deb
   become: true
-  shell: 
+  shell:
     chdir: "{{ item }}"
-    cmd: git log | head -3 | awk '/commit/ {print $2}'
+    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+  args:
+    executable: /bin/bash
   register: gitcommit
-  with_items: 
+  with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
@@ -34,8 +38,11 @@
 - name: Prepare reverting commit
   become: false
   shell: echo "{{ item.cmd }}" | awk '{print "cd",$2" ; git reset --hard",$6}'
+  args:
+    executable: /bin/bash
   register: reverting
   delegate_to: localhost
+  changed_when: false
   when: item.rc == 1
   with_items: "{{ compare | json_query('results[*]') }}"
 
@@ -43,6 +50,9 @@
   become: false
   delegate_to: localhost
   shell: echo "{{ item.cmd }}" | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  changed_when: false
   register: dirs
   when: item.rc == 1
   with_items: "{{ compare | json_query('results[*]') }}"
@@ -51,21 +61,27 @@
   become: false
   delegate_to: localhost
   shell: echo "{{ item.cmd }}" | awk '{print $3}'
+  args:
+    executable: /bin/bash
+  changed_when: false
   register: revcommit
   when: item.rc == 1
   with_items: "{{ compare | json_query('results[*]') }}"
 
 - name: Adminstart
   become: true
-  import_role: 
+  import_role:
     name: adminstart
   when: reverting is changed
 
 - name: Check reverting commit changed files
   become: true
-  shell: 
+  shell:
     chdir: "{{ item.0 }}"
-    cmd: "git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
+    cmd: "set -o pipefail && git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
+  args:
+    executable: /bin/bash
+  changed_when: false
   register: changedfiles
   with_together:
     - "{{ dirs | json_query('results[*].stdout') }}"
@@ -74,6 +90,8 @@
 - name: REVERT COMMIT
   become: true
   shell: "{{ item }}"
+  args:
+    executable: /bin/bash
   register: reverted
   with_items: "{{ reverting | json_query('results[*].stdout') }}"
   when: item != ""
@@ -81,11 +99,13 @@
 - name: Restart services after revert
   become: true
   shell: /usr/local/sbin/scdrm-service-restart "{{ changedfiles | json_query('results[*].stdout') }}"
+  args:
+    executable: /bin/bash
   changed_when: false
 
 - name: Adminstop
   become: true
-  import_role: 
+  import_role:
     name: adminstop
   when: reverting is changed
 ...

@@ -168,10 +168,11 @@ mkdir log reports > /dev/null 2>&1
 ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
 
 if [[ $git_branch != "" ]]
-then ansible-playbook playbooks/adminssh.yml -e "git_branch=$git_branch myuser=$USER"
-else ansible-playbook playbooks/adminssh.yml -e "myuser=$USER"
+then sed -i "s/^git_branch: main/git_branch: $git_branch/" playbooks/vars/main.yml
+sed -i 's/#upstream_git: yes/upstream_git: yes/' playbooks/scdrm.yml
 fi
 
+ansible-playbook playbooks/adminssh.yml
 
 printf '\t\e[32mALL DONE\e[0m\n'
 printf '\nFirst thing to do now is to add you team members to "scdrm" group to be able to write to /scdrm/host_vars\n'

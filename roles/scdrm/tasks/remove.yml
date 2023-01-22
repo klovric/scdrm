@@ -1,49 +1,83 @@
 ---
-- name: Prepare for deletion SCDRM
+- name: Prepare directories for deletion 
   become: true
-  failed_when: False
-  shell: chattr -R -i /etc /usr/lib/systemd /usr/lib64/security/ /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /usr/local/sbin/*-guard /usr/local/sbin/aide-auto-check /lib/x86_64-linux-gnu/security/.gitignore 2>/dev/null
-
-- name: Remove .gitignore EL
-  file:
-    path: "{{ item }}/.gitignore"
-    state: absent
+  failed_when: false
+  changed_when: true
+  shell: chattr -R -i "{{ item }}" 2>/dev/null
+  args:
+    executable: /bin/bash
   with_items:
-    - "{{ dirlist_el }}"
-  when: '"el" in release.stdout'
+    - /etc/scdrm
+    - /etc/.git
+    - /etc/.gitignore
+    - /etc/systemd/system
+    - /etc/systemd/system/timers.target.wants
+    - /etc/logrotate.d
+    - /usr/lib/systemd/.git
+    - /usr/lib/systemd/.gitignore
+    - /usr/lib64/security/.git
+    - /usr/lib64/security/.gitignore
+    - /lib/x86_64-linux-gnu/security/.git
+    - /lib/x86_64-linux-gnu/security/.gitignore
+    - /etc/aide.conf
+    - /etc/aide/aide.conf.d/98_aide_scdrm
+    - /usr/local/bin/adminstart
+    - /usr/local/sbin/bash-guard
+    - /usr/local/sbin/route-guard
+    - /usr/local/sbin/aide-auto-check
+
+- name: Prepare files for deletion
+  become: true
+  shell: chattr -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* 2>/dev/null
+  args:
+    executable: /bin/bash
+  failed_when: false
+  changed_when: true
 
 - name: Remove .git EL
+  become: true
   file:
     path: "{{ item }}/.git"
     state: absent
-  with_items:
-    - "{{ dirlist_el }}"
+  with_items: "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
-- name: Remove .gitignore Deb
+- name: Remove .gitignore EL
+  become: true
   file:
     path: "{{ item }}/.gitignore"
     state: absent
-  with_items:
-    - "{{ dirlist_deb }}"
-  when: '"el" not in release.stdout'
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
 
 - name: Remove .git Deb
+  become: true
+  ignore_errors: true
   file:
     path: "{{ item }}/.git"
     state: absent
-  with_items:
-    - "{{ dirlist_deb }}"
+  with_items: "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
+
+- name: Remove .gitignore Deb
+  become: true
+  ignore_errors: true
+  file:
+    path: "{{ item }}/.gitignore"
+    state: absent
+  with_items: "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
 - name: Uninstall SCDRM
   file:
     path: "{{ item }}"
     state: absent
+  ignore_errors: true
   with_items:
     - /scdrm
     - /etc/scdrm
     - /etc/aide.conf
+    - /etc/aide/aide.conf.d/98_aide_scdrm
     - /var/log/scdrm
     - /var/log/aide
     - /etc/logrotate.d/aide
@@ -94,5 +128,5 @@
 
 - name: Reload systemd
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 ...

@@ -14,7 +14,7 @@
        - /usr/local/bin/adminssh
        - /usr/local/bin/scdrm-commit
        - /scdrm
-       - "{{ scdrm_install_dir }}/host_vars"
+       - "{{ scdrm_install_dir }}/scdrm/host_vars"
        - "/home/{{ myuser }}/.scdrm_rc"
 
    - name: Remove scdrm-commit cron

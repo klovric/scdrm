@@ -1,15 +1,15 @@
 ---
 - name: Get kernel version
-  shell: uname -r
-  become: False
+  command: uname -r
+  become: false
   register: release
-  changed_when: False
+  changed_when: false
   failed_when: release.stdout == ""
 
 - name: Get distribution
-  shell: awk -F'"' '/^NAME/ {print $2}' /etc/*-release
-  become: False
+  shell: awk -F'"' '/^NAME/ {print $2}' /etc/os-release
+  become: false
   register: distro
-  changed_when: False
+  changed_when: false
   failed_when: distro.stdout == ""
 ...
