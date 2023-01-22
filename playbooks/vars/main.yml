@@ -4,7 +4,7 @@ scdrm_install_dir: INSTALLDIR
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
 git_branch: main
-myuser: $USER
+myuser: USER
 # These directories are managed by Git
 dirlist_el:
   - /etc
