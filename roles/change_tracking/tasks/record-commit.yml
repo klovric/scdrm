@@ -20,14 +20,14 @@
   args:
     executable: /bin/bash
   register: gitcommit
-  with_items: 
+  with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
 - name: Prepare host vars file
   become: true
   copy:
-    content: | 
+    content: |
       last_commit:
     dest: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
     force: true

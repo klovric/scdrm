@@ -49,9 +49,7 @@
 - name: Prepare facts
   become: false
   delegate_to: localhost
-  shell: echo "{{ item.cmd }}" | awk '{print $2}'
-  args:
-    executable: /bin/bash
+  command: echo "{{ item.cmd }}" | awk '{print $2}'
   changed_when: false
   register: dirs
   when: item.rc == 1
@@ -60,9 +58,7 @@
 - name: Prepare facts
   become: false
   delegate_to: localhost
-  shell: echo "{{ item.cmd }}" | awk '{print $3}'
-  args:
-    executable: /bin/bash
+  command: echo "{{ item.cmd }}" | awk '{print $3}'
   changed_when: false
   register: revcommit
   when: item.rc == 1
@@ -98,9 +94,7 @@
 
 - name: Restart services after revert
   become: true
-  shell: /usr/local/sbin/scdrm-service-restart "{{ changedfiles | json_query('results[*].stdout') }}"
-  args:
-    executable: /bin/bash
+  command: /usr/local/sbin/scdrm-service-restart "{{ changedfiles | json_query('results[*].stdout') }}"
   changed_when: false
 
 - name: Adminstop

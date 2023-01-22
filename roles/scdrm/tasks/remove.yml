@@ -1,5 +1,5 @@
 ---
-- name: Prepare directories for deletion 
+- name: Prepare directories for deletion
   become: true
   failed_when: false
   changed_when: true
@@ -52,27 +52,27 @@
 
 - name: Remove .git Deb
   become: true
-  ignore_errors: true
   file:
     path: "{{ item }}/.git"
     state: absent
   with_items: "{{ dirlist_deb }}"
+  failed_when: false
   when: '"el" not in release.stdout'
 
 - name: Remove .gitignore Deb
   become: true
-  ignore_errors: true
   file:
     path: "{{ item }}/.gitignore"
     state: absent
   with_items: "{{ dirlist_deb }}"
+  failed_when: false
   when: '"el" not in release.stdout'
 
 - name: Uninstall SCDRM
   file:
     path: "{{ item }}"
     state: absent
-  ignore_errors: true
+  failed_when: false
   with_items:
     - /scdrm
     - /etc/scdrm

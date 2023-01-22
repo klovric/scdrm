@@ -10,5 +10,5 @@
   import_role:
     name: change_tracking
   vars:
-    update: yes
+    update: true
 ...

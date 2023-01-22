@@ -1,9 +1,7 @@
 ---
 - name: Adminstart
   become: true
-  shell: /usr/local/sbin/adminstart-auto
-  args:
-    executable: /bin/bash
+  command: /usr/local/sbin/adminstart-auto
   changed_when: false
 
 - name: Install and configure AIDE
@@ -28,23 +26,23 @@
 
 - name: Set SELinux fact
   set_fact:
-    hasselinux: yes
-  when: 
+    hasselinux: true
+  when:
     - '"el" in release.stdout'
     - selinux.stdout == "Enforcing" or selinux.stdout == "Permissive"
 
 - name: Set SELinux fact
   set_fact:
-    hasselinux: no
-  when: 
+    hasselinux: false
+  when:
     - '"el" in release.stdout'
-    - selinux.stdout != "Enforcing" 
+    - selinux.stdout != "Enforcing"
     - selinux.stdout != "Permissive"
 
 - name: Set SELinux fact
   set_fact:
-    hasselinux: no
-  when: 
+    hasselinux: false
+  when:
     - '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
     - selinux is not defined
 

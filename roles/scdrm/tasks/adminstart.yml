@@ -41,7 +41,7 @@
   when: '"el7" in release.stdout'
 
 - name: Copy adminstart RHEL8
-  become: True
+  become: true
   copy:
     content: |
       {{ shebang }}
@@ -84,7 +84,7 @@
   when: '"el7" not in release.stdout'
 
 - name: Copy adminstart1
-  become: True
+  become: true
   copy:
     content: |
       {{ shebang }}
@@ -114,11 +114,11 @@
     attributes: +i
 
 - name: Copy adminstop
-  become: True
+  become: true
   copy:
     content: |
       {{ shebang }}
-      # 
+      #
       # Stop admin mode for user
       #
       if [[ -s /etc/scdrm/scdrm.conf ]]
@@ -132,14 +132,14 @@
 
       printf '\nPlease wait for DR checks and AIDE update, sometimes it can take several minutes...\n\n'
       /usr/local/sbin/scdrm-fast > /dev/null
-      
+
       {% if "el" in release.stdout %}
       for DIRECTORY in {{ dirlist_el | join(' ') }}
       {% else %}
       for DIRECTORY in {{ dirlist_deb | join(' ') }}
       {% endif %}
       do cd $DIRECTORY > /dev/null
-      
+
       git status > /tmp/scdrm.tmpf
       if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/scdrm.tmpf > /dev/null
       then printf 'Adding new files to the repo\n' >> $SCDRMDLOG
@@ -155,7 +155,7 @@
       then true
       else git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
       fi
-      
+
       done
 
       find /home/$USERN/.log_local -type f -ctime +{{ llog_retention }} -delete > /dev/null 2>&1
@@ -179,8 +179,8 @@
     group: root
     attributes: +i
 
-- name: Install adminstart-auto 
-  become: True
+- name: Install adminstart-auto
+  become: true
   copy:
     content: |
       {{ shebang }}
@@ -213,7 +213,7 @@
     attributes: +i
 
 - name: Install adminstop-auto
-  become: True
+  become: true
   copy:
     content: |
       {{ shebang }}

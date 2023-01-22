@@ -307,8 +307,8 @@
 
 - name: Download emergency restore DPKGs
   become: true
-  shell: 
-    cmd: apt-get download dpkg libc6 libc-bin coreutils bash
+  shell:
+    cmd: apt-get download dpkg libc6 libc-bin coreutils bash -y
     chdir: /scdrm
   args:
     executable: /bin/bash
@@ -316,10 +316,9 @@
 
 - name: Run the installer
   become: true
-  shell: /usr/local/sbin/scdrm-install
-  args:
-    executable: /bin/bash
+  command: /usr/local/sbin/scdrm-install
   register: installer
+  changed_when: true
   failed_when: installer.rc != 0
 
 - name: Remove installer

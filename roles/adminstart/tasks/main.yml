@@ -1,10 +1,9 @@
 ---
 - name: Run adminstart-auto
   become: true
-  shell: /usr/local/sbin/adminstart-auto
-  args:
-    executable: /bin/bash
+  command: /usr/local/sbin/adminstart-auto
+  ignore_errors: false
   register: adminstart
   failed_when: adminstart.rc != 0
-  ignore_errors: false
+  changed_when: false
 ...

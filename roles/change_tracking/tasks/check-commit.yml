@@ -27,7 +27,7 @@
 
 - name: Compare commits
   become: false
-  shell: 
+  shell:
     cmd: "set -o pipefail;echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
   args:
     executable: /bin/bash
