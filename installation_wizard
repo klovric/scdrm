@@ -26,9 +26,13 @@ sed -i "s/USER/$USER/" playbooks/vars/main.yml
 # Dependency installation
 printf '\n\n\tChecking and installing dependencies.\n\n'
 if uname -r | fgrep el7 > /dev/null
-then sudo yum install ansible python-jmespath.noarch -y
-else sudo yum install ansible python3-jmespath.noarch -y
+then sudo yum install ansible python-jmespath -y
+elif uname -r | egrep 'el8|el9'
+then sudo yum install ansible python3-jmespath -y
+else sudo apt-get install python3-pip python3-jmespath -y
 fi
+
+pip3 install jmespath
 
 # Gather info
 printf '\e[32m\n\nHello and welcome to the SCDRM installation wizard!\e[0m\nJust relax and let us go over few things we need to setup SCDRM for you!\n\n'
