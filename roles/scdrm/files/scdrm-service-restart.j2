@@ -22,25 +22,33 @@ printf "$INPUT" | fgrep 'ssh' > /dev/null && systemctl restart sshd 2>$SCDRMELOG
 # Check for sssd changes and restart
 printf "$INPUT" | fgrep 'sssd' > /dev/null && systemctl restart sssd 2>$SCDRMELOG
 
-# Check for firewalld changes and restart
-printf "$INPUT" | fgrep 'firewalld' > /dev/null && systemctl restart firewalld 2>$SCDRMELOG
+# Check for journal changes and restart
+printf "$INPUT" | fgrep 'journald.conf' > /dev/null && systemctl restart systemd-journald 2>$SCDRMELOG
 
-# Check for cron changes and restart
-printf "$INPUT" | fgrep 'cron' > /dev/null && systemctl restart crond 2>$SCDRMELOG
+{% if "el" in release.stdout %}
+# Check for Network changes and restart
+printf "$INPUT" | egrep 'NetworkManager|network-scripts' > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
 
 # Check for kdump changes and restart
 printf "$INPUT" | fgrep 'kdump' > /dev/null && systemctl restart kdump 2>$SCDRMELOG
 
-# Check for journal changes and restart
-printf "$INPUT" | fgrep 'journald.conf' > /dev/null && systemctl restart systemd-journald 2>$SCDRMELOG
+# Check for cron changes and restart
+printf "$INPUT" | fgrep 'cron' > /dev/null && systemctl restart crond 2>$SCDRMELOG
 
+# Check for firewalld changes and restart
+printf "$INPUT" | fgrep 'firewalld' > /dev/null && systemctl restart firewalld 2>$SCDRMELOG
+{% else %}
 # Check for Network changes and restart
-printf "$INPUT" | egrep 'NetworkManager|network-scripts' > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
+printf "$INPUT" | fgrep 'network/interfaces' > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
+
+# Check for kdump changes and restart
+printf "$INPUT" | fgrep 'kdump' > /dev/null && systemctl restart kdump-tools 2>$SCDRMELOG
+
+# Check for cron changes and restart
+printf "$INPUT" | fgrep 'cron' > /dev/null && systemctl restart cron 2>$SCDRMELOG
+{% endif %}
 
 # Check for udev changes and restart
 printf "$INPUT" | fgrep 'udev' > /dev/null && systemctl restart systemd-udevd 2>$SCDRMELOG
-
-# Check for httpd changes and restart
-printf "$INPUT" | fgrep 'httpd' > /dev/null && systemctl restart httpd 2>$SCDRMELOG
 
 exit 0

@@ -99,7 +99,11 @@
 
       USERN="$1"
 
+      {% if "el" in release.stdout %}
       chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
+      {% else %}
+      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git /home/$USERN/.log_local/ 2>/dev/null
+      {% endif %}
       chown -R $USERN:$USERN /home/$USERN/.log_local/ 2>/dev/null
       chmod 0660 /home/$USERN/.log_local/* 2>/dev/null
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
@@ -166,10 +170,19 @@
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git home/$USERN/.log_local/ 2>/dev/null
+      {% if "el" in release.stdout %}
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
+      {% else %}
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git /home/$USERN/.log_local/ 2>/dev/null
+      {% endif %}
       {% if disable_aide is undefined %}
+        {% if "el" in release.stdout %}
       /usr/sbin/aide --update >/dev/null 2>&1
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
+        {% else %}
+      /usr/bin/aide --update >/dev/null 2>&1
+      /bin/mv -f /var/lib/aide/aide.db.new /var/lib/aide/aide.db 2>/dev/null
+        {% endif %}
       {% endif %}
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
@@ -200,7 +213,11 @@
       exit 1
       fi
 
-      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security.git
+      {% if "el" in release.stdout %}
+      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security.git > /dev/null
+      {% else %}
+      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git 2>/dev/null
+      {% endif %}
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
       test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
       printf "$NOW - Started admin mode\n" >> $SCDRMDLOG
@@ -261,11 +278,21 @@
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
       printf "$NOW - Exited admin mode\n" >> $SCDRMDLOG
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git
-      {% if disable_aide is undefined %}
-      /usr/sbin/aide --update
-      /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+      {% if "el" in release.stdout %}
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git > /dev/null
+      {% else %}
+      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git 2>/dev/null
       {% endif %}
+      {% if disable_aide is undefined %}
+        {% if "el" in release.stdout %}
+      /usr/sbin/aide --update >/dev/null 2>&1
+      /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
+        {% else %}
+      /usr/bin/aide --update >/dev/null 2>&1
+      /bin/mv -f /var/lib/aide/aide.db.new /var/lib/aide/aide.db 2>/dev/null
+        {% endif %}
+      {% endif %}
+
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop-auto
@@ -274,7 +301,7 @@
     group: root
     attributes: +i
 
-- name: Setup bashrc for Debian
+- name: Setup bashrc
   blockinfile:
     path: "/home/{{ myuser }}/.bashrc"
     block: |
@@ -284,5 +311,4 @@
       fi
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     state: present
-  when: '"el" not in release.stdout'
 ...

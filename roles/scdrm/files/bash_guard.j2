@@ -2,7 +2,11 @@
 # 
 # Bash guard - verify bash and reinstall when NOK
 
+{% if "el" in release.stdout %}
 rpm -V bash > /dev/null 2>&1 || yum reinstall bash -y > /dev/null
+{% else %}
+dpkg -V bash > /dev/null 2>&1 || dpkg install --reinstall bash -y > /dev/null
+{% endif %}
 
 if [[ $? -eq 0 ]]
 then exit 0

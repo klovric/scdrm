@@ -13,6 +13,7 @@
     - /etc/systemd/system
     - /etc/systemd/system/timers.target.wants
     - /etc/logrotate.d
+    - /etc/logrotate.d/aide
     - /usr/lib/systemd/.git
     - /usr/lib/systemd/.gitignore
     - /usr/lib64/security/.git
@@ -80,7 +81,6 @@
     - /etc/aide/aide.conf.d/98_aide_scdrm
     - /var/log/scdrm
     - /var/log/aide
-    - /etc/logrotate.d/aide
     - /etc/logrotate.d/scdrm
     - /etc/systemd/system/scdrm.service
     - /etc/systemd/system/scdrm.service.wants
@@ -104,6 +104,7 @@
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
     - /usr/local/sbin/scdrm-service-restart
+    - /usr/local/sbin/scdrm-commit-hostvars
     - /usr/local/sbin/route-guard
     - /usr/local/sbin/bash-guard
     - /usr/local/sbin/aide-auto-check
@@ -115,6 +116,14 @@
     hour: "16"
     day: "1"
     job: /usr/local/sbin/scdrm-gitcron
+    user: root
+    state: absent
+
+- name: Remove bash_guard cron
+  cron:
+    name: "SCDRM bash-guard"
+    minute: "23"
+    job: /usr/local/sbin/bash-guard
     user: root
     state: absent
 

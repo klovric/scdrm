@@ -36,6 +36,12 @@ sleep 60
 {% if "el9" in release.stdout %}
 /usr/sbin/aide -C 2>$SCDRMELOG
 {% endif %}
+{% if "Debian" in distro.stdout %}
+/usr/bin/aide -c /etc/aide/aide.conf --check >$SCDRMELOG
+{% endif %}
+{% if "Ubuntu" in distro.stdout %}
+/usr/bin/aide -c /etc/aide/aide.conf --check >$SCDRMELOG
+{% endif %}
 
 /bin/rm -f $ACTMPF
 

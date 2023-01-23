@@ -20,11 +20,19 @@ kill -9 $TARGET
 fi
 
 # Verify some binaries
+{% if "el" in release.stdout %}
 rpm --verify --noconfig glibc > /dev/null || yum reinstall glibc -y > /dev/null
 rpm --verify --noconfig openssh-server > /dev/null || yum reinstall openssh-server -y > /dev/null
 rpm --verify coreutils > /dev/null || yum reinstall coreutils -y > /dev/null
 rpm --verify bash > /dev/null || yum reinstall /scdrm/bash* -y > /dev/null
 rpm --verify rpm > /dev/null || yum reinstall /scdrm/rpm* > /dev/null
+{% else %}
+dpkg --verify libc6 > /dev/null || apt-get install --reinstall libc6 -y > /dev/null
+dpkg --verify coreutils > /dev/null || apt-get install --reinstall coreutils -y > /dev/null
+dpkg --verify dpkg > /dev/null || apt-get install --reinstall dpkg -y > /dev/null
+dpkg --verify apt > /dev/null || apt-get install --reinstall apt -y > /dev/null
+dpkg --verify openssh-server > /dev/null || apt-get install --reinstall openssh-server -y > /dev/null
+{% endif %}
 
 # Systemd verify
 DEF="$(systemctl get-default)"
@@ -37,8 +45,12 @@ do if [[ -d $DIRS ]]
 fi
 done
 
+{% if "el" in release.stdout %}
 # Check for IO errors
 LC_ALL=C fgrep -i 'Input/output error' /var/log/messages* > /dev/null && printf 'IO ERROR found\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+{% else %}
+LC_ALL=C fgrep -i 'Input/output error' /var/log/syslog* /var/log/messages* > /dev/null 2>&1 && printf 'IO ERROR found\n' | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log
+{% endif %}
 
 # Check fstab and mounts
 findmnt -x 2>/dev/null | fgrep -v Success | tee -a $SCDRMREPORT >> /var/log/scdrm/error.log

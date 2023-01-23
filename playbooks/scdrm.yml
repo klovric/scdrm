@@ -5,7 +5,6 @@
 #   managed - is the system change managed (1) by something (Ansible,Puppet,Chef,CFEngine...) or NOT (0)
 #   managed_string - when coexisting with other configuration management put in the 'managed by' identification line
 #   check_freq - SCDRM check frequency in seconds
-#   aide_check - hour when to start AIDE check, with randomization of up to 6 hours
 #   llog_retention - remove ~/log_local session logs older then X[YZ] days
 #   disable_route_guard - removes route-guard from the stack (disable for machines without default route), uncomment to activate
 #   disable_aide - removes AIDE from the stack (Disable at will), uncomment to activate
@@ -24,7 +23,6 @@
     managed: 0
     managed_string: 'my_managed_by_strings_too_look_for'
     check_freq: 30
-    aide_check: '20:00'
     llog_retention: 60
     #disable_route_guard: yes
     #disable_aide: yes

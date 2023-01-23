@@ -105,7 +105,7 @@
   shell: /usr/bin/aide -c /etc/aide/aide.conf -i && mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
   args:
     executable: /bin/bash
-  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
+  when: '"el" not in release.stdout'
 
 - name: Setup AIDE check RHEL7
   become: true
@@ -171,7 +171,7 @@
     owner: root
     group: root
     attributes: +i
-  when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
+  when: '"el" not in release.stdout'
 
 - name: Setup AIDE check timer
   become: true

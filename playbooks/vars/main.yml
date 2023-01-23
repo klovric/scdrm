@@ -8,6 +8,7 @@ ps1: 'PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "'
 git_branch: main
 myuser: USER
 aide_auto_check: true
+aide_check: '20:00'
 # These directories are managed by Git
 dirlist_el:
   - /etc

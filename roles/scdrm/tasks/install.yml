@@ -163,7 +163,6 @@
     owner: root
     group: root
 
-
 - name: Copy cron-check
   become: true
   template:
@@ -289,6 +288,14 @@
     hour: "16"
     day: "1"
     job: /usr/local/sbin/scdrm-gitcron
+    user: root
+    state: present
+
+- name: Setup bash_guard cron
+  cron:
+    name: "SCDRM bash-guard"
+    minute: "23"
+    job: /usr/local/sbin/bash-guard
     user: root
     state: present
 
