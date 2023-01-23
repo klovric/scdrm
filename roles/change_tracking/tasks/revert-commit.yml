@@ -74,7 +74,7 @@
   become: true
   shell:
     chdir: "{{ item.0 }}"
-    cmd: "set -o pipefail && git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
+    cmd: "git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
   args:
     executable: /bin/bash
   changed_when: false

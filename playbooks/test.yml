@@ -20,6 +20,14 @@
       yum:
         name: httpd
         state: latest
+      when: '"el" in release.stdout'
+
+    - name: Install Apache
+      become: True
+      package:
+        name: apache2
+        state: latest
+      when: '"el" not in release.stdout'
 
     - name: Start httpd
       become: True
@@ -27,6 +35,15 @@
         name: httpd
         enabled: yes
         state: started
+      when: '"el" in release.stdout'
+
+    - name: Start Apache
+      become: True
+      systemd:
+        name: apache2
+        enabled: yes
+        state: started
+      when: '"el" not in release.stdout'
 
     - name: Test change
       become: True
@@ -58,6 +75,13 @@
       systemd:
         name: httpd.service
         state: restarted
+      when: '"el" in release.stdout'
+    - name: Restart Apache
+      become: True
+      systemd:
+        name: apache2.service
+        state: restarted
+      when: '"el" not in release.stdout'
 
       # Failure when httpd not running
     - name: Check if change persits OK, fail when ERROR

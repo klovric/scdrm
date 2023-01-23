@@ -149,6 +149,8 @@
       cd $DIRECTORY > /dev/null
       git init . >> $SCDRMILOG 2>>$SCDRMELOG
       git add . >> $SCDRMILOG 2>>$SCDRMELOG
+      git config user.email "scdrm@localhost.localdomain"
+      git config user.name "SCDRM"
       git commit -a -m "Installation commit" >> $SCDRMILOG 2>>$SCDRMELOG
 
       done

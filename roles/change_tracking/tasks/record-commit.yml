@@ -4,10 +4,10 @@
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: elgitcommit
   with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
@@ -16,35 +16,47 @@
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: debgitcommit
   with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
 - name: Prepare host vars file
-  become: true
   copy:
     content: |
       last_commit:
     dest: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
     force: true
-    mode: 0640
-    owner: root
+    mode: 0660
+    owner: "{{ myuser }}"
+    group: scdrm
   delegate_to: localhost
 
-- name: Record commits
-  become: true
+- name: Record commits EL
   blockinfile:
     path: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
     block: |
       - {{ item.stdout }}
-    #    path: {{ item.item }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.item }}"
     state: present
   with_items:
-    - "{{ gitcommit.results }}"
+    - "{{ elgitcommit.results }}"
   delegate_to: localhost
+  when: '"el" in release.stdout'
+
+- name: Record commits Deb
+  blockinfile:
+    path: "{{ scdrm_install_dir }}/host_vars/{{ inventory_hostname }}"
+    block: |
+      - {{ item.stdout }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.item }}"
+    state: present
+  with_items:
+    - "{{ debgitcommit.results }}"
+  delegate_to: localhost
+  when: '"el" not in release.stdout'
+
 ...

@@ -169,7 +169,7 @@ ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T'
 
 if [[ $git_branch != "" ]]
 then sed -i "s/^git_branch: main/git_branch: $git_branch/" playbooks/vars/main.yml
-sed -i 's/#upstream_git: yes/upstream_git: yes/' playbooks/scdrm.yml
+sed -i 's/^#upstream_git: true/upstream_git: true/' playbooks/vars/main.yml
 fi
 
 ansible-playbook playbooks/adminssh.yml

@@ -263,26 +263,23 @@ Once updated 'DRYRUN=0' in /etc/scdrm/scdrm.conf you have activated change/delet
 
 To do this for you inventory you can simply execute:
 
-	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
-			or
+
 	scdrm-config-update--dryrun-off
+
  
 DEINSTALLATION
 -----------------------------------------
 
-It is a two part procedure. 
+Removes SCDRM from all inventory specified machines and localhost.
 
-1. Remove SCDRM from your inventory:
 
-        ansible-playbook playbooks/scdrm.yml -e "remove=yes"
-			or
+	scdrm-uninstall-all
+
+
+If you want to remove SCDRM just from the inventory or some specific machines, use:
+
+
 	scdrm-remove
-
-
-2. Remove SCDRM and 'adminssh' from central management node.
-
-        ansible-playbook playbooks/adminssh-remove.yml -e "myuser=$USER"
-
 
 
 CHANGE PROCESS
@@ -321,7 +318,6 @@ The two have been provided as roles and binaries you can easily include into you
     - name: Test SCDRM change process
       hosts: all
       gather_facts: False
-      serial: 96
       roles:
         - role: adminstart
         - role: install_httpd
@@ -333,7 +329,7 @@ Or you could call the binaries directly, i.e.
     ---
     - name: Adminstart
       become: yes
-      shell: /usr/local/sbin/adminstart-auto
+      command: /usr/local/sbin/adminstart-auto
 
     - name: Update system
       yum: 
@@ -343,7 +339,7 @@ Or you could call the binaries directly, i.e.
 
     - name: Adminstop
       become: yes
-      shell: /usr/local/sbin/adminstop-auto
+      command: /usr/local/sbin/adminstop-auto
 ...
 
 The only difference between 'adminstop/adminstart' and 'adminstart-auto/adminstop-auto' is user session logging.
@@ -358,6 +354,13 @@ This means that only ONE administrator is permitted to modify the system at a ti
 Only one script/playbook can be making changes to the system at a time.
 
 In case adminmode is active for more then 6 hours, it will be exited forcefully and all unsaved changes will get reverted (when NOT running 'DRYRUN' mode).
+
+
+When the play is interrupted before 'adminstop' removes the lock files, you are left with 'locked' systems.
+
+To remove all stale locks in such cases, just run:
+
+scdrm-cleanup-stale-admin-locks
 
 
 To test your SCDRM installation and restore process you can use example test.yml:
@@ -380,22 +383,19 @@ Standard change process will update the local Git commit IDs locally as host var
 
 To collect the host vars run:
 
-	ansible-playbook playbooks/change_tracking.yml -e "update=yes"
-			or
+
 	scdrm-update-change-tracking
+
 
 To check for configuration version discrepancies run:
 
-	ansible-playbook playbooks/change_tracking.yml -e "check=yes"
-			or
+
 	scdrm-check-change-tracking
+
 
 To revert to previously recorded version run:
 
-	ansible-playbook playbooks/change_tracking.yml -e "enforce=yes"
-			or
-	ansible-playbook playbooks/consistency-enforce.yml
-			or
+
 	scdrm-enforce-consistency
 
 
@@ -492,8 +492,6 @@ When the SCDRM has been set fully and the change process respected, you can use 
 If the last recorded commit IDs differs from live state, SCDRM will revert to last recorded commit.
 
 
-	ansible-playbook playbooks/consistency-enforce.yml
-			or
 	scdrm-enforce-consistency
 
 
@@ -564,7 +562,7 @@ Steffen Froemer@Redhat for motivation!
 
 Author
 -----------------------------------------
-Currently working as Linux architect @ IBM Croatia.
+Currently working as Linux IT architect @IBM systems.
 
 You can contact me at kresimir.lovric@ibm.com
 Linkedin or Github.
@@ -574,6 +572,8 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.8.5	    2023-01-23   Multiple fixes for Debian support, minor improvements.
+
 1.8.3	    2023-01-21   Extended support for Debian/Ubuntu; modular AIDE auto-check feature added; minor fixes
 
 1.7.5	    2022-11-18   Improvements and updates to scdrm_rc functions

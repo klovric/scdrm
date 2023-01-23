@@ -38,7 +38,7 @@
     owner: root
     group: root
     attributes: +i
-  when: '"el7" in release.stdout'
+  when: '"el7" in release.stdout or "Ubuntu" in distro.stdout or "Debian" in distro.stdout'
 
 - name: Copy adminstart RHEL8
   become: true
@@ -81,7 +81,7 @@
     owner: root
     group: root
     attributes: +i
-  when: '"el7" not in release.stdout'
+  when: '"el8" in release.stdout or "el9" in release.stdout'
 
 - name: Copy adminstart1
   become: true
@@ -266,6 +266,7 @@
       /usr/sbin/aide --update
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
       {% endif %}
+      /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop-auto
     mode: 0750

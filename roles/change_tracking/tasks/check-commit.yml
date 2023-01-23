@@ -4,37 +4,53 @@
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail;git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: elgitcommit
   with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
+  changed_when: false
 
 - name: Get commits for managed dirs Deb
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail; git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: debgitcommit
   changed_when: false
   with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
-- name: Compare commits
+- name: Compare commits EL
   become: false
   shell:
-    cmd: "set -o pipefail;echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+    cmd: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
   args:
     executable: /bin/bash
   with_together:
-    - "{{ gitcommit | json_query('results[*].item') }}"
-    - "{{ gitcommit | json_query('results[*].stdout') }}"
+    - "{{ elgitcommit | json_query('results[*].item') }}"
+    - "{{ elgitcommit | json_query('results[*].stdout') }}"
     - "{{ last_commit }}"
   delegate_to: localhost
   changed_when: false
+  when: '"el" in release.stdout'
+
+- name: Compare commits Deb
+  become: false
+  shell:
+    cmd: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  args:
+    executable: /bin/bash
+  with_together:
+    - "{{ debgitcommit | json_query('results[*].item') }}"
+    - "{{ debgitcommit | json_query('results[*].stdout') }}"
+    - "{{ last_commit }}"
+  delegate_to: localhost
+  changed_when: false
+  when: '"el" not in release.stdout'
 ...

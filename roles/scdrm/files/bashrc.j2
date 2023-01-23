@@ -22,7 +22,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-update-change-tracking {
@@ -44,7 +44,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-enforce-consistency {
@@ -68,7 +68,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-config-update {
@@ -93,7 +93,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-config-update--dryrun-off {
@@ -116,7 +116,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-config-update--dryrun-on {
@@ -138,7 +138,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 function scdrm-remove {
@@ -160,9 +160,25 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
+function scdrm-uninstall-all {
+local REPORT="{{ scdrm_install_dir}}/reports/uninstall_all-$(date '+%F-%T').txt"
+local LOGF="{{ scdrm_install_dir}}/log/uninstall_all-$(date '+%F-%T').log"
+
+cd {{ scdrm_install_dir }} > /dev/null
+
+ansible-playbook playbooks/scdrm.yml -e "remove=yes" -l $1 | tee $LOGF
+ansible-playbook playbooks/adminssh-remove.yml | tee -a $LOGF
+
+printf '\nChecking for unreachables...\n' | tee -a $REPORT
+fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
+printf '\nChecking for low disk space...\n' | tee -a $REPORT
+fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+}
 
 function scdrm-install {
 local REPORT="{{ scdrm_install_dir}}/reports/install-$(date '+%F-%T').txt"
@@ -183,7 +199,7 @@ fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
-fgrep 'fatal:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
 # This function will take optional inventory file
@@ -205,5 +221,22 @@ printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
 fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+}
+
+# This function will remove stale admin locks
+function scdrm-cleanup-stale-admin-locks {
+
+cd {{ scdrm_install_dir }} > /dev/null
+
+ansible-playbook playbooks/cleanup_stale_locks.yml | tee $LOGF
+
+printf '\nChecking for unreachables...\n' | tee -a $REPORT
+fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
+printf '\nChecking for low disk space...\n' | tee -a $REPORT
+fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 

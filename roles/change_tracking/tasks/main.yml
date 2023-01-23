@@ -27,5 +27,5 @@
    - update is defined
    - check is undefined
    - enforce is undefined
-   - upstream_git is undefined
+   - upstream_git is defined
 ...

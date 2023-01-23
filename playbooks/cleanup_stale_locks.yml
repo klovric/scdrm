@@ -1,0 +1,16 @@
+# Cleanup stale locks when broken before adminstop removed them
+# 
+---
+- name: Cleanup stale admin lock
+  hosts: all
+  gather_facts: false
+  serial: 96
+  ignore_errors: true
+  vars_files: ./vars/main.yml
+  tasks:
+    - name: Remove lock
+      become: True
+      file:
+        state: absent
+        path: /run/scdrm-admin.lock
+...

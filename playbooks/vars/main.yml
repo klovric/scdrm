@@ -3,6 +3,7 @@
 scdrm_install_dir: INSTALLDIR
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
+#upstream_git: true
 git_branch: main
 myuser: USER
 # These directories are managed by Git
