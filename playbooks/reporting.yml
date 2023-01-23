@@ -1,40 +1,35 @@
 ---
 - name: Report on changed/deleted files
   hosts: all
-  gather_facts: no
   serial: 96
   ignore_errors: yes
   vars_files: ./vars/main.yml
-  roles:
-    - role: get_kernel
   tasks:
+    - name: Clean tmp
+      become: false
+      delegate_to: localhost
+      run_once: true
+      shell:
+        chdir: "{{ scdrm_install_dir }}/tmp"
+        cmd: "rm -f *"
+      args:
+        executable: /bin/bash
+      changed_when: true
+
     - name: Collect SCDRM report
-      become: True
-      shell: cat /var/log/scdrm/report
-      register: report
-      changed_when: no
-      failed_when: report.stdout == ""
-
-    - name: Get deleted
-      become: False
-      shell: echo "{{ report.stdout }}" | fgrep DELETED
-      register: deleted
-      delegate_to: localhost
-
-    - name: Get changed
-      become: False
-      shell: echo "{{ report.stdout }}" | fgrep CHANGED
-      register: changed
-      delegate_to: localhost
-
-    - name: Get AIDE
-      become: False
-      shell: echo "{{ report.stdout }}" | fgrep 'AIDE ALERT'
-      register: aide
-      delegate_to: localhost
+      fetch:
+        flat: true
+        src: /var/log/scdrm/report
+        dest: "{{ scdrm_install_dir }}/tmp/{{ inventory_hostname }}"
+      changed_when: false
 
     - name: Log report
-      become: False
-      shell: "echo '{{ inventory_hostname }} {{ deleted.stdout | default('OK',true) }} {{ changed.stdout | default('OK',true) }} {{ aide.stdout | default('OK',true) }}' >> {{ scdrm_install_dir }}/reports/scdrm-report-$(date +%F).txt"
+      become: false
+      shell:
+        cmd: "egrep -r 'DELETED|CHANGED|AIDE ALERT' {{ scdrm_install_dir }}/tmp | rev | cut -d'/' -f1 | rev > {{ scdrm_install_dir }}/reports/scdrm-report-$(date +%F).txt"
+      args:
+        executable: /bin/bash
       delegate_to: localhost
+      run_once: true
+      changed_when: true
 ...

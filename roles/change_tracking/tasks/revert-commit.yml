@@ -58,17 +58,6 @@
     debgood: "{{ debcompare | json_query('results[*].rc') }}"
   when: '"el" not in release.stdout'
 
-
-#- name: Fail play when nothing to revert
-#  fail:
-#    msg: "Nothing to revert, failing"
-#  when:
-#    - item.0 == 0
-#    - item.1 == 0
-#  with_together: 
-#    - "{{ elcompare | json_query('results[*].rc') }}"
-#    - "{{ debcompare | json_query('results[*].rc') }}"
-
 - meta: end_host
   when:
     - '"el" not in release.stdout'
@@ -88,7 +77,7 @@
   delegate_to: localhost
   changed_when: false
   with_items: "{{ elcompare | json_query('results[*]') }}"
-  when: 
+  when:
     - '"el" in release.stdout'
     - item.rc == 1
 
@@ -101,7 +90,7 @@
   delegate_to: localhost
   changed_when: false
   with_items: "{{ debcompare | json_query('results[*]') }}"
-  when: 
+  when:
     - '"el" not in release.stdout'
     - item.rc == 1
 
@@ -202,7 +191,7 @@
     executable: /bin/bash
   register: elreverted
   with_items: "{{ elreverting | json_query('results[*].stdout') }}"
-  when: 
+  when:
     - '"el" in release.stdout'
     - item != ""
 
@@ -233,7 +222,7 @@
   become: true
   import_role:
     name: adminstop
-  when: 
+  when:
     - '"el" in release.stdout'
     - elreverting is changed
 
@@ -241,7 +230,7 @@
   become: true
   import_role:
     name: adminstop
-  when: 
+  when:
     - '"el" not in release.stdout'
     - debreverting is changed
 ...
