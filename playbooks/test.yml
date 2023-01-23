@@ -18,14 +18,18 @@
     - name: Install httpd
       become: True
       yum:
-        name: httpd
+        name: 
+          - httpd
+          - curl
         state: latest
       when: '"el" in release.stdout'
 
     - name: Install Apache
       become: True
       package:
-        name: apache2
+        name: 
+          - apache2
+          - curl
         state: latest
       when: '"el" not in release.stdout'
 
@@ -57,10 +61,17 @@
       import_role:
         name: adminstop
 
-    - name: Delete config
+    - name: Delete httpd config
       file:
-        path: /etc/httpd/
+        path: /etc/httpd
         state: absent
+      when: '"el" in release.stdout'
+
+    - name: Delete apache2 config
+      file:
+        path: /etc/apache2
+        state: absent
+      when: '"el" not in release.stdout'
 
       # Here SCDRM should restore /etc/httpd
     - name: Restart SCDRM

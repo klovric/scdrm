@@ -17,12 +17,29 @@
         name: httpd
         enabled: no
         state: stopped
+      when: '"el" in release.stdout'
+
+    - name: Stop Apache2
+      become: True
+      systemd:
+        name: apache2
+        enabled: no
+        state: stopped
+      when: '"el" not in release.stdout'
 
     - name: Remove httpd
       become: True
       yum:
         name: httpd
         state: absent
+      when: '"el" in release.stdout'
+
+    - name: Remove apache2
+      become: True
+      package:
+        name: apache2
+        state: absent
+      when: '"el" not in release.stdout'
 
     - name: Adminstop
       import_role:

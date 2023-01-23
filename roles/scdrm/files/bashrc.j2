@@ -61,8 +61,6 @@ elif [[ $# -eq 0 ]]
 then ansible-playbook playbooks/consistency-enforce.yml | tee $LOGF
 fi
 
-ansible-playbook playbooks/consistency-enforce.yml | tee $LOGF
-
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
 printf '\nChecking for low disk space...\n' | tee -a $REPORT
@@ -84,9 +82,6 @@ then ansible-playbook playbooks/scdrm.yml -e "update=yes" -i $1| tee $LOGF
 elif [[ $# -eq 0 ]]
 then ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee $LOGF
 fi
-
-
-ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee $LOGF
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -169,8 +164,9 @@ local LOGF="{{ scdrm_install_dir}}/log/uninstall_all-$(date '+%F-%T').log"
 
 cd {{ scdrm_install_dir }} > /dev/null
 
-ansible-playbook playbooks/scdrm.yml -e "remove=yes" -l $1 | tee $LOGF
+ansible-playbook playbooks/scdrm.yml -e "remove=yes" | tee $LOGF
 ansible-playbook playbooks/adminssh-remove.yml | tee -a $LOGF
+unlink host_vars
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -227,6 +223,8 @@ fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 
 # This function will remove stale admin locks
 function scdrm-cleanup-stale-admin-locks {
+local REPORT="{{ scdrm_install_dir}}/reports/cleanup_locks-$(date '+%F-%T').txt"
+local LOGF="{{ scdrm_install_dir}}/log/cleanup_locks-$(date '+%F-%T').log"
 
 cd {{ scdrm_install_dir }} > /dev/null
 

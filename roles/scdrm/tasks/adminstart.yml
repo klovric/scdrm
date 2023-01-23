@@ -273,4 +273,16 @@
     owner: root
     group: root
     attributes: +i
+
+- name: Setup bashrc for Debian
+  blockinfile:
+    path: "/home/{{ myuser }}/.bashrc
+    block: |
+      if fgrep 'ADMINMODE=1' /etc/scdrm/scdrm.conf > /dev/null 2>&1
+      then 
+      export PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "
+      fi
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.item }}"
+    state: present
+  when: '"el" not in release.stdout'
 ...

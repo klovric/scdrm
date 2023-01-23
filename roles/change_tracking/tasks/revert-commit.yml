@@ -4,10 +4,10 @@
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: elgitcommit
   with_items:
     - "{{ dirlist_el }}"
   when: '"el" in release.stdout'
@@ -16,61 +16,156 @@
   become: true
   shell:
     chdir: "{{ item }}"
-    cmd: set -o pipefail && git log | head -3 | awk '/commit/ {print $2}'
+    cmd: git log | head -3 | awk '/commit/ {print $2}'
   args:
     executable: /bin/bash
-  register: gitcommit
+  register: debgitcommit
   with_items:
     - "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
-- name: Compare commits
+- name: Compare commits EL
   become: false
   shell: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
-  register: compare
+  register: elcompare
   changed_when: false
   delegate_to: localhost
   with_together:
-    - "{{ gitcommit | json_query('results[*].item') }}"
-    - "{{ gitcommit | json_query('results[*].stdout') }}"
+    - "{{ elgitcommit | json_query('results[*].item') }}"
+    - "{{ elgitcommit | json_query('results[*].stdout') }}"
     - "{{ last_commit }}"
+  when: '"el" in release.stdout'
 
-- name: Prepare reverting commit
+- name: Compare commits Deb
+  become: false
+  shell: "echo {{ item.0 }} {{ item.1 }} | grep {{ item.2 }}"
+  register: debcompare
+  changed_when: false
+  delegate_to: localhost
+  with_together:
+    - "{{ debgitcommit | json_query('results[*].item') }}"
+    - "{{ debgitcommit | json_query('results[*].stdout') }}"
+    - "{{ last_commit }}"
+  when: '"el" not in release.stdout'
+
+- name: Set facts elgood
+  set_fact:
+    elgood: "{{ elcompare | json_query('results[*].rc') }}"
+  when: '"el" in release.stdout'
+
+- name: Set facts debgood
+  set_fact:
+    debgood: "{{ debcompare | json_query('results[*].rc') }}"
+  when: '"el" not in release.stdout'
+
+
+#- name: Fail play when nothing to revert
+#  fail:
+#    msg: "Nothing to revert, failing"
+#  when:
+#    - item.0 == 0
+#    - item.1 == 0
+#  with_together: 
+#    - "{{ elcompare | json_query('results[*].rc') }}"
+#    - "{{ debcompare | json_query('results[*].rc') }}"
+
+- meta: end_host
+  when:
+    - '"el" not in release.stdout'
+    - debgood == [0, 0, 0]
+
+- meta: end_host
+  when:
+    - '"el" in release.stdout'
+    - elgood == [0, 0, 0]
+ 
+- name: Prepare reverting commit EL
   become: false
   shell: echo "{{ item.cmd }}" | awk '{print "cd",$2" ; git reset --hard",$6}'
   args:
     executable: /bin/bash
-  register: reverting
+  register: elreverting
   delegate_to: localhost
   changed_when: false
-  when: item.rc == 1
-  with_items: "{{ compare | json_query('results[*]') }}"
+  with_items: "{{ elcompare | json_query('results[*]') }}"
+  when: 
+    - '"el" in release.stdout'
+    - item.rc == 1
 
-- name: Prepare facts
+- name: Prepare reverting commit Deb
+  become: false
+  shell: echo "{{ item.cmd }}" | awk '{print "cd",$2" ; git reset --hard",$6}'
+  args:
+    executable: /bin/bash
+  register: debreverting
+  delegate_to: localhost
+  changed_when: false
+  with_items: "{{ debcompare | json_query('results[*]') }}"
+  when: 
+    - '"el" not in release.stdout'
+    - item.rc == 1
+
+- name: Prepare facts EL
   become: false
   delegate_to: localhost
   command: echo "{{ item.cmd }}" | awk '{print $2}'
   changed_when: false
-  register: dirs
-  when: item.rc == 1
-  with_items: "{{ compare | json_query('results[*]') }}"
+  register: eldirs
+  with_items: "{{ elcompare | json_query('results[*]') }}"
+  when:
+    - '"el" in release.stdout'
+    - item.rc == 1
 
-- name: Prepare facts
+- name: Prepare facts Deb
+  become: false
+  delegate_to: localhost
+  command: echo "{{ item.cmd }}" | awk '{print $2}'
+  changed_when: false
+  register: debdirs
+  with_items: "{{ debcompare | json_query('results[*]') }}"
+  when:
+    - item.rc == 1
+    - '"el" not in release.stdout'
+
+- name: Prepare facts EL
   become: false
   delegate_to: localhost
   command: echo "{{ item.cmd }}" | awk '{print $3}'
   changed_when: false
-  register: revcommit
-  when: item.rc == 1
-  with_items: "{{ compare | json_query('results[*]') }}"
+  register: elrevcommit
+  with_items: "{{ elcompare | json_query('results[*]') }}"
+  when:
+    - '"el" in release.stdout'
+    - item.rc == 1
 
-- name: Adminstart
+- name: Prepare facts Deb
+  become: false
+  delegate_to: localhost
+  command: echo "{{ item.cmd }}" | awk '{print $3}'
+  changed_when: false
+  register: debrevcommit
+  with_items: "{{ debcompare | json_query('results[*]') }}"
+  when:
+    - '"el" not in release.stdout'
+    - item.rc == 1
+
+- name: Adminstart EL
   become: true
   import_role:
     name: adminstart
-  when: reverting is changed
+  when: 
+    - '"el" in release.stdout'
+#    - elreverting is changed
 
-- name: Check reverting commit changed files
+- name: Adminstart Deb
+  become: true
+  import_role:
+    name: adminstart
+  when: 
+    - '"el" not in release.stdout'
+#    - debreverting is changed
+
+- name: Check reverting commit changed files EL
   become: true
   shell:
     chdir: "{{ item.0 }}"
@@ -78,28 +173,75 @@
   args:
     executable: /bin/bash
   changed_when: false
-  register: changedfiles
+  failed_when: false
+  register: elchangedfiles
   with_together:
-    - "{{ dirs | json_query('results[*].stdout') }}"
-    - "{{ revcommit | json_query('results[*].stdout') }}"
+    - "{{ eldirs | json_query('results[*].stdout') }}"
+    - "{{ elrevcommit | json_query('results[*].stdout') }}"
+  when: '"el" in release.stdout'
 
-- name: REVERT COMMIT
+- name: Check reverting commit changed files Deb
+  become: true
+  shell:
+    chdir: "{{ item.0 }}"
+    cmd: "git show -p {{ item.1 }} | awk '/diff --git/ {print $4}' | tr '\n' ','"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  failed_when: false
+  register: debchangedfiles
+  with_together:
+    - "{{ debdirs | json_query('results[*].stdout') }}"
+    - "{{ debrevcommit | json_query('results[*].stdout') }}"
+  when: '"el" not in release.stdout'
+
+- name: REVERT COMMIT EL
   become: true
   shell: "{{ item }}"
   args:
     executable: /bin/bash
-  register: reverted
-  with_items: "{{ reverting | json_query('results[*].stdout') }}"
-  when: item != ""
+  register: elreverted
+  with_items: "{{ elreverting | json_query('results[*].stdout') }}"
+  when: 
+    - '"el" in release.stdout'
+    - item != ""
 
-- name: Restart services after revert
+- name: REVERT COMMIT Deb
   become: true
-  command: /usr/local/sbin/scdrm-service-restart "{{ changedfiles | json_query('results[*].stdout') }}"
-  changed_when: false
+  shell: "{{ item }}"
+  args:
+    executable: /bin/bash
+  register: debreverted
+  with_items: "{{ debreverting | json_query('results[*].stdout') }}"
+  when:
+    - '"el" not in release.stdout'
+    - item != ""
 
-- name: Adminstop
+- name: Restart services after revert EL
+  become: true
+  command: /usr/local/sbin/scdrm-service-restart "{{ elchangedfiles | json_query('results[*].stdout') }}"
+  changed_when: false
+  when: '"el" in release.stdout'
+
+- name: Restart services after revert Deb
+  become: true
+  command: /usr/local/sbin/scdrm-service-restart "{{ debchangedfiles | json_query('results[*].stdout') }}"
+  changed_when: false
+  when: '"el" not in release.stdout'
+
+- name: Adminstop EL
   become: true
   import_role:
     name: adminstop
-  when: reverting is changed
+  when: 
+    - '"el" in release.stdout'
+    - elreverting is changed
+
+- name: Adminstop Deb
+  become: true
+  import_role:
+    name: adminstop
+  when: 
+    - '"el" not in release.stdout'
+    - debreverting is changed
 ...
