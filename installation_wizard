@@ -32,7 +32,7 @@ fi
 
 # Gather info
 printf '\e[32m\n\nHello and welcome to the SCDRM installation wizard!\e[0m\nJust relax and let us go over few things we need to setup SCDRM for you!\n\n'
-printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es or (n)o[default]\n'
+printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es | (n)o[default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter the 'managed by' header you are using (case insensitive)"
@@ -45,7 +45,7 @@ read yesno
 			;;
 esac
 
-printf 'By default SCDRM check is running every 5 minutes. Do you want to change this value into something else?\n\t(y)es or (n)o[default]\n'
+printf 'By default SCDRM check is running every 5 minutes. Do you want to change this value into something else?\n\t(y)es | (n)o[default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter desired frequency in seconds the check should be running?\n"
@@ -57,7 +57,7 @@ read yesno
 			;;
 esac
 
-printf 'By default SCDRM deletes session logs older then 60 days. Do you want to change this value into something else?\n\t(y)es or (n)o[default]\n'
+printf 'By default SCDRM deletes session logs older then 60 days. Do you want to change this value into something else?\n\t(y)es | (n)o[default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK. Logs older then how many days should be deleted?\n"
@@ -69,7 +69,7 @@ read yesno
 			;;
 esac
 
-printf "Are you using upstream Git to keep host_vars in?\n\t(y)es or (n)o[default]\n"
+printf "Are you using upstream Git to keep host_vars in?\n\t(y)es | (n)o[default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter origin's branch name to push to\n"
@@ -81,7 +81,7 @@ read yesno
 			;;
 esac
 
-printf "In case you are not using default routes you should disable route-guard?\n\t(y)es or (n)o[default]\n"
+printf "In case you are not using default routes you should disable route-guard?\n\t(y)es | (n)o[default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
@@ -93,7 +93,7 @@ read yesno
 			;;
 esac
 
-printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do you want to disable AIDE?\n\t(y)es or (n)o[default]\n"
+printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do you want to disable AIDE?\n\t(y)es | (n)o[default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
@@ -109,9 +109,22 @@ printf "For more frequent reporting you should really run AIDE check after every
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/aide_auto_check: yes/#aide_auto_check: yes/' playbooks/scdrm.yml
+			sed -i 's/aide_auto_check: yes/#aide_auto_check: yes/' playbooks/vars/main.yml
 			;;
 		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+
+printf "Do you want to install SCDRM to hosts listed in ./inventory?\n\t(y)es [default] | (n)o\n"
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK\n"
+			LOCAL="false"
+			;;
+		n)      printf '\tOK\n'
+			LOCAL="true"
 			;;
 		*)      true
 			;;
@@ -165,7 +178,11 @@ fi
 
 cd $HERE
 mkdir log reports > /dev/null 2>&1
+
+if [[ $LOCAL == "false" ]]
+then
 ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
+fi
 
 if [[ $git_branch != "" ]]
 then sed -i "s/^git_branch: main/git_branch: $git_branch/" playbooks/vars/main.yml

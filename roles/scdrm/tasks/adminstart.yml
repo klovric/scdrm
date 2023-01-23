@@ -38,7 +38,7 @@
     owner: root
     group: root
     attributes: +i
-  when: '"el7" in release.stdout or "Ubuntu" in distro.stdout or "Debian" in distro.stdout'
+  when: '("el7" in release.stdout) or ("Ubuntu" in distro.stdout) or ("Debian" in distro.stdout)'
 
 - name: Copy adminstart RHEL8
   become: true
@@ -81,7 +81,7 @@
     owner: root
     group: root
     attributes: +i
-  when: '"el8" in release.stdout or "el9" in release.stdout'
+  when: '("el8" in release.stdout) or ("el9" in release.stdout)'
 
 - name: Copy adminstart1
   become: true
@@ -276,13 +276,13 @@
 
 - name: Setup bashrc for Debian
   blockinfile:
-    path: "/home/{{ myuser }}/.bashrc
+    path: "/home/{{ myuser }}/.bashrc"
     block: |
       if fgrep 'ADMINMODE=1' /etc/scdrm/scdrm.conf > /dev/null 2>&1
       then 
-      export PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "
+      export {{ ps1 }}
       fi
-    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.item }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
     state: present
   when: '"el" not in release.stdout'
 ...

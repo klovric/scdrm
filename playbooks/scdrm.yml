@@ -9,7 +9,6 @@
 #   llog_retention - remove ~/log_local session logs older then X[YZ] days
 #   disable_route_guard - removes route-guard from the stack (disable for machines without default route), uncomment to activate
 #   disable_aide - removes AIDE from the stack (Disable at will), uncomment to activate
-#   aide_auto_check - run AIDE check automatically on 'adminstop', used for reporting with frequent checking. CAUTION - causes extra load
 #   remove - uncomment to remove SCDRM
 #   update - uncomment to update SCDRM
 ---
@@ -29,7 +28,6 @@
     llog_retention: 60
     #disable_route_guard: yes
     #disable_aide: yes
-    aide_auto_check: yes
     #remove: yes
     #update: yes
   roles:
