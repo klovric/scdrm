@@ -13,4 +13,20 @@
       file:
         state: absent
         path: /run/scdrm-admin.lock
+
+    - name: Prepare scdrm.conf
+      become: True
+      shell: chattr -i /etc/scdrm/scdrm.conf
+
+    - name: Close adminmode
+      become: True
+      lineinfile:
+        path: /etc/scdrm/scdrm.conf
+        regexp: '^ADMINMODE=1'
+        line: ADMINMODE=0
+        state: present
+
+    - name: Close scdrm.conf
+      become: True
+      shell: chattr +i /etc/scdrm/scdrm.conf
 ...

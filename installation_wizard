@@ -36,7 +36,7 @@ pip3 install jmespath
 
 # Gather info
 printf '\e[32m\n\nHello and welcome to the SCDRM installation wizard!\e[0m\nJust relax and let us go over few things we need to setup SCDRM for you!\n\n'
-printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es | (n)o[default]\n'
+printf '\nAre you already using any change management system like Puppet/Ansible/Chef/CFengine, which files you would like to EXCLUDE from SCDRM monitoring?\n\t(y)es | (n)o [default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter the 'managed by' header you are using (case insensitive)"
@@ -49,7 +49,7 @@ read yesno
 			;;
 esac
 
-printf 'By default SCDRM check is running every 5 minutes. Do you want to change this value into something else?\n\t(y)es | (n)o[default]\n'
+printf 'By default SCDRM check is running every 5 minutes. Do you want to change this value into something else?\n\t(y)es | (n)o [default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter desired frequency in seconds the check should be running?\n"
@@ -61,7 +61,7 @@ read yesno
 			;;
 esac
 
-printf 'By default SCDRM deletes session logs older then 60 days. Do you want to change this value into something else?\n\t(y)es | (n)o[default]\n'
+printf 'By default SCDRM deletes session logs older then 60 days. Do you want to change this value into something else?\n\t(y)es | (n)o [default]\n'
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK. Logs older then how many days should be deleted?\n"
@@ -73,7 +73,7 @@ read yesno
 			;;
 esac
 
-printf "Are you using upstream Git to keep host_vars in?\n\t(y)es | (n)o[default]\n"
+printf "Are you using upstream Git to keep host_vars in?\n\t(y)es | (n)o [default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK.Please enter origin's branch name to push to\n"
@@ -85,7 +85,7 @@ read yesno
 			;;
 esac
 
-printf "In case you are not using default routes you should disable route-guard?\n\t(y)es | (n)o[default]\n"
+printf "In case you are not using default routes you should disable route-guard?\n\t(y)es | (n)o [default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
@@ -97,7 +97,7 @@ read yesno
 			;;
 esac
 
-printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do you want to disable AIDE?\n\t(y)es | (n)o[default]\n"
+printf "If you don't wan't to use AIDE, for some reason, it can be omitted. Do you want to disable AIDE?\n\t(y)es | (n)o [default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
@@ -109,7 +109,7 @@ read yesno
 			;;
 esac
 
-printf "For more frequent reporting you should really run AIDE check after every change. CAUTION this introduces additional load to the system.\n\tDo you want to disable this feature?\n\t(y)es or (n)o[default]\n"
+printf "For more frequent reporting you should really run AIDE check after every change. CAUTION this introduces additional load to the system.\n\tDo you want to disable this feature?\n\t(y)es or (n)o [default]\n"
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"

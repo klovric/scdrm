@@ -123,5 +123,6 @@ done < <(awk '!/^#/ && !/nfs/ && !/mapper/ && !/swap/ && !/tmpfs/ && !/iso9660/ 
 
 # Run SCDRM fast checks
 /usr/local/sbin/scdrm-fast > /dev/null
+/usr/local/sbin/bash-guard > /dev/null
 
 exit 0
