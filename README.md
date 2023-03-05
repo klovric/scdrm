@@ -572,6 +572,8 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.8.10	    2023-03-05   Bug fix to installation_wizard and config update task
+
 1.8.9	    2023-03-01   Route-guard V2 implemented
 
 1.8.6	    2023-01-23   Multiple fixes for Debian support, minor improvements.

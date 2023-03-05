@@ -113,7 +113,7 @@ printf "For more frequent reporting you should really run AIDE check after every
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/aide_auto_check: yes/#aide_auto_check: yes/' playbooks/vars/main.yml
+			sed -i 's/aide_auto_check: yes/#aide_auto_check: true/' playbooks/vars/main.yml
 			;;
 		n)      printf '\tOK\n'
 			;;
@@ -130,7 +130,7 @@ read yesno
 		n)      printf '\tOK\n'
 			LOCAL="true"
 			;;
-		*)      true
+		*)      LOCAL="true"
 			;;
 esac
 
@@ -145,7 +145,7 @@ sed -i  's/^\ \{4\]managed: 0/    managed: 1/' playbooks/scdrm.yml
 fi
 
 if [[ $check_freq != "" ]]
-then sed -i "s/^\ \{4\}check_freq:.*/    check_freq: ${check_freq}/" playbooks/scdrm.yml
+then sed -i "s/^\ \{4\}check_freq.*/    check_freq: ${check_freq}/" playbooks/scdrm.yml
 fi
 
 if [[ $llog_retention != "" ]]

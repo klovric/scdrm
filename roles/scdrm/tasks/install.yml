@@ -236,6 +236,9 @@
       ExecStart=/usr/local/sbin/scdrmd
       Restart=always
       RestartSec=30s
+      
+      [Install]
+      WantedBy=basic.target
     dest: /etc/systemd/system/scdrm.service
     mode: 0644
     owner: root

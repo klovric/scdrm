@@ -7,7 +7,8 @@
 
 - name: Prepare for update
   become: true
-  command: chattr -R -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+  #command: chattr -R -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+  command: chattr -R -i /usr/local/sbin/ /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
   failed_when: false
   changed_when: true
 
