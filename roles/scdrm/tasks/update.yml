@@ -176,8 +176,8 @@
 
 - name: Copy Debian/Ubuntu aide.conf
   become: true
-  copy:
-    src: ../files/98_aide_scdrm
+  template:
+    src: ../files/98_aide_scdrm.j2
     dest: /etc/aide/aide.conf.d/98_aide_scdrm
     mode: 0644
     attributes: +i

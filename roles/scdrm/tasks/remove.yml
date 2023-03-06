@@ -1,5 +1,5 @@
 ---
-- name: Prepare directories for deletion
+- name: Prepare files for deletion
   become: true
   failed_when: false
   changed_when: true
@@ -7,33 +7,51 @@
   args:
     executable: /bin/bash
   with_items:
+    - /scdrm
     - /etc/scdrm
-    - /etc/.git
-    - /etc/.gitignore
-    - /etc/systemd/system
-    - /etc/systemd/system/timers.target.wants
-    - /etc/logrotate.d
-    - /etc/logrotate.d/aide
-    - /usr/lib/systemd/.git
-    - /usr/lib/systemd/.gitignore
-    - /usr/lib64/security/.git
-    - /usr/lib64/security/.gitignore
-    - /lib/x86_64-linux-gnu/security/.git
-    - /lib/x86_64-linux-gnu/security/.gitignore
     - /etc/aide.conf
     - /etc/aide/aide.conf.d/98_aide_scdrm
+    - /var/log/scdrm
+    - /var/log/aide
+    - /etc/logrotate.d/scdrm
+    - /etc/systemd/system/scdrm.service
+    - /etc/systemd/system/scdrm.service.wants
+    - /etc/systemd/system/timers.target.wants/aide-auto-check.timer
+    - /etc/systemd/system/timers.target.wants/aide-check.timer
+    - /etc/systemd/system/timers.target.wants/scdrm-slow-check.timer
+    - /etc/systemd/system/scdrm-slow-check.service
+    - /etc/systemd/system/scdrm-slow-check.timer
+    - /etc/systemd/system/aide-check.timer
+    - /etc/systemd/system/aide-check.service
+    - /etc/systemd/system/aide-auto-check.service
+    - /etc/systemd/system/aide-auto-check.timer
     - /usr/local/bin/adminstart
-    - /usr/local/sbin/bash-guard
+    - /usr/local/sbin/scdrmd
+    - /usr/local/sbin/adminstart1
+    - /usr/local/sbin/adminstop
+    - /usr/local/sbin/adminstart-auto
+    - /usr/local/sbin/adminstop-auto
+    - /usr/local/sbin/scdrm-install
+    - /usr/local/sbin/scdrm-slow
+    - /usr/local/sbin/scdrm-fast
+    - /usr/local/sbin/scdrm-gitcron
+    - /usr/local/sbin/scdrm-service-restart
+    - /usr/local/sbin/scdrm-commit-hostvars
     - /usr/local/sbin/route-guard
+    - /usr/local/sbin/bash-guard
     - /usr/local/sbin/aide-auto-check
 
-- name: Prepare files for deletion
+- name: Prepare directories EL
   become: true
-  shell: chattr -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* 2>/dev/null
-  args:
-    executable: /bin/bash
-  failed_when: false
-  changed_when: true
+  shell: chattr -R -i "{{ item }}" 2>/dev/null
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Prepare directories Deb
+  become: true
+  shell: chattr -R -i "{{ item }}" 2>/dev/null
+  with_items: "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
 
 - name: Remove .git EL
   become: true

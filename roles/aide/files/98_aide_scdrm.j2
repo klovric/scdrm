@@ -1,14 +1,18 @@
 # Excluded for SCDRM
 
+{% if "el" in release.stdout %}
+{% for directoryel in dirlist_el %}
+!{{ directoryel }}/git*
+{% endfor %}
+{% else %}
+{% for directorydeb in dirlist_deb %}
+!{{ directorydeb }}/git*
+{% endfor %}
+{% endif %}
+
 !/usr/bin/scdrm-install
 !/scdrm
-!/etc/.git
-!/etc/.gitignore
 !/etc/cron.allow
-!/usr/lib/systemd/.git
-!/usr/lib/systemd/.gitignore
-!/usr/lib64/security/.git
-!/usr/lib64/security/.gitignore
 !/var/log
 !/var/tmp
 !/var/run
@@ -17,9 +21,7 @@
 !/var/spool/anacron
 !/export
 !/media
-!/nfs
 !/nfs.*
-!/mnt
 !/mnt.*
 !/run
 !/tmp
@@ -27,7 +29,6 @@
 !/proc
 !/dev
 !/sys
-!/mount
 !/mount.*
 !/u0.*
 !/oracle
@@ -35,16 +36,13 @@
 !/oraias-logs
 !/tftpboot
 !/sapmnt
-!/test
 !/test.*
 !/app
 !/appl
 !/webappl
 !/hana
-!/data
 !/data.*
 !/storage
-!/backup
 !/backup.*
 !/archive
 !/veeam

@@ -100,10 +100,15 @@
       USERN="$1"
 
       {% if "el" in release.stdout %}
-      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
+        {% for directoryel in dirlist_el %}
+        chattr -R -i {{ directoryel }} 2>/dev/null
+        {% endfor %}
       {% else %}
-      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git /home/$USERN/.log_local/ 2>/dev/null
+        {% for directorydeb in dirlist_deb %}
+        chattr -R -i {{ directorydeb }} 2>/dev/null
+        {% endfor %}
       {% endif %}
+      chattr -R -i /home/$USERN/.log_local/ 2>/dev/null
       chown -R $USERN:$USERN /home/$USERN/.log_local/ 2>/dev/null
       chmod 0660 /home/$USERN/.log_local/* 2>/dev/null
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
@@ -165,16 +170,23 @@
       find /home/$USERN/.log_local -type f -ctime +{{ llog_retention }} -delete > /dev/null 2>&1
       chown -R root:root /home/$USERN/.log_local/ 2>/dev/null
       chmod 0000 /home/$USERN/.log_local/* 2>/dev/null
+      chattr -R +i /home/$USERN/.log_local/ 2>/dev/null
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
       {% if aide_auto_check is defined %}
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
+
       {% if "el" in release.stdout %}
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git /home/$USERN/.log_local/ 2>/dev/null
+        {% for directoryel in dirlist_el %}
+        chattr -R +i {{ directoryel }}/.git* 2>/dev/null
+        {% endfor %}
       {% else %}
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git /home/$USERN/.log_local/ 2>/dev/null
+        {% for directorydeb in dirlist_deb %}
+        chattr -R +i {{ directorydeb }}/.git* 2>/dev/null
+        {% endfor %}
       {% endif %}
+
       {% if disable_aide is undefined %}
         {% if "el" in release.stdout %}
       /usr/sbin/aide --update >/dev/null 2>&1
@@ -214,10 +226,15 @@
       fi
 
       {% if "el" in release.stdout %}
-      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security.git > /dev/null
+        {% for directoryel in dirlist_el %}
+        chattr -R -i {{ directoryel }} 2>/dev/null
+        {% endfor %}
       {% else %}
-      chattr -R -i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git 2>/dev/null
+        {% for directorydeb in dirlist_deb %}
+        chattr -R -i {{ directorydeb }} 2>/dev/null
+        {% endfor %}
       {% endif %}
+
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
       test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
       printf "$NOW - Started admin mode\n" >> $SCDRMDLOG
@@ -277,12 +294,19 @@
       {% if aide_auto_check is defined %}
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
+
       printf "$NOW - Exited admin mode\n" >> $SCDRMDLOG
+
       {% if "el" in release.stdout %}
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /usr/lib64/security/.git > /dev/null
+        {% for directoryel in dirlist_el %}
+        chattr -R +i {{ directoryel }}/.git* 2>/dev/null
+        {% endfor %}
       {% else %}
-      chattr -R +i /etc/scdrm /etc/.git /usr/lib/systemd/.git /lib/x86_64-linux-gnu/security/.git 2>/dev/null
+        {% for directorydeb in dirlist_deb %}
+        chattr -R +i {{ directorydeb }}/.git* 2>/dev/null
+        {% endfor %}
       {% endif %}
+
       {% if disable_aide is undefined %}
         {% if "el" in release.stdout %}
       /usr/sbin/aide --update >/dev/null 2>&1

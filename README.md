@@ -62,7 +62,7 @@ What does it do / how does it work
 -----------------------------------------
 By default it will check for few most common man made disaster scenarios, like stopped network/SSH, missing default route, bad permissions, etc. When found it will revert to defaults, i.e. restart network/SSH or restore previously known default route.
 
-When set with 'dryrun=0' it will actively protect /etc, /usr/lib/systemd/ and /usr/lib64/security, by using local Git instance for every directory. Git will revert any unauthorized change.
+When set with 'dryrun=0' it will actively protect (/etc, /usr/lib/systemd/, /usr/lib64/security) by using local Git instance for every directory. Git will revert any unauthorized change.
 
 It will record terminal user session for debugging/accounting purposes.
 
@@ -73,7 +73,7 @@ A global Git instance is taking care of commit metadata for every machine in you
 This makes possible to revert settings for entire infrastructure in a safe and automated manner or just hunt for any unauthorized changes.
 
 
-Adminmode allows ONLY ONE user/script/playbook at a time to be doing changes to a machine. No more stepping over toes.
+Admin mode allows ONLY ONE user/script/playbook at a time to be doing changes to a machine. No more stepping over toes.
 
 
 LICENCE
@@ -240,15 +240,39 @@ which is how SCDRM determines which files to exclude.
 
 
 
+MODULARITY
+-----------------------------------------
+
+SCDRM is written with modularity in mind. This means that you can turn off almost any part of the stack to comply with your needs.
+
+The following can be easily turned off/on:
+
+	1. AIDE
+	2. AIDE auto check (every hour)
+	3. Route-guard
+	4. Change management exclusion (Ansible,Chef,Puppet...)
+	5. Upstream Git
+
+Every important variable can be easily changed to create even the most complex setups.
+
+You can always add a new directory to the 'dirlist' in case you are not satisfied with the defaults (etc, systemd, pam).
+
+
 INSTALLATION
 -----------------------------------------
 
-You should use the 'installation_wizard'.
+You should use the 'installation_wizard' for new setup. 
 
 It will setup some variable and invoke two plays:
 
 	playbooks/scdrm.yml    (installs fleet of hosts)
 	playbooks/adminssh.yml (installs only localhost)
+
+
+To install SCDRM to some new hosts add a host or a inventory file, i.e.:
+
+	scdrm-install <hostname or inventory file>
+
 
 Default install will set SCDRM in DRYRUN mode, meaning it will do only DR checks but will NOT revert any changes/deletions in given directories.
 
@@ -511,12 +535,11 @@ KNOWN LIMITATIONS
 -----------------------------------------
 
  - Re-configuring exclusions in aide.conf and .gitignore is usually the first step to make as probably expectations won't be met using defaults.
- - Exiting admin mode will ALWAYS run AIDE update, which on some systems can take longer time. It also updates local vars.
+ - Exiting admin mode run AIDE update (when set so), which on some systems can take longer time. It also updates local vars.
  - In case you don't use default route on your systems, you will have no use of route-guard as it restores previously recorded default route when one found missing from the system. If you have multiple default routes, you could have PROBLEMS with route-guard! You can easily disable route-guard.
  - Maybe you don't want your networking services automatically restarted when not active, as part of DR.
- - Maybe default RPM verification won't suit your case, test it.
+ - Maybe default package verification won't suit your case, test it.
  - Removal of SCDRM will remove AIDE and tlog from the system! You have been notified.
- - If you don't want to use AIDE - it can be turned off easily.
  - Automated revert possible only for dirs managed, currently ONLY /etc, /usr/lib/systemd/, /usr/lib64/security.
  - Race condition/piggy back commits - during admin mode is activated and another user is making changes to the system, they will be committed by user using 'admin mode'
  - Intended to be ran from single central management jumphost as it keeps the commit vars locally
@@ -564,6 +587,8 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.8.11	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10
+
 1.8.10	    2023-03-05   Bug fix to installation_wizard and config update task
 
 1.8.9	    2023-03-01   Route-guard V2 implemented

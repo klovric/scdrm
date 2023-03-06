@@ -167,15 +167,14 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha256
 !/etc/.*~
 
 # Excluded for SCDRM
+#
+{% for directoryel in dirlist_el %}
+!{{ directoryel }}/git*
+{% endfor %}
+
 !/usr/bin/scdrm-install
 !/scdrm
-!/etc/.git
-!/etc/.gitignore
 !/etc/cron.allow
-!/usr/lib/systemd/.git
-!/usr/lib/systemd/.gitignore
-!/usr/lib64/security/.git
-!/usr/lib64/security/.gitignore
 !/var/log
 !/var/tmp
 !/var/run
@@ -185,7 +184,6 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha256
 !/export
 !/media
 !/nfs
-!/mnt
 !/mnt.*
 !/run
 !/tmp
@@ -193,7 +191,6 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha256
 !/proc
 !/dev
 !/sys
-!/mount
 !/mount.*
 !/u0.*
 !/oracle
@@ -201,15 +198,12 @@ DATAONLY =  p+n+u+g+s+acl+xattrs+sha256
 !/oraias-logs
 !/tftpboot
 !/sapmnt
-!/test
 !/test.*
 !/appl
 !/webappl
 !/hana
-!/data
 !/data.*
 !/storage
-!/backup
 !/backup.*
 !/archive
 !/veeam
