@@ -6,12 +6,12 @@ What is SCDRM?
 It is a wrapper that acts as Ansible local agent and disaster recovery daemon designed for enterprise environments.
 
 Software stack:
- - AIDE: Intrusion detection system
- - Ansible: provided as Ansible roles/collection, intended as Ansible local agent
- - Git: change tracking and reverting
+ - AIDE: Intrusion detection environment
+ - Ansible: change management
+ - Git: change tracking and reverting; Ansible local agent
  - script/tlog: terminal session logging
 
-It enforces secure change process, does security reporting, change tracking and management. 
+It enforces secure change process, does security reporting, change tracking and management, automated disaster recovery. 
 
 Can work with existing change management systems like Puppet, Chef, CFEngine, Ansible...
 
@@ -469,8 +469,10 @@ Here I will list all active DR sanity checks currently performed:
  - is sshd active and unmasked
  - is (network|NetworkManger).service active and unmasked
  - if /etc/nologin or /var/run/nologin exist
- - rpm verify sshd, coreutils, bash, glibc
- - if default route is missing, restore it
+ - verify sshd, coreutils, bash, glibc, rpm/dpkg
+ - make sure default route is up and reachable
+ - verify systemd units
+ - filesystem sanity check
 
 SCDRM will try to prevent accidental deletion of its files and git by making files immutable.
 
