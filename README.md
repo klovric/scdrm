@@ -81,13 +81,10 @@ LICENCE
 GNU GPL v3 - see LICENSE for more details.
 
 
-VIDEO DEMO - v1.4.7
+VIDEO DEMO - Coming up
 -----------------------------------------
-You can watch the demo at:
 
-https://ibm.webex.com/ibm/ldr.php?RCID=370447dfd337cc651036af46684c0ae1
-
-Enter with iPNngwP8
+Coming soon...
 											
 
 CONTRIBUTE
@@ -424,9 +421,8 @@ If variables you are looking for are not in the scdrm.yml, look for templates an
 Then run this to provision the updates to your fleet:
 
 
-	ansible-playbook playbooks/scdrm.yml -e "update=yes"
-			or
 	scdrm-config-update
+
 
 Configuration update can be done inline - without making changes to any template/playbook.
 
@@ -436,14 +432,8 @@ For production you want the values hardcoded into scdrm.yml for persistence reas
 
 Simply run the scdrm.yml playbook with 'update=yes' and add any variable you need to update, i.e.
 
-	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0"
-				or
+
 	scdrm-config-update--dryrun-off
-
-
-Here you can update the check frequency from default 5 minutes to 30 seconds:
-
-	ansible-playbook playbooks/scdrm.yml -e "update=yes dryrun=0 check_freq=30"
 
 
 To remove SCDRM from your inventory run:
@@ -451,7 +441,7 @@ To remove SCDRM from your inventory run:
 	scdrm-remove
 
 SESSION LOGGING
------------------------------------------
+----------------------------------------
 
 Terminal session logging is enabled only for user logins, not for scripted runs.
 
@@ -562,9 +552,9 @@ Steffen Froemer@Redhat for motivation!
 
 Author
 -----------------------------------------
-Currently working as Linux IT architect @IBM systems.
+Currently not working as Linux IT architect @IBM systems.
 
-You can contact me at kresimir.lovric@ibm.com
+You can contact me at klovric@kripteia.eu
 Linkedin or Github.
 
 
