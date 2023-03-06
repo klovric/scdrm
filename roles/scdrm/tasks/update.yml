@@ -15,22 +15,24 @@
 - name: Check network service
   become: true
   command: systemctl is-active network.service
-  changed_when: false
+  #changed_when: false
   failed_when: false
+  when: '"el" in release.stdout'
   register: networkcheck
 
 - name: Check NetworkManager service
   become: true
   command: systemctl is-active NetworkManager.service
   failed_when: false
-  changed_when: false
+  #changed_when: false
+  when: '"el" in release.stdout'
   register: nmcheck
 
 - name: Check networking service
   become: true
   command: systemctl is-active networking.service
   failed_when: false
-  changed_when: false
+  #changed_when: false
   register: networkingcheck
   when: '"Debian" in distro.stdout'
 
@@ -38,7 +40,7 @@
   become: true
   command: systemctl is-active systemd-networkd.service
   failed_when: false
-  changed_when: false
+  #changed_when: false
   register: systemdnetworkd
   when: '"Ubuntu" in distro.stdout'
 
@@ -46,29 +48,33 @@
   set_fact:
     netservice: network
   when:
-    - networkcheck.stdout == "active"
     - '"el" in release.stdout'
+    - networkcheck is defined
+    - networkcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: NetworkManager
   when:
-    - nmcheck.stdout == "active"
     - '"el" in release.stdout'
+    - nmcheck is defined
+    - nmcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: networking
   when:
-    - networkingcheck.stdout == "active"
     - '"Debian" in distro.stdout'
+    - networkingcheck is defined
+    - networkingcheck.stdout == "active"
 
 - name: Set fact
   set_fact:
     netservice: systemd-networkd
   when:
-    - systemdnetworkd.stdout == "active"
     - '"Ubuntu" in distro.stdout'
+    - systemdnetworkd is defined
+    - systemdnetworkd.stdout == "active"
 
 - name: Copy scdrmd
   become: true
@@ -146,11 +152,12 @@
   register: selinux
   when:
     - disable_aide is undefined
+    - '"el" in release.stdout'
 
 - name: Copy RHEL7 aide.conf
   become: true
   template:
-    src: ../files/aide-rhel7.j2
+    src: ../../aide/files/aide-rhel7.j2
     dest: /etc/aide.conf
     mode: 0600
     attributes: +i
@@ -159,7 +166,7 @@
 - name: Copy RHEL8 aide.conf
   become: true
   template:
-    src: ../files/aide-rhel8.j2
+    src: ../../aide/files/aide-rhel8.j2
     dest: /etc/aide.conf
     mode: 0600
     attributes: +i
@@ -168,7 +175,7 @@
 - name: Copy RHEL9 aide.conf
   become: true
   template:
-    src: ../files/aide-rhel9.j2
+    src: ../../aide/files/aide-rhel9.j2
     dest: /etc/aide.conf
     mode: 0600
     attributes: +i
@@ -177,7 +184,7 @@
 - name: Copy Debian/Ubuntu aide.conf
   become: true
   template:
-    src: ../files/98_aide_scdrm.j2
+    src: ../../aide/files/98_aide_scdrm.j2
     dest: /etc/aide/aide.conf.d/98_aide_scdrm
     mode: 0644
     attributes: +i

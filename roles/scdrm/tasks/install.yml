@@ -27,12 +27,14 @@
   failed_when: false
   changed_when: false
   register: networkcheck
+  when: '"el" in release.stdout'
 
 - name: Check NetworkManager service
   become: true
   command: systemctl is-active NetworkManager.service
   failed_when: false
   changed_when: false
+  when: '"el" in release.stdout'
   register: nmcheck
 
 - name: Check networking service
@@ -56,6 +58,7 @@
     netservice: network
   when:
     - '"el" in release.stdout'
+    - networkcheck is defined
     - networkcheck.stdout == "active"
 
 - name: Set fact
@@ -63,6 +66,7 @@
     netservice: NetworkManager
   when:
     - '"el" in release.stdout'
+    - nmcheck is defined
     - nmcheck.stdout == "active"
 
 - name: Set fact
@@ -70,6 +74,7 @@
     netservice: networking
   when:
     - '"Debian" in distro.stdout'
+    - networkingcheck is defined
     - networkingcheck.stdout == "active"
 
 - name: Set fact
@@ -77,6 +82,7 @@
     netservice: systemd-networkd
   when:
     - '"Ubuntu" in distro.stdout'
+    - sysdnetcheck is defined
     - sysdnetcheck.stdout == "active"
 
 - name: Copy scdrmd
