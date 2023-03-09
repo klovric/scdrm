@@ -12,7 +12,7 @@
        state: absent
      with_items:
        - /usr/local/bin/adminssh
-       - /usr/local/bin/scdrm-commit
+       - /usr/local/bin/scdrm-commit-hostvars
        - /scdrm
        - "{{ scdrm_install_dir }}/scdrm/host_vars"
        - "/home/{{ myuser }}/.scdrm_rc"
@@ -22,7 +22,7 @@
      cron:
        name: "SCDRM commit hostvars"
        minute: "1,31"
-       job: /usr/local/bin/scdrm-commit
+       job: /usr/local/bin/scdrm-commit-hostvars
        state: absent
 
    - name: Remove local bashrc functions

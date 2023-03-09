@@ -1,0 +1,24 @@
+---
+- name: Switch to paranoid mode
+  hosts: all
+  gather_facts: false
+  serial: 96
+  ignore_errors: true
+  vars_files: ./vars/main.yml
+  tasks:
+    - name: Prepare scdrm.conf
+      become: True
+      shell: chattr -R -i /etc/scdrm
+
+    - name: Close paranoid mode
+      become: True
+      lineinfile:
+        path: "{{ scdrm_conf }}"
+        regexp: '^PARANOID=0'
+        line: PARANOID=1
+        state: present
+
+    - name: Close scdrm.conf
+      become: True
+      shell: chattr -R +i /etc/scdrm
+...

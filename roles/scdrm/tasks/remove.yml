@@ -36,20 +36,20 @@
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
     - /usr/local/sbin/scdrm-service-restart
-    - /usr/local/sbin/scdrm-commit-hostvars
+    - /usr/local/sbin/scdrm-paranoid
     - /usr/local/sbin/route-guard
     - /usr/local/sbin/bash-guard
     - /usr/local/sbin/aide-auto-check
 
 - name: Prepare directories EL
   become: true
-  shell: chattr -R -i "{{ item }}" 2>/dev/null
+  shell: chattr -R -i "{{ item }}"/.git* 2>/dev/null
   with_items: "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
 - name: Prepare directories Deb
   become: true
-  shell: chattr -R -i "{{ item }}" 2>/dev/null
+  shell: chattr -R -i "{{ item }}"/.git* 2>/dev/null
   with_items: "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
@@ -94,6 +94,7 @@
   failed_when: false
   with_items:
     - /scdrm
+    - /etc/motd.d/scdrm
     - /etc/scdrm
     - /etc/aide.conf
     - /etc/aide/aide.conf.d/98_aide_scdrm
@@ -122,7 +123,7 @@
     - /usr/local/sbin/scdrm-fast
     - /usr/local/sbin/scdrm-gitcron
     - /usr/local/sbin/scdrm-service-restart
-    - /usr/local/sbin/scdrm-commit-hostvars
+    - /usr/local/sbin/scdrm-paranoid
     - /usr/local/sbin/route-guard
     - /usr/local/sbin/bash-guard
     - /usr/local/sbin/aide-auto-check

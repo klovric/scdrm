@@ -1,0 +1,182 @@
+
+PLAY [Get and record commits] **************************************************
+
+TASK [get_kernel : Get kernel version] *****************************************
+[0;32mok: [debian10][0m
+[0;32mok: [debian11][0m
+[0;32mok: [rhel7][0m
+[0;32mok: [rhel8][0m
+[0;32mok: [rhel9][0m
+[0;32mok: [ubuntu2204][0m
+[0;32mok: [ubuntu2210][0m
+
+TASK [get_kernel : Get distribution] *******************************************
+[0;32mok: [debian10][0m
+[0;32mok: [rhel7][0m
+[0;32mok: [debian11][0m
+[0;32mok: [rhel8][0m
+[0;32mok: [rhel9][0m
+[0;32mok: [ubuntu2204][0m
+[0;32mok: [ubuntu2210][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [rhel7][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [rhel8][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [rhel9][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [debian10][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [debian11][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [ubuntu2204][0m
+
+TASK [skip_host : Skip host due to critical task failure] **********************
+[0;36mskipping: [ubuntu2210][0m
+
+TASK [change_tracking : Record commits] ****************************************
+[0;36mincluded: /home/klovric/scdrm/roles/change_tracking/tasks/record-commit.yml for rhel7, rhel8, rhel9, debian10, debian11, ubuntu2204, ubuntu2210[0m
+
+TASK [change_tracking : Get commits for managed dirs] **************************
+[0;36mskipping: [debian10] => (item=/etc) [0m
+[0;36mskipping: [debian10] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [debian10] => (item=/usr/lib64/security) [0m
+[0;36mskipping: [debian11] => (item=/etc) [0m
+[0;36mskipping: [debian11] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [debian11] => (item=/usr/lib64/security) [0m
+[0;36mskipping: [ubuntu2204] => (item=/etc) [0m
+[0;36mskipping: [ubuntu2204] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [ubuntu2204] => (item=/usr/lib64/security) [0m
+[0;36mskipping: [ubuntu2210] => (item=/etc) [0m
+[0;36mskipping: [ubuntu2210] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [ubuntu2210] => (item=/usr/lib64/security) [0m
+[0;33mchanged: [rhel7] => (item=/etc)[0m
+[0;33mchanged: [rhel8] => (item=/etc)[0m
+[0;33mchanged: [rhel9] => (item=/etc)[0m
+[0;33mchanged: [rhel7] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [rhel8] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [rhel7] => (item=/usr/lib64/security)[0m
+[0;33mchanged: [rhel9] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [rhel8] => (item=/usr/lib64/security)[0m
+[0;33mchanged: [rhel9] => (item=/usr/lib64/security)[0m
+
+TASK [change_tracking : Get commits for managed dirs] **************************
+[0;36mskipping: [rhel7] => (item=/etc) [0m
+[0;36mskipping: [rhel7] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [rhel7] => (item=/lib/x86_64-linux-gnu/security) [0m
+[0;36mskipping: [rhel8] => (item=/etc) [0m
+[0;36mskipping: [rhel8] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [rhel8] => (item=/lib/x86_64-linux-gnu/security) [0m
+[0;36mskipping: [rhel9] => (item=/etc) [0m
+[0;36mskipping: [rhel9] => (item=/usr/lib/systemd) [0m
+[0;36mskipping: [rhel9] => (item=/lib/x86_64-linux-gnu/security) [0m
+[0;33mchanged: [debian10] => (item=/etc)[0m
+[0;33mchanged: [debian11] => (item=/etc)[0m
+[0;33mchanged: [ubuntu2204] => (item=/etc)[0m
+[0;33mchanged: [ubuntu2210] => (item=/etc)[0m
+[0;33mchanged: [debian10] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [debian11] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [ubuntu2204] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [ubuntu2210] => (item=/usr/lib/systemd)[0m
+[0;33mchanged: [debian10] => (item=/lib/x86_64-linux-gnu/security)[0m
+[0;33mchanged: [debian11] => (item=/lib/x86_64-linux-gnu/security)[0m
+[0;33mchanged: [ubuntu2204] => (item=/lib/x86_64-linux-gnu/security)[0m
+[0;33mchanged: [ubuntu2210] => (item=/lib/x86_64-linux-gnu/security)[0m
+
+TASK [change_tracking : Prepare host vars file] ********************************
+[0;33mchanged: [debian10 -> localhost][0m
+[0;33mchanged: [rhel8 -> localhost][0m
+[0;33mchanged: [debian11 -> localhost][0m
+[0;33mchanged: [rhel7 -> localhost][0m
+[0;33mchanged: [rhel9 -> localhost][0m
+[0;33mchanged: [ubuntu2204 -> localhost][0m
+[0;33mchanged: [ubuntu2210 -> localhost][0m
+
+TASK [change_tracking : Record commits EL] *************************************
+[0;36mskipping: [debian10] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [debian10] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [debian10] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [debian11] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [debian11] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [debian11] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2204] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2204] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2204] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2210] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2210] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [ubuntu2210] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'}) [0m
+[0;33mchanged: [rhel8 -> localhost] => (item={'changed': True, 'stdout': '0a5e11b7e1c36d111881b320f3131a96aff0994c', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.209611', 'end': '2023-03-09 23:50:12.214997', 'delta': '0:00:00.005386', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['0a5e11b7e1c36d111881b320f3131a96aff0994c'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel7 -> localhost] => (item={'changed': True, 'end': '2023-03-09 23:50:12.531492', 'stdout': '4f2128bafa45a3b56e94c26837034c29fcc83ed3', 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.526441', 'delta': '0:00:00.005051', 'stderr': '', 'rc': 0, 'invocation': {'module_args': {'creates': None, 'executable': '/bin/bash', 'chdir': '/etc', 'strip_empty_ends': True, '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", 'removes': None, 'argv': None, 'warn': False, '_uses_shell': True, 'stdin_add_newline': True, 'stdin': None}}, 'msg': '', 'stdout_lines': ['4f2128bafa45a3b56e94c26837034c29fcc83ed3'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel9 -> localhost] => (item={'changed': True, 'stdout': 'e2772d4e44d664900d0d9adc964307065060cb70', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:13.029085', 'end': '2023-03-09 23:50:13.033096', 'delta': '0:00:00.004011', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['e2772d4e44d664900d0d9adc964307065060cb70'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel9 -> localhost] => (item={'changed': True, 'stdout': 'aa35140a0eeb4ad71a297fb0a0ec5322fcbc6e1e', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:13.346464', 'end': '2023-03-09 23:50:13.350504', 'delta': '0:00:00.004040', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['aa35140a0eeb4ad71a297fb0a0ec5322fcbc6e1e'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel8 -> localhost] => (item={'changed': True, 'stdout': '85790bd1519bb7f22a40e07756b7be2f38144add', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.474433', 'end': '2023-03-09 23:50:12.479298', 'delta': '0:00:00.004865', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['85790bd1519bb7f22a40e07756b7be2f38144add'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel7 -> localhost] => (item={'changed': True, 'end': '2023-03-09 23:50:12.737912', 'stdout': '56576b2426ffa0caebf54199966fd2ee4acdbf64', 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.733835', 'delta': '0:00:00.004077', 'stderr': '', 'rc': 0, 'invocation': {'module_args': {'creates': None, 'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', 'strip_empty_ends': True, '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", 'removes': None, 'argv': None, 'warn': False, '_uses_shell': True, 'stdin_add_newline': True, 'stdin': None}}, 'msg': '', 'stdout_lines': ['56576b2426ffa0caebf54199966fd2ee4acdbf64'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel9 -> localhost] => (item={'changed': True, 'stdout': '3aa72a3e5327d62c77fe95024732f6ade152f5a6', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:13.628375', 'end': '2023-03-09 23:50:13.631485', 'delta': '0:00:00.003110', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib64/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3aa72a3e5327d62c77fe95024732f6ade152f5a6'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel8 -> localhost] => (item={'changed': True, 'stdout': 'bf9affdc55c7772e0520c6d2799fbecd157d97a1', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.740838', 'end': '2023-03-09 23:50:12.745482', 'delta': '0:00:00.004644', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib64/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['bf9affdc55c7772e0520c6d2799fbecd157d97a1'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [rhel7 -> localhost] => (item={'changed': True, 'end': '2023-03-09 23:50:12.950813', 'stdout': 'b9d378835043e8ff79dc66ac4d05dbf638bab14c', 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:12.946890', 'delta': '0:00:00.003923', 'stderr': '', 'rc': 0, 'invocation': {'module_args': {'creates': None, 'executable': '/bin/bash', 'chdir': '/usr/lib64/security', 'strip_empty_ends': True, '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", 'removes': None, 'argv': None, 'warn': False, '_uses_shell': True, 'stdin_add_newline': True, 'stdin': None}}, 'msg': '', 'stdout_lines': ['b9d378835043e8ff79dc66ac4d05dbf638bab14c'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib64/security', 'ansible_loop_var': 'item'})[0m
+
+TASK [change_tracking : Record commits Deb] ************************************
+[0;36mskipping: [rhel7] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel7] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel7] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel8] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel8] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel8] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel9] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/etc', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel9] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'}) [0m
+[0;36mskipping: [rhel9] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'}) [0m
+[0;33mchanged: [debian10 -> localhost] => (item={'changed': True, 'stdout': '6a9b9841e86cabbdce5a7e6b571c2526139786e9', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:13.883067', 'end': '2023-03-09 23:50:13.886718', 'delta': '0:00:00.003651', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['6a9b9841e86cabbdce5a7e6b571c2526139786e9'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [debian11 -> localhost] => (item={'changed': True, 'stdout': 'dacbade1253ede0606abfa1de24c745821e20e57', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:13.844088', 'end': '2023-03-09 23:50:13.847573', 'delta': '0:00:00.003485', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['dacbade1253ede0606abfa1de24c745821e20e57'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2204 -> localhost] => (item={'changed': True, 'stdout': '557b0e8398e043d547257e89a1550de7553c4922', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:13.883338', 'end': '2023-03-09 22:50:13.887018', 'delta': '0:00:00.003680', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['557b0e8398e043d547257e89a1550de7553c4922'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2210 -> localhost] => (item={'changed': True, 'stdout': '4df642097a9f58612193630bdfd9fe53e18dda86', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:13.907931', 'end': '2023-03-09 22:50:13.912350', 'delta': '0:00:00.004419', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/etc', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['4df642097a9f58612193630bdfd9fe53e18dda86'], 'stderr_lines': [], 'failed': False, 'item': '/etc', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [debian10 -> localhost] => (item={'changed': True, 'stdout': '333e5aebf03d20be9a31e63346b726b1575ccd88', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:14.046243', 'end': '2023-03-09 23:50:14.049382', 'delta': '0:00:00.003139', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['333e5aebf03d20be9a31e63346b726b1575ccd88'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [debian11 -> localhost] => (item={'changed': True, 'stdout': '1a2d89830625d40fb3e6acc1d553fcf1793cd232', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:14.024688', 'end': '2023-03-09 23:50:14.028723', 'delta': '0:00:00.004035', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['1a2d89830625d40fb3e6acc1d553fcf1793cd232'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2204 -> localhost] => (item={'changed': True, 'stdout': 'd1bad3a6fc4d31440ba2768fff769dec6c815b5b', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:14.074910', 'end': '2023-03-09 22:50:14.079424', 'delta': '0:00:00.004514', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['d1bad3a6fc4d31440ba2768fff769dec6c815b5b'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2210 -> localhost] => (item={'changed': True, 'stdout': '5fb705b2b655e1360917926934403c00e053e40f', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:14.117544', 'end': '2023-03-09 22:50:14.123231', 'delta': '0:00:00.005687', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/usr/lib/systemd', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['5fb705b2b655e1360917926934403c00e053e40f'], 'stderr_lines': [], 'failed': False, 'item': '/usr/lib/systemd', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [debian10 -> localhost] => (item={'changed': True, 'stdout': 'd28b396c2553fc3ccb5c0c99d3927d27c02e8c0a', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:14.231068', 'end': '2023-03-09 23:50:14.234256', 'delta': '0:00:00.003188', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/lib/x86_64-linux-gnu/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['d28b396c2553fc3ccb5c0c99d3927d27c02e8c0a'], 'stderr_lines': [], 'failed': False, 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [debian11 -> localhost] => (item={'changed': True, 'stdout': 'b371faeb7632db4b125c68fe24afa4e029d78ef6', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 23:50:14.195273', 'end': '2023-03-09 23:50:14.199037', 'delta': '0:00:00.003764', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/lib/x86_64-linux-gnu/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['b371faeb7632db4b125c68fe24afa4e029d78ef6'], 'stderr_lines': [], 'failed': False, 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2204 -> localhost] => (item={'changed': True, 'stdout': '8c4d62a930b93cc2379532fddf66540499d8a5ac', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:14.266064', 'end': '2023-03-09 22:50:14.270128', 'delta': '0:00:00.004064', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/lib/x86_64-linux-gnu/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['8c4d62a930b93cc2379532fddf66540499d8a5ac'], 'stderr_lines': [], 'failed': False, 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'})[0m
+[0;33mchanged: [ubuntu2210 -> localhost] => (item={'changed': True, 'stdout': 'eb1d93ec7c1717c15de3a20ed2119eec09081b27', 'stderr': '', 'rc': 0, 'cmd': "git log | head -3 | awk '/commit/ {print $2}'", 'start': '2023-03-09 22:50:14.308037', 'end': '2023-03-09 22:50:14.311379', 'delta': '0:00:00.003342', 'msg': '', 'invocation': {'module_args': {'executable': '/bin/bash', 'chdir': '/lib/x86_64-linux-gnu/security', '_raw_params': "git log | head -3 | awk '/commit/ {print $2}'", '_uses_shell': True, 'warn': False, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['eb1d93ec7c1717c15de3a20ed2119eec09081b27'], 'stderr_lines': [], 'failed': False, 'item': '/lib/x86_64-linux-gnu/security', 'ansible_loop_var': 'item'})[0m
+
+TASK [change_tracking : Check commits] *****************************************
+[0;36mskipping: [rhel7][0m
+[0;36mskipping: [rhel8][0m
+[0;36mskipping: [rhel9][0m
+[0;36mskipping: [debian10][0m
+[0;36mskipping: [debian11][0m
+[0;36mskipping: [ubuntu2204][0m
+[0;36mskipping: [ubuntu2210][0m
+
+TASK [change_tracking : Revert any previously unrecorded commits] **************
+[0;36mskipping: [rhel7][0m
+[0;36mskipping: [rhel8][0m
+[0;36mskipping: [rhel9][0m
+[0;36mskipping: [debian10][0m
+[0;36mskipping: [debian11][0m
+[0;36mskipping: [ubuntu2204][0m
+[0;36mskipping: [ubuntu2210][0m
+
+TASK [change_tracking : Commit global changes] *********************************
+[0;36mskipping: [rhel7][0m
+[0;36mskipping: [rhel8][0m
+[0;36mskipping: [rhel9][0m
+[0;36mskipping: [debian10][0m
+[0;36mskipping: [debian11][0m
+[0;36mskipping: [ubuntu2204][0m
+[0;36mskipping: [ubuntu2210][0m
+
+PLAY RECAP *********************************************************************
+[0;33mdebian10[0m                   : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mdebian11[0m                   : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mrhel7[0m                      : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mrhel8[0m                      : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mrhel9[0m                      : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mubuntu2204[0m                 : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+[0;33mubuntu2210[0m                 : [0;32mok=6   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    ignored=0   
+

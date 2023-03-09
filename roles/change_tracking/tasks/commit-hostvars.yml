@@ -2,7 +2,8 @@
 ---
 - name: Run the program to commit changes
   become: true
-  command: /usr/local/sbin/scdrm-commit-hostvars
+  command: /usr/local/bin/scdrm-commit-hostvars
   changed_when: false
   delegate_to: localhost
+  run_once: true
 ...

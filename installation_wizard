@@ -130,7 +130,49 @@ read yesno
 		n)      printf '\tOK\n'
 			LOCAL="true"
 			;;
-		*)      LOCAL="true"
+		*)      LOCAL="false"
+			;;
+esac
+
+printf "Do you want to enable PARANOID mode?This mode requires you to acknowledge the change before it gets reverted automatically.\nParanoid mode presumes the change needs reverting\n\t(y)es | (n)o [default]\n"
+read yesno
+	case "$yesno" in
+		y)      printf "\tOK\n"
+			PARANOIA="true"
+			;;
+		n)      printf '\tOK\n'
+			PARANOIA="false"
+			;;
+		*)      PARANOIA="false"
+			;;
+esac
+
+if [[ $PARANOIA == "true" ]]
+then
+printf "Default paranoia time to wait for change confirmation is 300 seconds\nDo you wish to change this value?\n\t(y)es | (n)o [default]\n"
+read yesno
+	case "$yesno" in
+		y)      printf '\tOK\t- how many seconds should we wait before reverting changes?'
+			read paranoia_time
+			;;
+		n)      printf '\tOK\n'
+			;;
+		*)      true
+			;;
+esac
+fi
+
+printf "Would you like to install MOTD for extra visibility?\n\t(y)es [default] | (n)o\n"
+read yesno
+	case "$yesno" in
+		y)      printf '\tOK\n'
+			set_motd=true
+			;;
+		n)      printf '\tOK\n'
+			set_motd=false
+			;;
+		*)      true
+			set_motd=true
 			;;
 esac
 
@@ -150,6 +192,18 @@ fi
 
 if [[ $llog_retention != "" ]]
 then sed -i "s/^\ \{4\}llog_retention:.*/    llog_retention: ${llog_retention}/" playbooks/scdrm.yml
+fi
+
+if [[ $PARANOIA == "true" ]]
+then sed -i "s/paranoid:.*/paranoid: true/" playbooks/vars/main.yml
+fi
+
+if [[ $paranoia_time != "" ]]
+then sed -i "s/paranoid_time:.*/paranoid_time: $paranoia_time/" playbooks/vars/main.yml
+fi
+
+if [[ $set_motd == "false" ]]
+then sed -i "s/set_motd:.*/set_motd: false/" playbooks/vars/main.yml
 fi
 
 # Setup change tracking
@@ -190,7 +244,7 @@ fi
 
 if [[ $git_branch != "" ]]
 then sed -i "s/^git_branch: main/git_branch: $git_branch/" playbooks/vars/main.yml
-sed -i 's/^#upstream_git: true/upstream_git: true/' playbooks/vars/main.yml
+sed -i 's/^upstream_git: false/upstream_git: true/' playbooks/vars/main.yml
 fi
 
 ansible-playbook playbooks/adminssh.yml

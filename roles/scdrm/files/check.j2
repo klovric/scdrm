@@ -8,8 +8,8 @@ while true
 do 
 
 # Config check
-if [[ -s /etc/scdrm/scdrm.conf ]]
-then . /etc/scdrm/scdrm.conf
+if [[ -s {{ scdrm_conf }} ]]
+then . {{ scdrm_conf }}
 else printf '\nNo configuration file found.\nExiting.\n'
 exit 1
 fi
@@ -19,7 +19,7 @@ if [[ $ADMINMODE -eq 1 ]]
 then if find /run -type f -name scdrm-admin.lock -mmin +360 | fgrep scdrm-admin.lock >/dev/null 
 	then printf 'ERROR: admin mode active over 6 hours. Exiting admin mode.\n' | tee -a $SCDRMDLOG
 	chattr -R -i /etc/scdrm 2>/dev/null
-      	sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
+      	sed -i 's/^ADMINMODE=1/ADMINMODE=0/' {{ scdrm_conf }} 2>/dev/null
 	/bin/rm -f $ALOCKF > /dev/null 2>&1
 	chattr -R +i /etc/scdrm 2>/dev/null
 	fi
@@ -108,48 +108,9 @@ fi
 cd ~ > /dev/null
 done
 
-# Check for systemd changes and restart
-egrep '\.(automount|mount|path|service|slice|socket|target|timer)|fstab' $SCDRMREPORT > /dev/null && systemctl daemon-reload 2>$SCDRMELOG
-
-# Check for rsyslog changes and restart
-fgrep 'syslog' $SCDRMREPORT > /dev/null && systemctl restart rsyslog 2>$SCDRMELOG
-
-# Check for sshd changes and restart
-fgrep 'ssh' $SCDRMREPORT > /dev/null && systemctl restart sshd 2>$SCDRMELOG
-
-# Check for sssd changes and restart
-fgrep 'sssd' $SCDRMREPORT > /dev/null && systemctl restart sssd 2>$SCDRMELOG
-
-{% if "el" in release.stdout %}
-# Check for Network changes and restart
-egrep 'NetworkManager|network-scripts' $SCDRMREPORT > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
-
-# Check for cron changes and restart
-fgrep 'cron' $SCDRMREPORT > /dev/null && systemctl restart crond 2>$SCDRMELOG
-
-# Check for firewalld changes and restart
-fgrep 'firewalld' $SCDRMREPORT > /dev/null && systemctl restart firewalld 2>$SCDRMELOG
-
-# Check for kdump changes and restart
-fgrep 'kdump' $SCDRMREPORT > /dev/null && systemctl restart kdump 2>$SCDRMELOG
-{% else %}
-# Check for Network changes and restart
-fgrep 'network/interfaces' $SCDRMREPORT > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
-
-# Check for cron changes and restart
-fgrep 'cron' $SCDRMREPORT > /dev/null && systemctl restart cron 2>$SCDRMELOG
-
-# Check for kdump changes and restart
-fgrep 'kdump' $SCDRMREPORT > /dev/null && systemctl restart kdump-tools 2>$SCDRMELOG
-{% endif %}
-
-# Check for journal changes and restart
-fgrep 'journald.conf' $SCDRMREPORT > /dev/null && systemctl restart systemd-journald 2>$SCDRMELOG
-
-
-# Check for udev changes and restart
-fgrep 'udev' $SCDRMREPORT > /dev/null && systemctl restart systemd-udevd 2>$SCDRMELOG
-
+if [[ $GRST -ne 0 && $DRYRUN -eq 0 ]]
+then /usr/local/sbin/scdrm-service-restart "$(cat $SCDRMREPORT | tr '\n' ',')"
+fi
 
 {% if disable_aide is undefined %}
 # Aide check is done from cron as it is relatively intensive and you will get false positives, just run 'aide -C' and should be OK
@@ -158,7 +119,6 @@ then printf 'AIDE OK\n' >> $SCDRMREPORT
 else printf 'AIDE ALERT\n' >> $SCDRMREPORT
 fi
 {% endif %}
-
 
 # DR checks
 /usr/local/sbin/scdrm-fast > /dev/null

@@ -105,6 +105,16 @@
     group: root
     attributes: +i
 
+- name: Copy scdrm-paranoid
+  become: true
+  template:
+    src: ../files/paranoid.j2
+    dest: /usr/local/sbin/scdrm-paranoid
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+
 - name: Copy gitignore EL
   become: true
   copy:
@@ -132,8 +142,8 @@
   copy:
     content: |
       {{ shebang }}
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else
       printf 'Configuration file missing. Exiting...\n'
       exit 1
@@ -214,16 +224,6 @@
   template:
     src: ../files/scdrm-service-restart.j2
     dest: /usr/local/sbin/scdrm-service-restart
-    mode: 0750
-    owner: root
-    group: root
-    attributes: +i
-
-- name: Copy scdrm-commit-hostvars
-  become: true
-  template:
-    src: ../../change_tracking/files/commit-hostvars.j2
-    dest: /usr/local/sbin/scdrm-commit-hostvars
     mode: 0750
     owner: root
     group: root
@@ -331,6 +331,23 @@
   args:
     executable: /bin/bash
   when: '"Debian" in distro.stdout or "Ubuntu" in distro.stdout'
+
+- name: Create directory
+  become: true
+  file:
+    path: /etc/motd.d
+    state: directory
+    mode: 0755
+
+- name: Copy MOTD
+  become: true
+  copy:
+    src: ../files/motd
+    dest: /etc/motd.d/scdrm
+    mode: 0644
+    owner: root
+    group: root
+  when: set_motd is true
 
 - name: Run the installer
   become: true

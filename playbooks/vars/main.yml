@@ -1,14 +1,18 @@
 # Global vars
 ---
-scdrm_install_dir: INSTALLDIR
+scdrm_install_dir: /home/klovric/scdrm
+scdrm_conf: /etc/scdrm/scdrm.conf
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
 ps1: 'PS1="[\e[91m\u@\h *ADMINMODE* \e[0m]$ "'
-#upstream_git: true
+upstream_git: false
 git_branch: main
-myuser: USER
+myuser: klovric
 aide_auto_check: true
 aide_check: '20:00'
+paranoid: true
+paranoid_time: 20
+set_motd: true
 # These directories are managed by Git
 dirlist_el:
   - /etc

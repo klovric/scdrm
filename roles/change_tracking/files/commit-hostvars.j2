@@ -1,9 +1,25 @@
 {{ shebang }}
-# Update host_vars to upstream Git repository
+#
+# This will blindly update everything in host_vars
 
-cd /scdrm > /dev/null 2>&1
-git add * > /dev/null 2>&1
-git commit -a -m "Automatic update" > /dev/null 2>&1
-git push -u origin {{ git_branch }} > /dev/null
+# Commit changes for global change tracking
+cd /scdrm/host_vars > /dev/null
+git status > /tmp/gitstatus-$$.tmp
+
+if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/gitstatus-$$.tmp > /dev/null
+	then egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/gitstatus-$$.tmp | awk '{ if ($1 == "#") print $2 ; else print $1 ; }' > /tmp/gitstatus-$$.tmp.tmp
+fi
+
+for x in $(cat /tmp/gitstatus-$$.tmp.tmp)
+	do git add $x > /dev/null
+done
+
+/bin/rm -f /tmp/gitstatus-$$.tmp* > /dev/null 2>&1
+
+git commit -a -m "SCDRM auto commit" > /dev/null
+
+{% if upstream_git == "true" %}
+git push -u origin {{ git_branch }}
+{% endif }%
 
 exit 0

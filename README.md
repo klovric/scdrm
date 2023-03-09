@@ -70,7 +70,7 @@ All changes are committed with local Git instances and AIDE update is ran after 
 
 A global Git instance is taking care of commit metadata for every machine in your inventory, so the management node should always know about the current state in the infrastructure.
 
-This makes possible to revert settings for entire infrastructure in a safe and automated manner or just hunt for any unauthorized changes.
+This makes possible to revert settings for entire infrastructure in automated manner or just hunt for any unauthorized changes.
 
 
 Admin mode allows ONLY ONE user/script/playbook at a time to be doing changes to a machine. No more stepping over toes.
@@ -108,7 +108,7 @@ Most importantly PLEASE do report all and any bugs, errors or weird stuff SCDRM 
 
 Only you and your feedback can bring up SCDRM to a truly stable thing.
 
-This has been tested working on RHEL 7/8/9 but still needs a proper test in Nk environment.
+This has been tested working but still needs a proper test in Nk environment.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ P.S. For those willing to read more, here we go in more detail.
 INTRODUCTION
 -----------------------------------------
 
-While working with Nk RHEL infrastructure managed by CFEngine, which implementation was incomplete if you ask me, I've immediately started to write Ansible plays to deal with the infrastructure.
+While working with Nk RHEL infrastructure managed by CFEngine, I've immediately started to write Ansible plays to deal with the infrastructure.
 
 Been Ansible user for years and loving it, for multiple reasons.
 
@@ -175,7 +175,7 @@ Use AIDE for checking the rest of the system and send summary reporting to Secur
 
 Enforce a standard change process, that is safe and fast to revert, transparent, traceable and easy to manage.
 
-Keep up the uptime.
+Keep up the uptime by trying to keep server reachable.
 
 
 
@@ -245,17 +245,18 @@ MODULARITY
 
 SCDRM is written with modularity in mind. This means that you can turn off almost any part of the stack to comply with your needs.
 
-The following can be easily turned off/on:
+The following 'modules' can be easily turned off/on:
 
-	1. AIDE
-	2. AIDE auto check (every hour)
-	3. Route-guard
-	4. Change management exclusion (Ansible,Chef,Puppet...)
-	5. Upstream Git
+	1. AIDE and its checking frequency
+	2. Route-guard
+	3. Change management exclusion (Ansible,Chef,Puppet...)
+	4. Upstream Git
+	5. Automatic configuration reverting
+	6. Panic mode
 
 Every important variable can be easily changed to create even the most complex setups.
 
-You can always add a new directory to the 'dirlist' in case you are not satisfied with the defaults (etc, systemd, pam).
+You can always add a new directory to be watched by Git to the 'dirlist' variables in case you are not satisfied with the defaults (etc, systemd, pam).
 
 
 INSTALLATION
@@ -464,6 +465,18 @@ To remove SCDRM from your inventory run:
 
 	scdrm-remove
 
+MODULES 
+----------------------------------------
+
+Following options are made modular for ease of use. They are usually set in playbooks/scdrm.yml.
+
+  - AIDE: configure and use on demand; more frequent checks as secondary option
+  - Route-guard: in case you are not using default gateways (or have multiple), this should be turned off
+  - Active configuration protection by Git: this is called 'DRYRUN' mode and can be turned off and on
+  - Change management exclusion: exclude files containing specific header (like 'Managed by Ansible')
+  - Upstream Git: sync host_vars to upstream Git instance
+  - Panic mode: revert last change if not acknowledged by human
+
 SESSION LOGGING
 ----------------------------------------
 
@@ -517,6 +530,7 @@ To BLINDLY revert to the last change ONLY in /etc (by default) just run:
 
 
 	ansible-playbook playbooks/revert-last_change.yml
+
 
 This differes from 'consistency-enforce.yml' as it will not check last recorded commit.
 
@@ -587,7 +601,9 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.8.11	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10
+1.9.2	    2023-03-09   Included unpingable gateway setups in route-guard; paranoid mode included; fixes
+
+1.8.12	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10
 
 1.8.10	    2023-03-05   Bug fix to installation_wizard and config update task
 

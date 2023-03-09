@@ -14,15 +14,13 @@
        src: ../roles/scdrm/files/adminssh.j2
        dest: /usr/local/bin/adminssh
        mode: '0755'
-       owner: root
 
    - name: Copy commit-hostvars
      become: True
      template:
        src: ../roles/scdrm/files/commit-hostvars.j2
-       dest: /usr/local/bin/scdrm-commit
+       dest: /usr/local/bin/scdrm-commit-hostvars
        mode: '0755'
-       owner: root
 
    - name: Copy scdrm_rc
      become: False
@@ -36,7 +34,7 @@
      cron:
        name: "SCDRM commit hostvars"
        minute: "1,31"
-       job: /usr/local/bin/scdrm-commit
+       job: /usr/local/bin/scdrm-commit-hostvars
        state: present
 
    - name: Check local bashrc functions existing

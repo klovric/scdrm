@@ -86,11 +86,21 @@
     group: root
     attributes: +i
 
-- name: Copy scdrm.conf
+- name: Copy "{{ scdrm_conf }}"
   become: true
   template:
     src: ../files/scdrm.j2
-    dest: /etc/scdrm/scdrm.conf
+    dest: "{{ scdrm_conf }}"
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy scdrm-paranoid
+  become: true
+  template:
+    src: ../files/paranoid.j2
+    dest: /usr/local/sbin/scdrm-paranoid
     mode: 0755
     owner: root
     group: root
@@ -134,6 +144,16 @@
     owner: root
     group: root
     attributes: +i
+
+- name: Copy MOTD
+  become: true
+  template:
+    src: ../files/motd.j2
+    dest: /etc/motd.d/scdrm
+    mode: 0644
+    owner: root
+    group: root
+  when: set_motd is true
 
 - name: Setup Git GC cron
   cron:

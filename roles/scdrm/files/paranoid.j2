@@ -1,0 +1,36 @@
+{{ shebang }}
+
+# Revert to previous configuration if change not acknowledged within the 'paranoid_time' period
+source {{ scdrm_conf }}
+
+sleep {{ paranoid_time }}
+
+# If paranoid then revert to previous version for those dirs that had a change
+if [[ $PARANOID -eq 1 ]]
+then /bin/rm -f $PARANOIDTMP 2>/dev/null && touch $PARANOIDTMP 2>/dev/null
+COMIT=NULL
+	{% if "el" in release.stdout %}
+        for DIRS in {{ dirlist_el | join(' ') }}
+      	{% else %}
+        for DIRS in {{ dirlist_deb | join(' ') }}
+        {% endif %}
+        do 
+	cd $DIRS 2>/dev/null
+		if [[ -s $IDPARANOID ]]
+		then
+		chattr -R -i .git* 2>/dev/null
+		COMIT=$(git log | head -2 | awk '/commit/ {print $2}')
+		git show $COMIT | awk '/^diff/ {print $3}' >> $PARANOIDTMP
+		git reset --hard $(cat $IDPARANOID) 2>/dev/null
+		/bin/rm -f $IDPARANOID 2>/dev/null
+		chattr -R +i .git* 2>/dev/null
+		fi
+	done
+
+	/usr/local/sbin/scdrm-service-restart "$(cat $PARANOIDTMP | tr '\n' ',')"
+	/bin/rm -f $PARANOIDTMP 2>/dev/null
+
+else exit 0
+fi
+
+exit 0

@@ -91,7 +91,7 @@ printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
-function scdrm-config-update--dryrun-off {
+function scdrm-config-update-dryrun-off {
 local REPORT="{{ scdrm_install_dir}}/reports/config-update-dryrun-off-$(date '+%F-%T').txt"
 local LOGF="{{ scdrm_install_dir}}/log/config-update-dryrun-off-$(date '+%F-%T').log"
 
@@ -114,7 +114,7 @@ printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
 
-function scdrm-config-update--dryrun-on {
+function scdrm-config-update-dryrun-on {
 local REPORT="{{ scdrm_install_dir}}/reports/config-update-dryrun-on-$(date '+%F-%T').txt"
 local LOGF="{{ scdrm_install_dir}}/log/config-update-dryrun-on-$(date '+%F-%T').log"
 
@@ -127,6 +127,56 @@ then ansible-playbook playbooks/switch-dryrun-mode.yml -e "dryrun=1" -i $1| tee 
 elif [[ $# -eq 0 ]]
 then ansible-playbook playbooks/switch-dryrun-mode.yml -e "dryrun=1" | tee $LOGF
 fi
+
+printf '\nChecking for unreachables...\n' | tee -a $REPORT
+fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
+printf '\nChecking for low disk space...\n' | tee -a $REPORT
+fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+}
+
+function scdrm-config-update-paranoid-off {
+local REPORT="{{ scdrm_install_dir}}/reports/paranoid-off-$(date '+%F-%T').txt"
+local LOGF="{{ scdrm_install_dir}}/log/paranoid-off-$(date '+%F-%T').log"
+
+cd {{ scdrm_install_dir }} > /dev/null
+
+sed -i 's/^paranoid:.*$/paranoid: false/' playbooks/vars/main.yml
+ansible-playbook playbooks/switch-paranoid-off.yml
+
+printf '\nChecking for unreachables...\n' | tee -a $REPORT
+fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
+printf '\nChecking for low disk space...\n' | tee -a $REPORT
+fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+}
+
+function scdrm-config-update-paranoid-on {
+local REPORT="{{ scdrm_install_dir}}/reports/paranoid-on-$(date '+%F-%T').txt"
+local LOGF="{{ scdrm_install_dir}}/log/paranoid-on-$(date '+%F-%T').log"
+
+cd {{ scdrm_install_dir }} > /dev/null
+
+sed -i 's/^paranoid:.*$/paranoid: true/' playbooks/vars/main.yml
+ansible-playbook playbooks/switch-paranoid-on.yml
+
+printf '\nChecking for unreachables...\n' | tee -a $REPORT
+fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
+printf '\nChecking for low disk space...\n' | tee -a $REPORT
+fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+printf '\nChecking for failed tasks...\n' | tee -a $REPORT
+fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
+}
+
+function scdrm-paranoid-acknowledge-change {
+local REPORT="{{ scdrm_install_dir}}/reports/paranoid-ack-$(date '+%F-%T').txt"
+local LOGF="{{ scdrm_install_dir}}/log/paranoid-ack-$(date '+%F-%T').log"
+
+cd {{ scdrm_install_dir }} > /dev/null
+
+ansible-playbook playbooks/paranoid-ack.yml
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -237,4 +287,5 @@ fgrep 'No space' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 printf '\nChecking for failed tasks...\n' | tee -a $REPORT
 fgrep 'failed:' $LOGF || printf '\nAll good!\n\n' | tee -a $REPORT
 }
+
 

@@ -9,7 +9,7 @@
 #############################################################
 #
 # Main configuration file
-SCDRMCONF="/etc/scdrm/scdrm.conf"
+SCDRMCONF="{{ scdrm_conf | quote }}"
 #
 # Log and report directory
 SCDRMLOGDIR="/var/log/scdrm"
@@ -51,6 +51,15 @@ AIDE_CHECK=0
 #
 # Aide check temp file
 ACTMPF="/tmp/aide-auto-check.lck"
+#
+# Toggle paranoid mode on | off
+PARANOID=0
+#
+# Temp file for paranoid mode auto service restart
+PARANOIDTMP='/var/log/scdrm/paranoid.tmp'
+#
+# Location of commit ID for paranoid mode
+IDPARANOID='.scdrm-paranoid'
 #
 # Toggles admin mode ON | OFF
 ADMINMODE=0

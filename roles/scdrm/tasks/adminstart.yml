@@ -7,8 +7,8 @@
       {{ shebang }}
       #
       # Check for configuration
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -91,8 +91,8 @@
       #
       # Start admin mode for user
       #
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -130,8 +130,8 @@
       #
       # Stop admin mode for user
       #
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -157,12 +157,14 @@
           do git add $x
           done
       /bin/rm -f /tmp/scdrm.tmpf* > /dev/null 2>&1
+      git log | head -1 | awk '/commit/ {print $2}' > $IDPARANOID
       git commit -a -m "SCDRM auto add files commit" >> $SCDRMDLOG 2>&1
       fi
 
       if git status | fgrep "nothing to commit, working tree clean" > /dev/null
       then true
-      else git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
+      else git log | head -1 | awk '/commit/ {print $2}' > $IDPARANOID
+      git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
       fi
 
       done
@@ -175,6 +177,7 @@
       {% if aide_auto_check is defined %}
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
+
       printf "$NOW - Exited admin mode for $USERN\n" >> $SCDRMDLOG
 
       {% if "el" in release.stdout %}
@@ -196,6 +199,11 @@
       /bin/mv -f /var/lib/aide/aide.db.new /var/lib/aide/aide.db 2>/dev/null
         {% endif %}
       {% endif %}
+
+      if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
+      then /usr/local/sbin/scdrm-paranoid &
+      fi
+
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop
@@ -257,8 +265,8 @@
 
       /usr/local/sbin/scdrm-fast > /dev/null
 
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -280,12 +288,14 @@
           do git add $x
           done
       /bin/rm -f /tmp/scdrm.tmpf* > /dev/null 2>&1
+      git log | head -1 | awk '/commit/ {print $2}' > $IDPARANOID
       git commit -a -m "SCDRM auto add files commit" >> $SCDRMDLOG 2>&1
       fi
 
       if git status | fgrep "nothing to commit, working tree clean" > /dev/null
       then true
-      else git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
+      else git log | head -1 | awk '/commit/ {print $2}' > $IDPARANOID
+      git commit -a -m "SCDRM auto commit" >> $SCDRMDLOG 2>&1
       fi
 
       done
@@ -317,6 +327,10 @@
         {% endif %}
       {% endif %}
 
+      if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
+      then /usr/local/sbin/scdrm-paranoid &
+      fi
+
       /bin/rm -f $ALOCKF > /dev/null 2>&1
       exit 0
     dest: /usr/local/sbin/adminstop-auto
@@ -329,7 +343,7 @@
   blockinfile:
     path: "/home/{{ myuser }}/.bashrc"
     block: |
-      if fgrep 'ADMINMODE=1' /etc/scdrm/scdrm.conf > /dev/null 2>&1
+      if fgrep 'ADMINMODE=1' {{ scdrm_conf }} > /dev/null 2>&1
       then 
       export {{ ps1 }}
       fi

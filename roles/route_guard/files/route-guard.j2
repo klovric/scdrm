@@ -8,6 +8,7 @@ GATEWAY=NULL
 DROUTE=NULL
 OLDGW=NULL
 PINGABLE=NULL
+FIRSTPING=NULL
 DROUTEPING=NULL
 OGWPING=NULL
 
@@ -16,6 +17,15 @@ if [[ $DROUTE == "NULL" ]]
 then GATEWAY="$(ip route show | grep default)"
 	if (ping -c1 -W5 $(echo $GATEWAY | awk '{print $3}') > /dev/null)
 	then sed -i "s/^DROUTE=NULL$/DROUTE='$GATEWAY'/" $SBINARY
+	sed -i "s/^PINGABLE=NULL$/PINGABLE=YES/" $SBINARY
+	sed -i "s/^FIRSTPING=NULL$/FIRSTPING=YES/" $SBINARY
+	PINGABLE=YES
+	FIRSTPING=YES
+	else PINGABLE=NO
+	FIRSTPING=NO
+	sed -i "s/^DROUTE=NULL$/DROUTE='$GATEWAY'/" $SBINARY
+	sed -i "s/^PINGABLE=NULL$/PINGABLE=NO/" $SBINARY
+	sed -i "s/^FIRSTPING=NULL$/FIRSTPING=NO/" $SBINARY
 	fi
 exit 0
 fi
@@ -26,14 +36,17 @@ then GATEWAY="$(ip route show | grep default)"
 
 	if (ping -c1 -W5 $(echo $GATEWAY | awk '{print $3}') > /dev/null)
 	then PINGABLE=YES
+	else PINGABLE=NO
 	fi
 
 	if [[ $OLDGW != "NULL" ]] && (ping -c1 -W5 $(echo $OLDGW | awk '{print $3}') > /dev/null)
 	then OGWPING=YES
+	else OGWPING=NO
 	fi
 
 	if [[ $DROUTE != "NULL" ]] && (ping -c1 -W5 $(echo $DROUTE | awk '{print $3}') > /dev/null)
 	then DROUTEPING=YES
+	else DROUTEPING=NO
 	fi
 
 	if (echo $GATEWAY | grep -v "$DROUTE" > /dev/null) && [[ $PINGABLE == "YES" ]]
@@ -41,23 +54,33 @@ then GATEWAY="$(ip route show | grep default)"
 	sed -i "s/^DROUTE=.*$/DROUTE='$GATEWAY'/" $SBINARY
 	fi
 
-	if [[ $PINGABLE == "NULL" && $DROUTEPING == "YES" ]]
+	if (echo $GATEWAY | grep -v "$DROUTE" > /dev/null) && [[ $FIRSTPING == "NO" ]]
+	then ip route del $GATEWAY
+	ip route add $DROUTE
+	fi	
+
+	if [[ $PINGABLE == "NO" && $DROUTEPING == "YES" ]]
 	then ip route del $GATEWAY
 	ip route add $DROUTE
 	fi
 
-	if [[ $PINGABLE == "NULL" && $OGWPING == "YES" ]]
+	if [[ $PINGABLE == "NO" && $OGWPING == "YES" ]]
 	then ip route del $GATEWAY
 	ip route add $OLDGW
 	sed -i "s/^DROUTE=.*$/DROUTE='$OLDGW'/" $SBINARY
 	fi
 
 else
-	if (ping -c1 -W5 $(echo $DROUTE | awk '{print $3}') > /dev/null)
+	if [[ $FIRSTPING == "YES" ]]
+	then 
+		if (ping -c1 -W5 $(echo $DROUTE | awk '{print $3}') > /dev/null)
+		then ip route add $DROUTE || systemctl restart {{ netservice }}.service > /dev/null
+		elif [[ $OLDGW != "NULL" ]] && (ping -c1 -W5 $(echo $OLDGW | awk '{print $3}') > /dev/null)
+		then sed -i "s/^DROUTE=.*$/DROUTE='$OLDGW'/" $SBINARY
+		ip route add $OLDGW || systemctl restart {{ netservice }}.service > /dev/null
+		fi
+	elif [[ $FIRSTPING == "NO" && $DROUTE != "NULL" ]] 
 	then ip route add $DROUTE || systemctl restart {{ netservice }}.service > /dev/null
-	elif [[ $OLDGW != "NULL" ]] && (ping -c1 -W5 $(echo $OLDGW | awk '{print $3}') > /dev/null)
-	then sed -i "s/^DROUTE=.*$/DROUTE='$OLDGW'/" $SBINARY
-	ip route add $OLDGW || systemctl restart {{ netservice }}.service > /dev/null
 	fi
 fi
 
