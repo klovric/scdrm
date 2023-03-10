@@ -1,4 +1,4 @@
-# This playbook acknowledges the change done in PARANOID mode
+# This playbook acknowledges the change done in PARANOID mode - fast
 ---
 - name: Acknowledge change while in paranoid mode
   hosts: all
@@ -10,21 +10,9 @@
   tasks:
     - name: Prepare for update
       become: true
-      command: chattr -R -i /etc/scdrm/ 2>/dev/null
-      failed_when: false
-      changed_when: true
-
-    - name: Update config
-      become: true
-      lineinfile:
-        path: /etc/scdrm/scdrm.conf
-        regexp: '^PARANOID=1'
-        line: PARANOID=0
-        state: present
-
-    - name: Lock config
-      become: true
-      command: chattr -R +i /etc/scdrm/ 2>/dev/null
+      command: chattr -R -i /etc/scdrm/ 2>/dev/null && sed -i 's/^PARANOID=1/PARANOID=0/' "{{ scdrm_conf }}" && chattr -R +i /etc/scdrm/ 2>/dev/null
+      args:
+        exeutable: /bin/bash
       failed_when: false
       changed_when: true
 ...
