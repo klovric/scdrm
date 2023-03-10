@@ -22,7 +22,7 @@
     dryrun: 1
     managed: 0
     managed_string: 'my_managed_by_strings_too_look_for'
-    check_freq: 20
+    check_freq: 300
     llog_retention: 60
     #disable_route_guard: true
     #disable_aide: true
