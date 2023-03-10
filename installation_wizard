@@ -113,7 +113,7 @@ printf "For more frequent reporting you should really run AIDE check after every
 read yesno
 	case "$yesno" in
 		y)      printf "\tOK\n"
-			sed -i 's/aide_auto_check: yes/#aide_auto_check: true/' playbooks/vars/main.yml
+			sed -i 's/aide_auto_check: true/aide_auto_check: false/' playbooks/vars/main.yml
 			;;
 		n)      printf '\tOK\n'
 			;;
@@ -218,14 +218,15 @@ ln -sf /scdrm/host_vars . > /dev/null 2>&1
 cd /scdrm/host_vars > /dev/null
 git init > /dev/null
 git add . > /dev/null
+git config init.defaultBranch main
 git commit -a -m "Installation init" > /dev/null
+	#if [[ ! -d /scdrm/.git ]]
+	#then cd /scdrm/host_vars > /dev/null
+	#git init > /dev/null
+	#git add . > /dev/null
+	#git commit -a -m "Installation init" > /dev/null
+	#fi
 else
-	if [[ ! -d /scdrm/.git ]]
-	then cd /scdrm/host_vars > /dev/null
-	git init > /dev/null
-	git add . > /dev/null
-	git commit -a -m "Installation init" > /dev/null
-	fi
 # Check group presence
 fgrep scdrm /etc/group > /dev/null || (sudo groupadd scdrm && sudo chgrp -R scdrm /scdrm) > /dev/null 2>&1
 fgrep scdrm /etc/group | fgrep $USER > /dev/null || sudo usermod -a -G scdrm $(whoami) > /dev/null 2>&1

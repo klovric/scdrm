@@ -146,13 +146,13 @@
     user: root
     state: absent
 
-- name: Remove packages
-  package:
-    name: "{{ item }}"
-    state: absent
-  with_items:
-    - aide
-    - tlog
+#- name: Remove packages
+#  package:
+#    name: "{{ item }}"
+#    state: absent
+#  with_items:
+#    - aide
+#    - tlog
 
 - name: Reload systemd
   systemd:

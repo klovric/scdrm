@@ -245,13 +245,13 @@ MODULARITY
 
 SCDRM is written with modularity in mind. This means that you can turn off almost any part of the stack to comply with your needs.
 
-The following 'modules' can be easily turned off/on:
+The following 'modules' or modes can be easily turned off/on:
 
 	1. AIDE and its checking frequency
 	2. Route-guard
 	3. Change management exclusion (Ansible,Chef,Puppet...)
 	4. Upstream Git
-	5. Automatic configuration reverting
+	5. Automatic configuration reverting (dryrun)
 	6. Panic mode
 
 Every important variable can be easily changed to create even the most complex setups.
@@ -286,7 +286,7 @@ Once updated 'DRYRUN=0' in /etc/scdrm/scdrm.conf you have activated change/delet
 To do this for you inventory you can simply execute:
 
 
-	scdrm-config-update--dryrun-off
+	scdrm-config-update-dryrun-off
 
  
 DEINSTALLATION
@@ -449,21 +449,19 @@ Then run this to provision the updates to your fleet:
 	scdrm-config-update
 
 
-Configuration update can be done inline - without making changes to any template/playbook.
-
-This is my perferred and suggested method for testing. 
-
 For production you want the values hardcoded into scdrm.yml for persistence reason.
 
 Simply run the scdrm.yml playbook with 'update=yes' and add any variable you need to update, i.e.
 
+Some configuration changes do not require re-syncing the stack, thus they have been picked out
 
-	scdrm-config-update--dryrun-off
+for convenience and fast usage, like:
 
 
-To remove SCDRM from your inventory run:
+	scdrm-config-update-dryrun-off
+	scdrm-config-update-paranoid
 
-	scdrm-remove
+
 
 MODULES 
 ----------------------------------------
@@ -601,7 +599,7 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.9.2	    2023-03-09   Included unpingable gateway setups in route-guard; paranoid mode included; fixes
+1.9.2	    2023-03-10   Included unpingable gateway setups in route-guard:v2 ; PARANOID mode included ; MOTD included ; several minor fixes
 
 1.8.12	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10
 

@@ -91,7 +91,7 @@
     dest: /usr/local/sbin/aide-auto-check
     mode: 0750
     attributes: +i
-  when: aide_auto_check is defined
+  when: aide_auto_check is true
 
 - name: AIDE init EL
   become: true
@@ -214,7 +214,7 @@
     group: root
     attributes: +i
   when:
-    - aide_auto_check is defined
+    - aide_auto_check is true
 
 - name: Setup AIDE auto-check timer
   become: true
@@ -236,7 +236,7 @@
     owner: root
     group: root
     attributes: +i
-  when: aide_auto_check is defined
+  when: aide_auto_check is true
 
 - name: Commit AIDE install EL
   become: true

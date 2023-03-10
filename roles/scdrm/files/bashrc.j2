@@ -10,11 +10,11 @@ local LOGF="{{ scdrm_install_dir}}/log/change-tracking-check-$(date '+%F-%T').lo
 cd {{ scdrm_install_dir }} > /dev/null
 
 if [[ $# -eq 1 && ! -s $1 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "check=yes" -l $1 | tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "check=true" -l $1 | tee $LOGF
 elif [[ $# -eq 1 && -s $1 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "check=yes" -i $1| tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "check=true" -i $1| tee $LOGF
 elif [[ $# -eq 0 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "check=yes" | tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "check=true" | tee $LOGF
 fi
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
@@ -32,11 +32,11 @@ local LOGF="{{ scdrm_install_dir}}/log/change-tracking-update-$(date '+%F-%T').l
 cd {{ scdrm_install_dir }} > /dev/null
 
 if [[ $# -eq 1 && ! -s $1 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "update=yes" -l $1 | tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "update=true" -l $1 | tee $LOGF
 elif [[ $# -eq 1 && -s $1 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "update=yes" -i $1| tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "update=true" -i $1| tee $LOGF
 elif [[ $# -eq 0 ]]
-then ansible-playbook playbooks/change-tracking.yml -e "update=yes" | tee $LOGF
+then ansible-playbook playbooks/change-tracking.yml -e "update=true" | tee $LOGF
 fi
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
@@ -76,11 +76,11 @@ local LOGF="{{ scdrm_install_dir}}/log/config-update-$(date '+%F-%T').log"
 cd {{ scdrm_install_dir }} > /dev/null
 
 if [[ $# -eq 1 && ! -s $1 ]]
-then ansible-playbook playbooks/scdrm.yml -e "update=yes" -l $1 | tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "update=true" -l $1 | tee $LOGF
 elif [[ $# -eq 1 && -s $1 ]]
-then ansible-playbook playbooks/scdrm.yml -e "update=yes" -i $1| tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "update=true" -i $1| tee $LOGF
 elif [[ $# -eq 0 ]]
-then ansible-playbook playbooks/scdrm.yml -e "update=yes" | tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "update=true" | tee $LOGF
 fi
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
@@ -143,7 +143,7 @@ local LOGF="{{ scdrm_install_dir}}/log/paranoid-off-$(date '+%F-%T').log"
 cd {{ scdrm_install_dir }} > /dev/null
 
 sed -i 's/^paranoid:.*$/paranoid: false/' playbooks/vars/main.yml
-ansible-playbook playbooks/switch-paranoid-off.yml
+ansible-playbook playbooks/switch-paranoid-off.yml | tee $LOGF
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -160,7 +160,7 @@ local LOGF="{{ scdrm_install_dir}}/log/paranoid-on-$(date '+%F-%T').log"
 cd {{ scdrm_install_dir }} > /dev/null
 
 sed -i 's/^paranoid:.*$/paranoid: true/' playbooks/vars/main.yml
-ansible-playbook playbooks/switch-paranoid-on.yml
+ansible-playbook playbooks/switch-paranoid-on.yml | tee $LOGF
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -176,7 +176,7 @@ local LOGF="{{ scdrm_install_dir}}/log/paranoid-ack-$(date '+%F-%T').log"
 
 cd {{ scdrm_install_dir }} > /dev/null
 
-ansible-playbook playbooks/paranoid-ack.yml
+ansible-playbook playbooks/paranoid-ack.yml | tee $LOGF
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
 fgrep 'unreachable=1' $LOGF ||  printf "\nAll good!\n\n" | tee -a $REPORT
@@ -193,11 +193,11 @@ local LOGF="{{ scdrm_install_dir}}/log/remove-$(date '+%F-%T').log"
 cd {{ scdrm_install_dir }} > /dev/null
 
 if [[ $# -eq 1 && ! -s $1 ]]
-then ansible-playbook playbooks/scdrm.yml -e "remove=yes" -l $1 | tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "remove=true" -l $1 | tee $LOGF
 elif [[ $# -eq 1 && -s $1 ]]
-then ansible-playbook playbooks/scdrm.yml -e "remove=yes" -i $1| tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "remove=true" -i $1| tee $LOGF
 elif [[ $# -eq 0 ]]
-then ansible-playbook playbooks/scdrm.yml -e "remove=yes" | tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "remove=true" | tee $LOGF
 fi
 
 printf '\nChecking for unreachables...\n' | tee -a $REPORT
@@ -214,7 +214,7 @@ local LOGF="{{ scdrm_install_dir}}/log/uninstall_all-$(date '+%F-%T').log"
 
 cd {{ scdrm_install_dir }} > /dev/null
 
-ansible-playbook playbooks/scdrm.yml -e "remove=yes" | tee $LOGF
+ansible-playbook playbooks/scdrm.yml -e "remove=true" | tee $LOGF
 ansible-playbook playbooks/adminssh-remove.yml | tee -a $LOGF
 unlink host_vars
 

@@ -1,7 +1,7 @@
 # Commit changes to global change tracking Git
 ---
 - name: Run the program to commit changes
-  become: true
+  become: false
   command: /usr/local/bin/scdrm-commit-hostvars
   changed_when: false
   delegate_to: localhost

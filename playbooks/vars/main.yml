@@ -11,7 +11,7 @@ myuser: klovric
 aide_auto_check: true
 aide_check: '20:00'
 paranoid: true
-paranoid_time: 20
+paranoid_time: 120
 set_motd: true
 # These directories are managed by Git
 dirlist_el:

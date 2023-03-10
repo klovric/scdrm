@@ -49,8 +49,8 @@
       # Start admin mode for user
       #
       # Check for configuration
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -148,6 +148,7 @@
       for DIRECTORY in {{ dirlist_deb | join(' ') }}
       {% endif %}
       do cd $DIRECTORY > /dev/null
+      echo -n '' > $IDPARANOID 2>/dev/null
 
       git status > /tmp/scdrm.tmpf
       if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/scdrm.tmpf > /dev/null
@@ -174,7 +175,7 @@
       chmod 0000 /home/$USERN/.log_local/* 2>/dev/null
       chattr -R +i /home/$USERN/.log_local/ 2>/dev/null
       sed -i 's/^ADMINMODE=1/ADMINMODE=0/' $SCDRMCONF 2>/dev/null
-      {% if aide_auto_check is defined %}
+      {% if aide_auto_check is true %}
       sed -i 's/^AIDE_CHECK=0/AIDE_CHECK=1/' $SCDRMCONF 2>/dev/null
       {% endif %}
 
@@ -201,7 +202,7 @@
       {% endif %}
 
       if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
-      then /usr/local/sbin/scdrm-paranoid &
+      then nohup /usr/local/sbin/scdrm-paranoid & 2>/dev/null
       fi
 
       /bin/rm -f $ALOCKF > /dev/null 2>&1
@@ -328,7 +329,7 @@
       {% endif %}
 
       if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
-      then /usr/local/sbin/scdrm-paranoid &
+      then nohup /usr/local/sbin/scdrm-paranoid & 2>/dev/null
       fi
 
       /bin/rm -f $ALOCKF > /dev/null 2>&1

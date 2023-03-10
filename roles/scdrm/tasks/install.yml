@@ -167,6 +167,7 @@
       git add . >> $SCDRMILOG 2>>$SCDRMELOG
       git config user.email "scdrm@localhost.localdomain"
       git config user.name "SCDRM"
+      git config --global --add safe.directory '*'
       git commit -a -m "Installation commit" >> $SCDRMILOG 2>>$SCDRMELOG
 
       done

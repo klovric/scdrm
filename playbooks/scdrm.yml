@@ -22,12 +22,12 @@
     dryrun: 1
     managed: 0
     managed_string: 'my_managed_by_strings_too_look_for'
-    check_freq: 30
+    check_freq: 20
     llog_retention: 60
-    #disable_route_guard: yes
-    #disable_aide: yes
-    #remove: yes
-    #update: yes
+    #disable_route_guard: true
+    #disable_aide: true
+    #remove: true
+    #update: true
   roles:
     - role: get_kernel
     - { role: skip_host, when: 'release is undefined or "el6" in release.stdout' }
