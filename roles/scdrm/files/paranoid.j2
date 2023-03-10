@@ -1,9 +1,10 @@
 {{ shebang }}
 
 # Revert to previous configuration if change not acknowledged within the 'paranoid_time' period
-source {{ scdrm_conf }}
 
 sleep {{ paranoid_time }}
+
+source {{ scdrm_conf }}
 
 # If paranoid then revert to previous version for those dirs that had a change
 if [[ $PARANOID -eq 1 ]]

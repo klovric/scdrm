@@ -23,7 +23,6 @@ Because people make mistakes!
 Because managing N(N)k machines in a heavily segmented infrastructure with Ansible is fun and easy!
 
 
-
 Answer this question! 
 -----------------------------------------
 If a junior sysadmin makes a typo in a playbook which got executed on ENTIRE inventory, and the typo resulted in /etc/passwd file getting deleted/overwritten, how long would it take you to recover from this?
@@ -252,7 +251,8 @@ The following 'modules' or modes can be easily turned off/on:
 	3. Change management exclusion (Ansible,Chef,Puppet...)
 	4. Upstream Git
 	5. Automatic configuration reverting (dryrun)
-	6. Panic mode
+	6. Paranoid mode
+	7. MOTD setup
 
 Every important variable can be easily changed to create even the most complex setups.
 
@@ -436,6 +436,7 @@ By having global tracking in 'personal' Git, we have records and possibility to 
 
 Optionally, you could use your Gitlab/Github instance to keep host_vars in. The installation wizard will ask for this.
 
+
 UPDATING CONFIGURATION
 -----------------------------------------
 
@@ -458,22 +459,25 @@ Some configuration changes do not require re-syncing the stack, thus they have b
 for convenience and fast usage, like:
 
 
-	scdrm-config-update-dryrun-off
-	scdrm-config-update-paranoid
+	scdrm-config-update-dryrun-off - exit dryrun mode for active protection
 
+	scdrm-config-update-paranoid-on - enter paranoid mode to presume every change is to be reverted
+
+	scdrm-paranoid-acknowledge-change - stop change from being reverted / acknowlede as valid
 
 
 MODULES 
 ----------------------------------------
 
-Following options are made modular for ease of use. They are usually set in playbooks/scdrm.yml.
+Following options are made modular for ease of use. They are usually set in playbooks/vars/main.yml and playbooks/scdrm.yml.
 
   - AIDE: configure and use on demand; more frequent checks as secondary option
   - Route-guard: in case you are not using default gateways (or have multiple), this should be turned off
-  - Active configuration protection by Git: this is called 'DRYRUN' mode and can be turned off and on
+  - Active configuration protection by Git: when turned off is called 'DRYRUN' mode
   - Change management exclusion: exclude files containing specific header (like 'Managed by Ansible')
   - Upstream Git: sync host_vars to upstream Git instance
-  - Panic mode: revert last change if not acknowledged by human
+  - Paranoid mode: revert change if not acknowledged by human, presume the change is bad - good for testing SSH/PAM changes
+
 
 SESSION LOGGING
 ----------------------------------------
@@ -599,7 +603,7 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
-1.9.2	    2023-03-10   Included unpingable gateway setups in route-guard:v2 ; PARANOID mode included ; MOTD included ; several minor fixes
+1.9.3	    2023-03-10   Included unpingable gateway setups in route-guard:v2 ; PARANOID mode included ; MOTD included ; several minor fixes
 
 1.8.12	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10
 

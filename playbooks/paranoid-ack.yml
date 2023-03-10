@@ -1,16 +1,30 @@
+# This playbook acknowledges the change done in PARANOID mode
 ---
 - name: Acknowledge change while in paranoid mode
   hosts: all
-  gather_facts: false
+  gather_facts: False
   serial: 96
-  ignore_errors: true
+  ignore_errors: True
+  strategy: linear
   vars_files: ./vars/main.yml
   tasks:
-    - name: Kill scdrm-paranoid
-      become: True
-      shell: pkill scdrm-paranoid
-      args:
-        executable: /bin/bash
-      changed_when: false
-      ignore_errors: true
+    - name: Prepare for update
+      become: true
+      command: chattr -R -i /etc/scdrm/ 2>/dev/null
+      failed_when: false
+      changed_when: true
+
+    - name: Update config
+      become: true
+      lineinfile:
+        path: /etc/scdrm/scdrm.conf
+        regexp: '^PARANOID=1'
+        line: PARANOID=0
+        state: present
+
+    - name: Lock config
+      become: true
+      command: chattr -R +i /etc/scdrm/ 2>/dev/null
+      failed_when: false
+      changed_when: true
 ...

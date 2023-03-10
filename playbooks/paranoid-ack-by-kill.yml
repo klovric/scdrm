@@ -1,0 +1,20 @@
+# This playbook acknowledges the change done in PARANOID mode ungracefully by killing the process.
+# It is fast but it an cause problems if the restore is already ongoing.
+# Use with caution!!!
+---
+- name: Acknowledge change while in paranoid mode - ungracefuly
+  hosts: all
+  gather_facts: False
+  serial: 96
+  ignore_errors: True
+  strategy: linear
+  vars_files: ./vars/main.yml
+  tasks:
+    - name: Kill the paranoid process
+      become: true
+      command: pkill scdrm-paranoid
+      args:
+        executable: /bin/bash
+      changed_when: true
+
+...
