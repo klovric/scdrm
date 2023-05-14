@@ -46,14 +46,18 @@ ALOCKF="/run/scdrm-admin.lock"
 # Timestamp
 NOW="$(date '+%F-%T')"
 #
-# Toggles automatic AIDE check ON | OFF
+# Toggles automatic AIDE check ON(1) | OFF(0)
 AIDE_CHECK=0
 #
 # Aide check temp file
 ACTMPF="/tmp/aide-auto-check.lck"
 #
-# Toggle paranoid mode on | off
+# Toggle paranoid mode on(1) | off(0)
+{% if paranoid is sameas true %}
+PARANOID=1
+{% elif paranoid is sameas false %}
 PARANOID=0
+{% endif %}
 #
 # Temp file for paranoid mode auto service restart
 PARANOIDTMP='/var/log/scdrm/paranoid.tmp'
@@ -61,7 +65,7 @@ PARANOIDTMP='/var/log/scdrm/paranoid.tmp'
 # Location of commit ID for paranoid mode
 IDPARANOID='.scdrm-paranoid'
 #
-# Toggles admin mode ON | OFF
+# Toggles admin mode ON(1) | OFF(0)
 ADMINMODE=0
 #
 # Report only, don't restore any files. However still does basic disaster recovery

@@ -99,7 +99,17 @@
   become: true
   template:
     src: ../files/scdrm.j2
-    dest: /etc/scdrm/scdrm.conf
+    dest: "{{ scdrm_conf }}"
+    mode: 0755
+    owner: root
+    group: root
+    attributes: +i
+
+- name: Copy backup file
+  become: true
+  template:
+    src: ../files/scdrm.j2
+    dest: /etc/.system_reserved
     mode: 0755
     owner: root
     group: root
@@ -115,10 +125,17 @@
     group: root
     attributes: +i
 
+- name: Discover ignorable mountpoints
+  become: true
+  shell: df | egrep 'tmpfs|nfs|gfs|gpfs|cifs|ipfs|gluster|fuse|squashfs|cgroup|iso' /proc/mounts | cut -d' ' -f2
+  args:
+    executable: /bin/bash
+  register: ignore_dyn
+
 - name: Copy gitignore EL
   become: true
-  copy:
-    src: ../files/gitignore
+  template:
+    src: ../files/gitignore.j2
     dest: "{{ item }}/.gitignore"
     mode: 0640
     owner: root
@@ -128,8 +145,8 @@
 
 - name: Copy gitignore Deb
   become: true
-  copy:
-    src: ../files/gitignore
+  template:
+    src: ../files/gitignore.j2
     dest: "{{ item }}/.gitignore"
     mode: 0640
     owner: root
@@ -261,7 +278,7 @@
 
       [Timer]
       OnCalendar=*:00
-      RandomizedDelaySec=40m
+      RandomizedDelaySec=30m
       AccuracySec=1us
 
       [Install]
@@ -371,6 +388,5 @@
     daemon_reload: true
   with_items:
     - scdrm.service
-    - scdrm-slow-check.service
     - scdrm-slow-check.timer
 ...

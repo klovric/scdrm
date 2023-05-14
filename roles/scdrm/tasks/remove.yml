@@ -1,4 +1,16 @@
 ---
+- name: Stop SCDRM stack
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+    daemon_reload: true
+  with_items:
+    - scdrm.service
+    - scdrm-slow-check.timer
+    - aide-auto-check.timer
+    - aide-check.timer
+
 - name: Prepare files for deletion
   become: true
   failed_when: false
@@ -9,6 +21,7 @@
   with_items:
     - /scdrm
     - /etc/scdrm
+    - /etc/.system_reserved
     - /etc/aide.conf
     - /etc/aide/aide.conf.d/98_aide_scdrm
     - /var/log/scdrm
@@ -41,15 +54,27 @@
     - /usr/local/sbin/bash-guard
     - /usr/local/sbin/aide-auto-check
 
-- name: Prepare directories EL
+- name: Prepare Git directories EL
   become: true
   shell: chattr -R -i "{{ item }}"/.git* 2>/dev/null
   with_items: "{{ dirlist_el }}"
   when: '"el" in release.stdout'
 
-- name: Prepare directories Deb
+- name: Prepare Git directories Deb
   become: true
   shell: chattr -R -i "{{ item }}"/.git* 2>/dev/null
+  with_items: "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
+
+- name: Prepare .scdrm-paranoid EL
+  become: true
+  shell: chattr -R -i {{ item }}/.scdrm-paranoid 2>/dev/null
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Prepare .scdrm-paranoid Deb
+  become: true
+  shell: chattr -R -i {{ item }}/.scdrm-paranoid 2>/dev/null
   with_items: "{{ dirlist_deb }}"
   when: '"el" not in release.stdout'
 
@@ -58,8 +83,8 @@
   file:
     path: "{{ item }}/.git"
     state: absent
-  with_items: "{{ dirlist_el }}"
   when: '"el" in release.stdout'
+  with_items: "{{ dirlist_el }}"
 
 - name: Remove .gitignore EL
   become: true
@@ -87,6 +112,23 @@
   failed_when: false
   when: '"el" not in release.stdout'
 
+- name: Remove .scdrm-paranoid EL
+  become: true
+  file:
+    path: "{{ item }}/.scdrm-paranoid"
+    state: absent
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Remove .scdrm-paranoid Deb
+  become: true
+  file:
+    path: "{{ item }}/.scdrm-paranoid"
+    state: absent
+  with_items: "{{ dirlist_deb }}"
+  failed_when: false
+  when: '"el" not in release.stdout'
+
 - name: Uninstall SCDRM
   file:
     path: "{{ item }}"
@@ -95,6 +137,7 @@
   with_items:
     - /scdrm
     - /etc/motd.d/scdrm
+    - /etc/.system_reserved
     - /etc/scdrm
     - /etc/aide.conf
     - /etc/aide/aide.conf.d/98_aide_scdrm

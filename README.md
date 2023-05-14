@@ -15,6 +15,18 @@ It enforces secure change process, does security reporting, change tracking and 
 
 Can work with existing change management systems like Puppet, Chef, CFEngine, Ansible...
 
+Tested and working on:
+
+	Manged nodes OS:
+	RHEL: 7 - 9
+	Debian: 10 - 11
+	Ubuntu: 20.04 - 23.04
+
+	Management node ENV:
+	ansible [core 2.13.3]
+  	python version = 3.9.13
+  	jinja version = 3.1.2
+
 
 Why would someone use it?
 -----------------------------------------
@@ -593,7 +605,7 @@ Steffen Froemer@Redhat for motivation!
 
 Author
 -----------------------------------------
-Currently not working as Linux IT architect @IBM systems.
+Kresimir Lovric
 
 You can contact me at klovric@kripteia.eu
 Linkedin or Github.
@@ -603,6 +615,8 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+1.9.4	    2023-05-14   Introducing auto 'scdrm.conf' DR backup and restore, some minor fixes and improvements
+
 1.9.3	    2023-03-10   Included unpingable gateway setups in route-guard:v2 ; PARANOID mode included ; MOTD included ; several minor fixes
 
 1.8.12	    2023-03-06   Proper handling of ${dirlist} fixed ; Community RFC marked with v1.8.10

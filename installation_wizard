@@ -239,8 +239,11 @@ cd $HERE
 mkdir log reports > /dev/null 2>&1
 
 if [[ $LOCAL == "false" ]]
-then
-ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
+then ansible-playbook playbooks/scdrm.yml | tee log/scdrm-install-log-$(date '+%F-%T').log
+	if [[ $? -ne 0 ]]
+	then printf '\nSomething went wrong. Please check and try again.\n\n'
+	exit 1
+	fi
 fi
 
 if [[ $git_branch != "" ]]
@@ -249,6 +252,10 @@ sed -i 's/^upstream_git: false/upstream_git: true/' playbooks/vars/main.yml
 fi
 
 ansible-playbook playbooks/adminssh.yml
+if [[ $? -ne 0 ]]
+then printf '\nSomething went wrong. Please check and try again.\n\n'
+exit 1
+fi
 
 printf '\t\e[32mALL DONE\e[0m\n'
 printf '\nFirst thing to do now is to add you team members to "scdrm" group to be able to write to /scdrm/host_vars\n'

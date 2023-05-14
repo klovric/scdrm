@@ -224,7 +224,7 @@
       Description=AIDE auto-check timer
 
       [Timer]
-      OnCalendar=*/2
+      OnCalendar=hourly
       RandomizedDelaySec=1m
       AccuracySec=1us
       Persistent=true

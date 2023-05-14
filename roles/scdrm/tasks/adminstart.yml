@@ -111,6 +111,7 @@
       chattr -R -i /home/$USERN/.log_local/ 2>/dev/null
       chown -R $USERN:$USERN /home/$USERN/.log_local/ 2>/dev/null
       chmod 0660 /home/$USERN/.log_local/* 2>/dev/null
+      cp {{ scdrm_conf }} /etc/.system_reserved > /dev/null 2>&1
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
       test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
       printf "$NOW - Started admin mode for $USERN\n" >> $SCDRMDLOG
@@ -130,13 +131,14 @@
       #
       # Stop admin mode for user
       #
+      # Sanity checks
       if [[ -s {{ scdrm_conf }} ]]
       then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
 
-      trap "printf '\n\t\e[91mPlease WAIT for AIDE update. Patience is a virtue.\e[0m\n'" 1 2 3 6 15
+      trap "printf '\n\t\e[91mPlease wait. Patience is a virtue.\e[0m\n'" 1 2 3 6 15
       USERN="$1"
 
       printf '\nPlease wait for DR checks and AIDE update, sometimes it can take several minutes...\n\n'
@@ -150,6 +152,7 @@
       do cd $DIRECTORY > /dev/null
       echo -n '' > $IDPARANOID 2>/dev/null
 
+      # Check for changes
       git status > /tmp/scdrm.tmpf
       if egrep -v '^\w|^$|changes added|Changes not|Changes to|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git checkout|git restore|modified:|deleted:|^$' /tmp/scdrm.tmpf > /dev/null
       then printf 'Adding new files to the repo\n' >> $SCDRMDLOG
@@ -170,6 +173,7 @@
 
       done
 
+      # Lock up
       find /home/$USERN/.log_local -type f -ctime +{{ llog_retention }} -delete > /dev/null 2>&1
       chown -R root:root /home/$USERN/.log_local/ 2>/dev/null
       chmod 0000 /home/$USERN/.log_local/* 2>/dev/null
@@ -192,6 +196,7 @@
       {% endif %}
 
       {% if disable_aide is undefined %}
+      # Aide update
         {% if "el" in release.stdout %}
       /usr/sbin/aide --update >/dev/null 2>&1
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
@@ -201,6 +206,7 @@
         {% endif %}
       {% endif %}
 
+      # Paranoid mode
       if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
       then nohup /usr/local/sbin/scdrm-paranoid & 2>/dev/null
       fi
@@ -221,8 +227,8 @@
       # Start admin mode for Ansible/scripts
       
       # Check for configuration
-      if [[ -s /etc/scdrm/scdrm.conf ]]
-      then . /etc/scdrm/scdrm.conf
+      if [[ -s {{ scdrm_conf }} ]]
+      then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
       exit 1
       fi
@@ -244,6 +250,7 @@
         {% endfor %}
       {% endif %}
 
+      cp {{ scdrm_conf }} /etc/.system_reserved > /dev/null 2>&1
       sed -i 's/^ADMINMODE=0/ADMINMODE=1/' $SCDRMCONF 2>/dev/null
       test -f $SCDRMDLOG || touch $SCDRMDLOG > /dev/null 2>&1
       printf "$NOW - Started admin mode\n" >> $SCDRMDLOG
@@ -266,6 +273,7 @@
 
       /usr/local/sbin/scdrm-fast > /dev/null
 
+      # Sanity checks
       if [[ -s {{ scdrm_conf }} ]]
       then . {{ scdrm_conf }}
       else printf '\nNo configuration file found.\nExiting.\n'
@@ -281,6 +289,7 @@
       {% endif %}
       do cd $DIRECTORY > /dev/null
 
+      # Check for changes
       git status > /tmp/scdrm.tmpf
       if egrep -v '^\w|^$|changes added|Changes not|be commited|to commit|discard changes|On branch|Untracked|untracked files|git add|git restore|git checkout|modified:|deleted:' /tmp/scdrm.tmpf > /dev/null
       then printf "$NOW - Adding new files to the repo\n" >> $SCDRMDLOG
@@ -319,6 +328,7 @@
       {% endif %}
 
       {% if disable_aide is undefined %}
+      # Aide update
         {% if "el" in release.stdout %}
       /usr/sbin/aide --update >/dev/null 2>&1
       /bin/mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 2>/dev/null
@@ -328,6 +338,7 @@
         {% endif %}
       {% endif %}
 
+      # Paranoid mode
       if [[ $PARANOID -eq 1 && $DRYRUN -eq 0 ]]
       then nohup /usr/local/sbin/scdrm-paranoid & 2>/dev/null
       fi

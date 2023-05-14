@@ -8,7 +8,7 @@
 - name: Prepare for update
   become: true
   #command: chattr -R -i /usr/local/sbin/scdrm* /usr/local/sbin/adminst* /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
-  command: chattr -R -i /usr/local/sbin/ /usr/local/bin/adminstart /etc/systemd/system 2>/dev/null
+  command: chattr -R -i /usr/local/sbin/ /usr/local/bin/adminstart /etc/ 2>/dev/null
   failed_when: false
   changed_when: true
 
@@ -106,14 +106,27 @@
     group: root
     attributes: +i
 
-- name: Copy gitignore
+- name: Copy gitignore EL
   become: true
-  copy:
-    src: ../files/gitignore
-    dest: /etc/.gitignore
+  template:
+    src: ../files/gitignore.j2
+    dest: "{{ item }}/.gitignore"
     mode: 0640
     owner: root
     attributes: +i
+  with_items: "{{ dirlist_el }}"
+  when: '"el" in release.stdout'
+
+- name: Copy gitignore Deb
+  become: true
+  template:
+    src: ../files/gitignore.j2
+    dest: "{{ item }}/.gitignore"
+    mode: 0640
+    owner: root
+    attributes: +i
+  with_items: "{{ dirlist_deb }}"
+  when: '"el" not in release.stdout'
 
 - name: Copy cron-check
   become: true
@@ -280,7 +293,7 @@
       Description=AIDE auto-check timer
 
       [Timer]
-      OnCalendar=*/2
+      OnCalendar=hourly
       RandomizedDelaySec=5s
       AccuracySec=1us
       Persistent=true

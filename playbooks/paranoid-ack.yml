@@ -2,17 +2,17 @@
 ---
 - name: Acknowledge change while in paranoid mode
   hosts: all
-  gather_facts: False
+  gather_facts: false
   serial: 96
-  ignore_errors: True
+  ignore_errors: true
   strategy: linear
   vars_files: ./vars/main.yml
   tasks:
     - name: Prepare for update
       become: true
-      command: chattr -R -i /etc/scdrm/ 2>/dev/null && sed -i 's/^PARANOID=1/PARANOID=0/' "{{ scdrm_conf }}" && chattr -R +i /etc/scdrm/ 2>/dev/null
+      command: chattr -R -i /etc/scdrm 2>/dev/null && sed -i 's/^PARANOID=1/PARANOID=0/' "{{ scdrm_conf }}" && chattr -R +i /etc/scdrm 2>/dev/null
       args:
-        exeutable: /bin/bash
+        executable: /bin/bash
       failed_when: false
       changed_when: true
 ...

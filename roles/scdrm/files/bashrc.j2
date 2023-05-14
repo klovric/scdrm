@@ -78,7 +78,7 @@ cd {{ scdrm_install_dir }} > /dev/null
 if [[ $# -eq 1 && ! -s $1 ]]
 then ansible-playbook playbooks/scdrm.yml -e "update=true" -l $1 | tee $LOGF
 elif [[ $# -eq 1 && -s $1 ]]
-then ansible-playbook playbooks/scdrm.yml -e "update=true" -i $1| tee $LOGF
+then ansible-playbook playbooks/scdrm.yml -e "update=true" -i $1 | tee $LOGF
 elif [[ $# -eq 0 ]]
 then ansible-playbook playbooks/scdrm.yml -e "update=true" | tee $LOGF
 fi

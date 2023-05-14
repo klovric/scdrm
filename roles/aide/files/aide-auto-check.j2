@@ -25,7 +25,7 @@ touch $ACTMPF && echo $(date '+%F-%T') > $ACTMPF
 fi
 
 # Sleep some to prevent immediate checking as update might be running
-sleep 60
+sleep 15
 
 {% if "el7" in release.stdout %}
 /usr/sbin/aide -C > /var/log/aide/aide.log 2>$SCDRMELOG
