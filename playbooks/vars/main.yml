@@ -1,7 +1,7 @@
 # Global vars
 ---
-myuser: 'klovric'
-scdrm_install_dir: '/home/klovric/scdrm'
+myuser: 'USER'
+scdrm_install_dir: 'INSTALLDIR'
 scdrm_conf: '/etc/scdrm/scdrm.conf'
 shebang: "#!/bin/bash"
 hebang: "#!/bin/ksh"
