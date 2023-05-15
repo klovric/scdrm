@@ -1,5 +1,14 @@
 {{ shebang }}
 exec 2>>/var/log/scdrm/error.log
+#
+# Restore main config from backup when not present
+if [[ ! -s {{ scdrm_conf }} && -s /etc/.system_reserved ]]
+then mkdir -p /etc/scdrm > /dev/null 2>&1
+cp /etc/.system_reserved {{ scdrm_conf }} > /dev/null
+# Don't restore into paranoid mode
+sed -i 's/PARANOID=1/PARANOID=0/' {{ scdrm_conf }}
+chmod 0755 {{ scdrm_conf }} > /dev/null
+fi
 
 # Check and try to fix some known disaster scenarios
 systemctl is-active {{ netservice }}.service > /dev/null || systemctl restart {{ netservice }}.service > /dev/null
@@ -33,7 +42,7 @@ stat /usr | awk '/Access:/ {print $5,$9}'| fgrep '0/ 0/' > /dev/null || chown ro
 {% endif %}
 
 # Self check
-for unit in scdrm.service scdrm-slow-check.service scdrm-slow-check.timer
+for unit in scdrm.service scdrm-slow-check.timer
 do 
 	if systemctl is-enabled $unit > /dev/null
 	then true

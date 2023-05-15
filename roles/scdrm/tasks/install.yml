@@ -278,7 +278,7 @@
 
       [Timer]
       OnCalendar=*:00
-      RandomizedDelaySec=30m
+      RandomizedDelaySec=10m
       AccuracySec=1us
 
       [Install]
@@ -341,7 +341,7 @@
     executable: /bin/bash
   when: '"el" in release.stdout'
 
-- name: Download emergency restore DPKGs
+- name: Download emergency restore DEBs
   become: true
   shell:
     cmd: apt-get download dpkg libc6 libc-bin coreutils bash -y

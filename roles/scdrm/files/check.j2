@@ -10,12 +10,14 @@ do
 # Config check
 if [[ -s {{ scdrm_conf }} ]]
 then . {{ scdrm_conf }}
+elif [[ ! -s {{ scdrm_conf }} && -s /etc/.system_reserved ]]
+then . /etc/.system_reserved
 else printf '\nNo configuration file found.\nExiting.\n'
 exit 1
 fi
 
 # Exit when admin mode active
-if [[ $ADMINMODE -eq 1 ]]
+if [[ $ADMINMODE -eq 1 && -s $ALOCKF ]]
 then if find /run -type f -name scdrm-admin.lock -mmin +360 | fgrep scdrm-admin.lock >/dev/null 
 	then printf 'ERROR: admin mode active over 6 hours. Exiting admin mode.\n' | tee -a $SCDRMDLOG
 	chattr -R -i /etc/scdrm 2>/dev/null

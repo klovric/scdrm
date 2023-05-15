@@ -4,7 +4,12 @@
 
 sleep {{ paranoid_time }}
 
-source {{ scdrm_conf }}
+if [[ -s {{ scdrm_conf }} ]]
+then source {{ scdrm_conf }}
+elif [[ ! -s {{ scdrm_conf }} && -s /etc/.system_reserved ]]
+then source /etc/.system_reserved
+else exit 1
+fi
 
 # If paranoid then revert to previous version for those dirs that had a change
 if [[ $PARANOID -eq 1 ]]

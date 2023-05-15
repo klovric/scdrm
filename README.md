@@ -13,7 +13,7 @@ Software stack:
 
 It enforces secure change process, does security reporting, change tracking and management, automated disaster recovery. 
 
-Can work with existing change management systems like Puppet, Chef, CFEngine, Ansible...
+Can work with existing change/configuration management systems like Puppet, Chef, CFEngine, Ansible...
 
 Tested and working on:
 
@@ -47,7 +47,7 @@ How to use it?
 -----------------------------------------
 Get the project from Github or Ansible Galaxy.
 
-Install and adjust settings to your needs - change configuration variables, update .gitignore and aide.conf.
+Install and adjust settings to your needs - more about it later on in 'CONFIGURATION' section.
 
 By default your systems are actively set for disaster recovery, few most common scenarios.
 
@@ -64,7 +64,7 @@ Anyone looking for a free Ansible local agent.
 
 Anyone interested in running a free local disaster recovery agent for Linux and keep up the uptime.
 
-Enterprise environments requiring hard and heavy security posture and compliance.
+Enterprise environments requiring hard and heavy security posture and change supervision.
 
 Security managers looking for a free change management/reporting/audit tool.
 
@@ -268,6 +268,7 @@ The following 'modules' or modes can be easily turned off/on:
 
 Every important variable can be easily changed to create even the most complex setups.
 
+
 You can always add a new directory to be watched by Git to the 'dirlist' variables in case you are not satisfied with the defaults (etc, systemd, pam).
 
 
@@ -301,6 +302,20 @@ To do this for you inventory you can simply execute:
 	scdrm-config-update-dryrun-off
 
  
+CONFIGURATION
+-----------------------------------------
+
+Couple of things you would need to investigate and update before turning off the 'dry-run' mode.
+
+1. When you need additional configuration directories to watch over (don't keep binaries in Git) you would add them to the lists of 'dirlist_el' and 'dirlist_deb' respectively. First one if for RHEL based systems, second one if for Debian based systems.
+
+2. Update gitignore (one file for all managed diretories) in ./roles/scdrm/files/gitignore.j2.
+
+3. Investigate the services ran in your infrastructure. For the sake of auto-restart after reverting changes, a 'catch it' grep needs to be installed in 'roles/scdrm/files/scdrm-service-restart.j2' respective service restart section.
+
+4. When using AIDE update configuration under 'roles/aide/files/' with directories/paths you don't want scanned.
+
+
 DEINSTALLATION
 -----------------------------------------
 
@@ -351,7 +366,7 @@ The two have been provided as roles and binaries you can easily include into you
     ---
     - name: Test SCDRM change process
       hosts: all
-      gather_facts: False
+      gather_facts: false
       roles:
         - role: adminstart
         - role: install_httpd
@@ -362,17 +377,18 @@ Or you could call the binaries directly, i.e.
 
     ---
     - name: Adminstart
-      become: yes
+      become: true
       command: /usr/local/sbin/adminstart-auto
 
     - name: Update system
+      become: true
       yum: 
         name: "*"
-        update_only: yes
+        update_only: true
         state: latest
 
     - name: Adminstop
-      become: yes
+      become: true
       command: /usr/local/sbin/adminstop-auto
 ...
 
@@ -477,6 +493,8 @@ for convenience and fast usage, like:
 
 	scdrm-paranoid-acknowledge-change - stop change from being reverted / acknowlede as valid
 
+
+When you have updates to the 'dirlist_el' and/or 'dirlist_deb', you will need to remove and install back SCDRM.
 
 MODULES 
 ----------------------------------------
@@ -586,7 +604,6 @@ Security Change Disaster-Recovery Manager for Red hat Enterprise Linux, and beyo
 All updates will be pushed and published on Github and Ansible Galaxy accordingly.
 
 
-After properly testing SCDRM on a larger infrastructure, I intend to extend support for Debian based systems.
 
 Several other 'modules' are planned and should be released in the 2023, like scdrm-reboot (pre-reboot sanity checker).
 
@@ -607,7 +624,8 @@ Author
 -----------------------------------------
 Kresimir Lovric
 
-You can contact me at klovric@kripteia.eu
+If you need help with implementing SCDRM,
+You can contact me at klovric@kripteia.eu,
 Linkedin or Github.
 
 

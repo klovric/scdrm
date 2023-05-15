@@ -5,17 +5,27 @@
 export PATH=/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin:/usr/local/sbin
 SCDRMELOG='/var/log/scdrm/error.log'
 SCDRMREPORT='/var/log/scdrm/report'
+NOW="$(date '+%F-%T')"
 
 exec 2>>$SCDRMELOG
 
 # Read main config, restore from backup when not present
 if [[ -s {{ scdrm_conf }} ]]
 then . {{ scdrm_conf }} >/dev/null
-elif [[ ! -s {{ scdrm_conf }} && -f /etc/.system_reserved ]]
-then cp /etc/.system_reserved {{ scdrm_conf }} > /dev/null
+elif [[ ! -s {{ scdrm_conf }} && -s /etc/.system_reserved ]]
+then mkdir -p /etc/scdrm > /dev/null 2>&1
+cp /etc/.system_reserved {{ scdrm_conf }} > /dev/null
+# Don't restore into paranoid mode
+sed -i 's/PARANOID=1/PARANOID=0/' {{ scdrm_conf }}
 chmod 0755 {{ scdrm_conf }} > /dev/null
 chatrr +i {{ scdrm_conf }}
 . {{ scdrm_conf }} > /dev/null
+fi
+
+# Check for admin mode
+if [[ $ADMINMODE -eq 1 || -s $ALOCKF ]]
+then printf "$NOW SCDRM slow check - Admin mode active.\nExiting...\n" >> $SCDRMDLOG
+exit 1
 fi
 
 # Do a self check and try to kill previous run if hanging do to storage/notwork

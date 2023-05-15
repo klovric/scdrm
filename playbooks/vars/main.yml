@@ -1,5 +1,6 @@
 # Global vars
 ---
+scdrm_version: '1.9.6'
 myuser: 'USER'
 scdrm_install_dir: 'INSTALLDIR'
 scdrm_conf: '/etc/scdrm/scdrm.conf'

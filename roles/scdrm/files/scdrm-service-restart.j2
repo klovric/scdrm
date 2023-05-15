@@ -10,6 +10,8 @@ exit 1
 fi
 
 INPUT="$@"
+# Common services
+#
 # Check for systemd changes and restart
 printf "$INPUT" | egrep '\.(automount|mount|path|service|slice|socket|target|timer)|fstab' > /dev/null && systemctl daemon-reload 2>$SCDRMELOG
 
@@ -29,6 +31,8 @@ printf "$INPUT" | fgrep 'journald.conf' > /dev/null && systemctl restart systemd
 printf "$INPUT" | fgrep 'udev' > /dev/null && systemctl restart systemd-udevd 2>$SCDRMELOG
 
 {% if "el" in release.stdout %}
+# RHEL specific services
+#
 # Check for Network changes and restart
 printf "$INPUT" | egrep 'NetworkManager|network-scripts' > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
 
@@ -41,6 +45,8 @@ printf "$INPUT" | fgrep 'cron' > /dev/null && systemctl restart crond 2>$SCDRMEL
 # Check for firewalld changes and restart
 printf "$INPUT" | fgrep 'firewalld' > /dev/null && systemctl restart firewalld 2>$SCDRMELOG
 {% else %}
+# Debian specific services
+#
 # Check for Network changes and restart
 printf "$INPUT" | fgrep 'network/interfaces' > /dev/null && systemctl restart {{ netservice }} 2>$SCDRMELOG
 

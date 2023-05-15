@@ -8,9 +8,9 @@
 - name: Update config
   become: true
   lineinfile:
-    path: /etc/scdrm/scdrm.conf
+    path: "{{ scdrm_conf }}"
     regexp: '^DRYRUN='
-    line: DRYRUN={{ dryrun }}
+    line: "DRYRUN={{ dryrun }}"
     state: present
 
 - name: Lock config

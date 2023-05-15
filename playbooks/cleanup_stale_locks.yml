@@ -16,17 +16,17 @@
 
     - name: Prepare scdrm.conf
       become: True
-      shell: chattr -i /etc/scdrm/scdrm.conf
+      shell: chattr -i "{{ scdrm_config }}"
 
     - name: Close adminmode
       become: True
       lineinfile:
-        path: /etc/scdrm/scdrm.conf
+        path: "{{ scdrm_config }}"
         regexp: '^ADMINMODE=1'
         line: ADMINMODE=0
         state: present
 
     - name: Close scdrm.conf
       become: True
-      shell: chattr +i /etc/scdrm/scdrm.conf
+      shell: chattr +i "{{ scdrm_config }}"
 ...
