@@ -3,7 +3,7 @@
 
 What is SCDRM?
 -----------------------------------------
-It is a wrapper that acts as Ansible local agent and disaster recovery daemon designed for enterprise environments.
+It is a wrapper that acts as Ansible local agent and disaster recovery daemon designed for Linux enterprise environments.
 
 Software stack:
  - AIDE: Intrusion detection environment
@@ -582,14 +582,14 @@ KNOWN LIMITATIONS
 
  - Re-configuring exclusions in aide.conf and .gitignore is usually the first step to make as probably expectations won't be met using defaults.
  - Exiting admin mode run AIDE update (when set so), which on some systems can take longer time. It also updates local vars.
- - In case you don't use default route on your systems, you will have no use of route-guard as it restores previously recorded default route when one found missing from the system. If you have multiple default routes, you could have PROBLEMS with route-guard! You can easily disable route-guard.
+ - Route-guard is working as designed only when you have single default route and your gateway is pingable. If you have multiple default routes, you could have PROBLEMS with route-guard!
  - Maybe you don't want your networking services automatically restarted when not active, as part of DR.
  - Maybe default package verification won't suit your case, test it.
  - Removal of SCDRM will remove AIDE and tlog from the system! You have been notified.
  - Automated revert possible only for dirs managed, currently ONLY /etc, /usr/lib/systemd/, /usr/lib64/security.
  - Race condition/piggy back commits - during admin mode is activated and another user is making changes to the system, they will be committed by user using 'admin mode'
  - Intended to be ran from single central management jumphost as it keeps the commit vars locally
- - Ansible strategy 'free' seems to break my 'consistency-enforce.yml' so works fine with 'linear' - have to look into this
+ - Ansible strategy 'free' seems to break my 'consistency-enforce.yml' but works fine with 'linear'.
 
 
 FUTURE UPDATES
@@ -633,6 +633,7 @@ Important change log
 -----------------------------------------
 | Version |	Date   |	Description 	|
 -----------------------------------------
+
 1.9.4	    2023-05-14   Introducing auto 'scdrm.conf' DR backup and restore, some minor fixes and improvements
 
 1.9.3	    2023-03-10   Included unpingable gateway setups in route-guard:v2 ; PARANOID mode included ; MOTD included ; several minor fixes

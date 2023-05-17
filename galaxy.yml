@@ -8,7 +8,7 @@ namespace: klovric
 name: scdrm
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.9.3
+version: 1.9.6
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -20,7 +20,7 @@ authors:
 
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
-description: Security Change Disaster-Recovery Manager for RHEL 7/8/9. It is a Anisble local agent based on Git which enforces secure change process and provides fast recovery along with several disaster-recovery/prevention sanity checks intended to keep the system up and reachable over SSH.
+description: Security Change Disaster-Recovery Manager for Linux (RHEL/Debian). It is a Anisble local agent based on Git which enforces secure change process and provides fast recovery along with several disaster-recovery/prevention sanity checks intended to keep the system up and reachable over SSH.
 
 # Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'

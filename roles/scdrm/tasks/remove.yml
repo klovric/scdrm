@@ -9,7 +9,9 @@
     - scdrm.service
     - scdrm-slow-check.timer
     - aide-auto-check.timer
+    - aide-auto-check.service
     - aide-check.timer
+    - aide-check.service
 
 - name: Prepare files for deletion
   become: true
