@@ -1,4 +1,4 @@
-# SCDRM - Security Change Disaster-Recovery Manager		
+# SCDRM - Secure Change and Disaster Recovery Manager		
 -----------------------
 
 What is SCDRM?
